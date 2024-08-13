@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "890110941957",
+    "project_id": "chessmaster-e0dbb",
+    "storage_bucket": "chessmaster-e0dbb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890110941957:android:b322f2f7aee440deb7756c",
+        "android_client_info": {
+          "package_name": "com.tak.chessmaster"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDtqLWpsnAJBkmnOgsY2WJzWzu1j1Pd2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

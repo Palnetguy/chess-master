@@ -1,5 +1,5 @@
 {
-    "name": "chess_master",
+    "name": "ChessMaster",
     "short_name": "chess_master",
     "start_url": ".",
     "display": "standalone",
