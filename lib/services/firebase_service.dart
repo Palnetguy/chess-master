@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart';
@@ -101,10 +102,10 @@ class FirebaseService {
 }
 
 // Check the platform if also developing for IOS.
-FirebaseOptions firebaseOptions = const FirebaseOptions(
-  apiKey: 'AIzaSyBDtqLWpsnAJBkmnOgsY2WJzWzu1j1Pd2A',
-  appId: '1:890110941957:android:b322f2f7aee440deb7756c',
-  messagingSenderId: '890110941957',
-  projectId: 'chessmaster-e0dbb',
-  storageBucket: 'chessmaster-e0dbb.appspot.com',
+FirebaseOptions firebaseOptions = FirebaseOptions(
+  apiKey: dotenv.env['API_KEY']!,
+  appId: dotenv.env['APPID']!,
+  messagingSenderId: dotenv.env['MESSAGINGSENDERID']!,
+  projectId: dotenv.env['PROJECTID']!,
+  storageBucket: dotenv.env['STORAGEBUCKET']!,
 );
