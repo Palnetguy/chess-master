@@ -102,10 +102,17 @@ class FirebaseService {
 }
 
 // Check the platform if also developing for IOS.
-FirebaseOptions firebaseOptions = FirebaseOptions(
-  apiKey: dotenv.env['API_KEY']!,
-  appId: dotenv.env['APPID']!,
-  messagingSenderId: dotenv.env['MESSAGINGSENDERID']!,
-  projectId: dotenv.env['PROJECTID']!,
-  storageBucket: dotenv.env['STORAGEBUCKET']!,
+// FirebaseOptions firebaseOptions = FirebaseOptions(
+//   apiKey: dotenv.env['API_KEY']!,
+//   appId: dotenv.env['APPID']!,
+//   messagingSenderId: dotenv.env['MESSAGINGSENDERID']!,
+//   projectId: dotenv.env['PROJECTID']!,
+//   storageBucket: dotenv.env['STORAGEBUCKET']!,
+// );
+FirebaseOptions firebaseOptions = const FirebaseOptions(
+  apiKey: 'AIzaSyBDtqLWpsnAJBkmnOgsY2WJzWzu1j1Pd2A',
+  appId: '1:890110941957:android:b322f2f7aee440deb7756c',
+  messagingSenderId: '890110941957',
+  projectId: 'chessmaster-e0dbb',
+  storageBucket: 'chessmaster-e0dbb.appspot.com',
 );
