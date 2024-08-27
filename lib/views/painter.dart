@@ -37,7 +37,8 @@ class Painter extends StatefulWidget {
 class _GameBoardState extends State<Painter>
     with TickerProviderStateMixin, UrlLauncherMixin {
   // PainterHelper PH = PainterHelper(); // create helper object
-  PainterHelper PH = Get.find<PainterHelper>();
+  final PainterHelper PH =
+      Get.find<PainterHelper>(); // Use GetX dependency injection
 
   late AnimationController animation;
 
@@ -106,6 +107,14 @@ class _GameBoardState extends State<Painter>
     super.initState();
   }
 
+  // Future<void> preloadImages() async {
+  //   String A = "assets/images/";
+  //   // Preload images asynchronously
+  //   PH.wk = await ldImg(A + "wking.png");
+  //   PH.wq = await ldImg(A + "wqueen.png");
+  //   // ... Load all other images similarly
+  // }
+
   // Images loading is async. and takes some time (theoretically)
   Future<ui.Image> ldImg(String assetPath) async {
     ByteData bd = await rootBundle.load(assetPath);
@@ -131,7 +140,8 @@ class _GameBoardState extends State<Painter>
               painter: myPainter(PH: PH),
               child: GestureDetector(
                 onTapDown: (TapDownDetails details) {
-                  myTap(details);
+                  PH.verifyTap(
+                      details.localPosition.dx, details.localPosition.dy);
                 },
               ),
             ),
@@ -155,7 +165,7 @@ class _GameBoardState extends State<Painter>
 
 class myPainter extends CustomPainter {
   final GameController gameController = Get.find<GameController>();
-  PainterHelper PH;
+  final PainterHelper PH;
 
   myPainter({required this.PH}) {
     PH.CP = this;
@@ -172,7 +182,7 @@ class myPainter extends CustomPainter {
     drawBoard();
 
     drawButtonsTexts();
-    if (PH.AnimTck > 0) drawAnim();
+    if (PH.animTck.value > 0) drawAnim();
   }
 
   // This paints an image
@@ -191,23 +201,23 @@ class myPainter extends CustomPainter {
 
   // put all buttons on screen
   void drawButtonsTexts() {
-    for (int i = 0; i < 7; i++) {
-      bool f = true;
-      // Lousy uses 64bits
-      if (i == 4 && (!PH.is64bitOK)) f = false;
+    // for (int i = 0; i < 7; i++) {
+    //   bool f = true;
+    //   // Lousy uses 64bits
+    //   if (i == 4 && (!PH.is64bitOK.value)) f = false;
 
-      //-------if disable url_launcher
+    //   //-------if disable url_launcher
 
-      //---- pgn part, not to go to WorkSheet
-      //if (i == 5) f = false;
-      //---- not to go to GitHub
-      //if (i == 6) f = false;
+    //   //---- pgn part, not to go to WorkSheet
+    //   //if (i == 5) f = false;
+    //   //---- not to go to GitHub
+    //   //if (i == 6) f = false;
 
-      if (f) drawButtTxt(PH.but_Img(i), i);
-    }
+    //   if (f) drawButtTxt(PH.but_Img(i), i);
+    // }
 
     ui.Image? iT;
-    var gameStatus = '';
+    // var gameStatus = '';
 
     // position 7 is text
     // if (PH.isRep3x) iT = PH.tRP;
@@ -221,36 +231,36 @@ class myPainter extends CustomPainter {
     // if (PH.txtThinking) iT = PH.tTH;
     // if (iT != null) drawButtTxt(iT, 7);
 
-    if (PH.isRep3x) {
+    if (PH.isRep3x.value) {
       iT = PH.tRP;
-      gameStatus = 'Repetition';
+      // gameStatus = 'Repetition';
     }
 
-    if (PH.txtYourMove) {
+    if (PH.txtYourMove.value) {
       iT = PH.tYM;
-      gameStatus = 'Your Move';
+      // gameStatus = 'Your Move';
     }
 
-    if (PH.isStaleMate) {
+    if (PH.isStaleMate.value) {
       iT = PH.tST;
-      gameStatus = 'Stale Mate';
+      // gameStatus = 'Stale Mate';
     }
 
-    if (PH.isCheck) {
+    if (PH.isCheck.value) {
       iT = PH.tCK;
-      gameStatus = 'Check +';
+      // gameStatus = 'Check +';
     }
-    if (PH.isCheckMate) {
-      iT = (PH.gameResult == "1-0" ? PH.tCM10 : PH.tCM01);
-      gameStatus = 'Check Mate';
+    if (PH.isCheckMate.value) {
+      iT = (PH.gameResult.value == "1-0" ? PH.tCM10 : PH.tCM01);
+      // gameStatus = 'Check Mate';
     }
 
-    if (PH.txtThinking) {
+    if (PH.txtThinking.value) {
       iT = PH.tTH;
-      gameStatus = 'Thinking';
+      // gameStatus = 'Thinking';
     }
     if (iT != null) {
-      drawButtTxt(iT, 7);
+      // drawButtTxt(iT, 7);
       // gameController.updateGameResult(gameStatus);
       gameController.drawImageText(iT);
     }
@@ -266,7 +276,7 @@ class myPainter extends CustomPainter {
     Canvas canvas = PH.canvas;
     double sqSize = PH.SqSize();
     int sq = (v << 3) | h;
-    if (!PH.ImPlayingWhite) {
+    if (!PH.imPlayingWhite.value) {
       sq = 63 - sq; // flip board
     }
 
@@ -303,7 +313,7 @@ class myPainter extends CustomPainter {
       drawImage(rect, img, scale);
 
       // Drag chess piece
-      if (PH.dragSquare == sq) {
+      if (PH.dragSquare.value == sq) {
         final Paint drag = Paint()
           ..style = PaintingStyle.stroke
           ..color = const Color(0xff0056eb)
@@ -357,9 +367,9 @@ class myPainter extends CustomPainter {
       Rect rect2 =
           Rect.fromLTWH(x + (imgSz * 0.55), y + (imgSz * 0.60), sc2, sc2);
 
-      bool Lamp = (I == 2 && (PH.Owl.Tck > 0 || PH.Owl.LampTck > 0)) ||
-          (I == 3 && (PH.Fruit.Tck > 0 || PH.Fruit.LampTck > 0)) ||
-          (I == 4 && (PH.Lousy.Tck > 0 || PH.Lousy.LampTck > 0));
+      bool Lamp = (I == 2 && (PH.owl.Tck > 0 || PH.owl.LampTck > 0)) ||
+          (I == 3 && (PH.fruit.Tck > 0 || PH.fruit.LampTck > 0)) ||
+          (I == 4 && (PH.lousy.Tck > 0 || PH.lousy.LampTck > 0));
 
       ui.Image? img2 = (Lamp ? PH.lm1 : PH.lm0);
 
@@ -374,17 +384,17 @@ class myPainter extends CustomPainter {
   drawAnim() {
     double sqSize = PH.SqSize();
 
-    int sq1 = PH.Anim_from_square;
-    int sq2 = PH.Anim_to_square;
+    int sq1 = PH.animFromSquare.value;
+    int sq2 = PH.animToSquare.value;
 
-    if (!PH.ImPlayingWhite) {
+    if (!PH.imPlayingWhite.value) {
       sq1 = 63 - sq1; // flip board
       sq2 = 63 - sq2;
     }
     int h1 = sq1 & 7, v1 = sq1 >> 3;
     int h2 = sq2 & 7, v2 = sq2 >> 3;
 
-    double tck = 1 - (PH.AnimTck / PH.AnimTCnt);
+    double tck = 1 - (PH.animTck.value / PH.animTCnt);
     double x = h1 * sqSize, y = (7 - v1) * sqSize;
     double dx = (h2 - h1) * sqSize, dy = (v1 - v2) * sqSize;
     dx *= tck;
@@ -404,14 +414,14 @@ class myPainter extends CustomPainter {
 
     drawImage(rect, img, scale);
 
-    if (PH.AnimTck < 8) {
-      int sq3 = PH.Anim_to_square;
+    if (PH.animTck.value < 8) {
+      int sq3 = PH.animToSquare.value;
       int col = PH.pieceColAt(sq3);
       if (col != -1) {
-        if (PH.AnimTck < 8) img = PH.ex1;
-        if (PH.AnimTck < 6) img = PH.ex2;
-        if (PH.AnimTck < 4) img = PH.ex3;
-        if (PH.AnimTck < 2) img = PH.ex4;
+        if (PH.animTck.value < 8) img = PH.ex1;
+        if (PH.animTck.value < 6) img = PH.ex2;
+        if (PH.animTck.value < 4) img = PH.ex3;
+        if (PH.animTck.value < 2) img = PH.ex4;
         Rect? rect3 = PH.sqDatas[sq3].rect!;
         drawImage(rect3, img, scale);
       }

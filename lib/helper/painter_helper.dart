@@ -30,82 +30,73 @@ class PainterHelper extends GetxController {
   late CustomPainter CP;
   late Canvas canvas;
   late int width, height;
-  double SquareSize = 70.0;
+  RxDouble squareSize = 70.0.obs;
 
-  bool repaint = true;
+  RxBool repaint = true.obs;
 
-  bool ImPlayingWhite = true;
+  RxBool imPlayingWhite = true.obs;
 
-  int PauseWait = 0; // Can set to pause and paint only
+  RxInt pauseWait = 0.obs; // Can set to pause and paint only
 
-  int AnimTCnt = 10;
-  int AnimTck = 0; // Animation ticker
-  int Anim_from_square = 0;
-  int Anim_to_square = 0;
+  int animTCnt = 10;
+  RxInt animTck = 0.obs; // Animation ticker
+  RxInt animFromSquare = 0.obs;
+  RxInt animToSquare = 0.obs;
 
-  bool isCheck = false;
-  bool isCheckMate = false;
-  bool isStaleMate = false;
-  bool isRep3x = false;
-  String gameResult = "";
+  RxBool isCheck = false.obs;
+  RxBool isCheckMate = false.obs;
+  RxBool isStaleMate = false.obs;
+  RxBool isRep3x = false.obs;
+  RxString gameResult = "".obs;
 
-  bool txtYourMove = false;
-  bool txtThinking = false;
+  RxBool txtYourMove = false.obs;
+  RxBool txtThinking = false.obs;
 
-  bool goGitHub = false; // if should redirect to GitHub page
-  bool goWorkSheet = false; // if should redirect to worksheet page
+  RxBool goGitHub = false.obs; // if should redirect to GitHub page
+  RxBool goWorkSheet = false.obs; // if should redirect to worksheet page
 
-  // objects of preloaded images of pieces
   ui.Image? wk, wq, wr, wb, wn, wp;
   ui.Image? bk, bq, br, bb, bn, bp;
-
-  // explosion animation
   ui.Image? ex1, ex2, ex3, ex4;
-  // buttons
   ui.Image? bNG, bTB, bOw, bFr, bLo, bPG, bGI;
-  // texts on screen
   ui.Image? tYM, tTH, tST, tCK, tCM10, tCM01, tRP;
-  // a small lamp on-off
   ui.Image? lm1, lm0;
 
-  static const Engine_OWL = 1;
-  static const Engine_FRUIT = 2;
-  static const Engine_LOUSY = 3;
-  int Engine_Selected = Engine_OWL;
+  static const engineOwl = 1;
+  static const engineFruit = 2;
+  static const engineLousy = 3;
+  RxInt engineSelected = engineOwl.obs;
 
-  // Chess engines
-  late OwlEngine Owl;
-  late FruitEngine Fruit;
-  late LousyEngine Lousy;
-  bool is64bitOK = (((1 << 32) >>> 1) == (1 << 31));
+  late OwlEngine owl;
+  late FruitEngine fruit;
+  late LousyEngine lousy;
+  RxBool is64bitOK = (((1 << 32) >>> 1) == (1 << 31)).obs;
 
-// squares positions
   late List<sqData> sqDatas = [];
-  // rectangles for buttons or texts
   late List<sqData> btDatas = [];
 
-  // Various status variables
-  int dragSquare = -1;
-  List<int> dSquares = [];
+  RxInt dragSquare = (-1).obs;
+  RxList<int> dSquares = <int>[].obs;
 
   static PainterHelper get instance => Get.find<PainterHelper>();
 
   int btnIndex = 0;
 
-  // Game timing and status
   late DateTime startTime;
-  final GameController gameController =
-      Get.find<GameController>(); // Use GetX to get the controller
+  final GameController gameController = Get.find<GameController>();
 
   // construct
   PainterHelper() {
-    Owl = OwlEngine();
-    Fruit = FruitEngine();
-    if (is64bitOK) Lousy = LousyEngine();
+    owl = OwlEngine();
+    fruit = FruitEngine();
+    if (is64bitOK.value) lousy = LousyEngine();
 
-    int i;
-    for (i = 0; i < 64; i++) sqDatas.add(sqData());
-    for (i = 0; i <= 7; i++) btDatas.add(sqData());
+    for (int i = 0; i < 64; i++) {
+      sqDatas.add(sqData());
+    }
+    for (int i = 0; i <= 7; i++) {
+      btDatas.add(sqData());
+    }
   }
 
   Map<String, ui.Image?> pieceImages = {};
@@ -121,15 +112,15 @@ class PainterHelper extends GetxController {
 
   // shoild repaint on animation or not
   bool shouldRepaint() {
-    bool r = repaint;
-    repaint = false;
+    bool r = repaint.value;
+    repaint.value = false;
     return r;
   }
 
   // various functions
 
   double SqSize() {
-    return SquareSize; // The size of square
+    return squareSize.value; // The size of square
   }
 
   // on each repaint (not optimal, but ok)
@@ -148,8 +139,12 @@ class PainterHelper extends GetxController {
     if ((mi + a) > (ma - 4)) a = mi / 9;
 
     // Adjust board size...
-    while (SquareSize < (a + 11) && SquareSize < 90) SquareSize++;
-    while (SquareSize > (a - 1) && SquareSize > 30) SquareSize--;
+    while (squareSize.value < (a + 11) && squareSize.value < 90) {
+      squareSize.value++;
+    }
+    while (squareSize.value > (a - 1) && squareSize.value > 30) {
+      squareSize.value--;
+    }
   }
 
   bool isDarkSq(int sq) {
@@ -210,64 +205,57 @@ class PainterHelper extends GetxController {
 
 // take this from OWL engine only
   int pieceColAt(int sq) {
-    return Owl.pieceColAt(sq);
+    return owl.pieceColAt(sq);
   }
 
   int pieceTypeAt(int sq) {
-    return Owl.pieceTypeAt(sq);
+    return owl.pieceTypeAt(sq);
   }
 
   int animCol() {
-    return Owl.anm_cl;
+    return owl.anm_cl;
   }
 
   int animType() {
-    return Owl.anm_pc - 1;
+    return owl.anm_pc - 1;
   }
 
   String get_MoveslistUcis() {
-    return Owl.MoveslistUcis;
+    return owl.MoveslistUcis;
   }
 
   // Gestures
 
-  verifyTap(double x, double y) {
-    int i, j;
+  void verifyTap(double x, double y) {
+    if (pauseWait.value > 0 || animTck.value > 0 || txtThinking.value) return;
 
-    if (PauseWait > 0 || AnimTck > 0 || txtThinking) return;
+    if (owl.isItMyMove(imPlayingWhite.value)) {
+      for (int i = 0; i < 64; i++) {
+        if (isCheckMate.value || isStaleMate.value) break;
 
-    // verify chess board
-    if (Owl.isItMyMove(ImPlayingWhite)) {
-      for (i = 0; i < 64; i++) {
-        if (isCheckMate || isStaleMate) break;
+        sqData ob = sqDatas[i];
 
-        sqData Ob = sqDatas[i];
-
-        if ((Ob.rect?.top)! <= y &&
-            (Ob.rect?.left)! <= x &&
-            (Ob.rect?.bottom)! >= y &&
-            (Ob.rect?.right)! >= x) {
-          // drag piece on square
-          if (dragSquare != i) {
-            List<int> Legals = Owl.LegalMovesToSquares(i);
-            for (j = 0; j < Legals.length; j++) {
-              // can move from here
-              if (dragSquare != i) dSquares = [];
-              dragSquare = i;
-              dSquares.add(Legals[j]);
-              repaint = true;
+        if ((ob.rect?.top)! <= y &&
+            (ob.rect?.left)! <= x &&
+            (ob.rect?.bottom)! >= y &&
+            (ob.rect?.right)! >= x) {
+          if (dragSquare.value != i) {
+            List<int> legals = owl.LegalMovesToSquares(i);
+            for (int j = 0; j < legals.length; j++) {
+              if (dragSquare.value != i) dSquares.clear();
+              dragSquare.value = i;
+              dSquares.add(legals[j]);
+              repaint.value = true;
             }
           }
 
-          if (dragSquare != -1) {
-            for (j = 0; j < dSquares.length; j++) {
-              // can move from here
+          if (dragSquare.value != -1) {
+            for (int j = 0; j < dSquares.length; j++) {
               if (dSquares[j] == i) {
-                // move piece
-                AnimToMove(dragSquare, i);
-                dragSquare = -1;
-                dSquares = [];
-                repaint = true;
+                AnimToMove(dragSquare.value, i);
+                dragSquare.value = -1;
+                dSquares.clear();
+                repaint.value = true;
               }
             }
           }
@@ -277,7 +265,7 @@ class PainterHelper extends GetxController {
 
     // verify buttons
 
-    // for (i = 0; i < 7; i++) {
+    // for (var i = 0; i < 7; i++) {
     //   sqData Ob = btDatas[i];
 
     //   if (Ob.rect != null &&
@@ -285,204 +273,251 @@ class PainterHelper extends GetxController {
     //       (Ob.rect?.left)! <= x &&
     //       (Ob.rect?.bottom)! >= y &&
     //       (Ob.rect?.right)! >= x) {
-    //     if (btnIndex == 0) NewGame();
-    //     if (btnIndex == 1) TakeBack();
+    //     if (i == 0) NewGame();
+    //     if (i == 1) TakeBack();
 
     //     if (i == 2) {
-    //       Engine_Selected = Engine_OWL;
-    //       Owl.LampTck = 20;
+    //       engineSelected.value = engineOwl;
+    //       owl.LampTck = 20;
     //       print("Clicked OWL Engine");
     //     }
     //     if (i == 3) {
-    //       Engine_Selected = Engine_FRUIT;
-    //       Fruit.LampTck = 20;
+    //       engineSelected.value = engineFruit;
+    //       fruit.LampTck = 20;
     //       print("Clicked Fruit Engine");
     //     }
-    //     if (i == 4) {
-    //       Engine_Selected = Engine_LOUSY;
-    //       Lousy.LampTck = 20;
-    //       print("Clicked LOUSY Engine");
+    //     if (i == 4 && is64bitOK.value) {
+    //       engineSelected.value = engineLousy;
+    //       lousy.LampTck = 20;
+    //       print("Clicked Lousy Engine");
     //     }
-
-    //     // allow for flutter build web
-    //     if (i == 5) goWorkSheet = false;
-    //     if (i == 6) goGitHub = false;
+    //     if (i == 5) goGitHub.value = true;
+    //     if (i == 6) goWorkSheet.value = true;
     //   }
     // }
   }
 
   // Set animation on
-  AnimToMove(fromSq, toSq) {
-    AnimTck = AnimTCnt;
-    Anim_from_square = fromSq;
-    Anim_to_square = toSq;
-    Owl.HidePieceSq(fromSq);
+  void AnimToMove(int fromSq, int toSq) {
+    animTck.value = animTCnt;
+    animFromSquare.value = fromSq;
+    animToSquare.value = toSq;
+    owl.HidePieceSq(fromSq);
   }
 
-  MoveAfterAnimation() {
-    Owl.RestorePieceSq();
-    Owl.MakeMove(Anim_from_square, Anim_to_square);
-    Fruit.MakeMove(Anim_from_square, Anim_to_square);
-    if (is64bitOK) Lousy.MakeMove(Anim_from_square, Anim_to_square);
+  void MoveAfterAnimation() {
+    owl.RestorePieceSq();
+    owl.MakeMove(animFromSquare.value, animToSquare.value);
+    fruit.MakeMove(animFromSquare.value, animToSquare.value);
+    if (is64bitOK.value) {
+      lousy.MakeMove(animFromSquare.value, animToSquare.value);
+    }
   }
 
   void bottomButtonAction(int i) {
-    // Trigger appropriate actions based on the button clicked
     if (i == 0) NewGame();
     if (i == 1) TakeBack();
 
     if (i == 2) {
-      Engine_Selected = Engine_OWL;
-      Owl.LampTck = 20;
+      engineSelected.value = engineOwl;
+      owl.LampTck = 20;
       print("Clicked OWL Engine");
     }
     if (i == 3) {
-      Engine_Selected = Engine_FRUIT;
-      Fruit.LampTck = 20;
+      engineSelected.value = engineFruit;
+      fruit.LampTck = 20;
       print("Clicked Fruit Engine");
     }
-    if (i == 4) {
-      Engine_Selected = Engine_LOUSY;
-      Lousy.LampTck = 20;
-      print("Clicked LOUSY Engine");
+    if (i == 4 && is64bitOK.value) {
+      engineSelected.value = engineLousy;
+      lousy.LampTck = 20;
+      print("Clicked Lousy Engine");
     }
+    // if (i == 5) goGitHub.value = true;
+    // if (i == 6) goWorkSheet.value = true;
 
-    // Mark the UI to be repainted
-    // repaint = true;
-
-    update();
+    repaint.value = true;
   }
 
   // Start a new game
-  NewGame() {
-    dragSquare = -1;
-    dSquares = [];
+  void NewGame() {
+    dragSquare.value = -1;
+    dSquares.clear();
 
-    ImPlayingWhite = !ImPlayingWhite;
-    Owl.NewGame();
-    Fruit.NewGame();
-    if (is64bitOK) Lousy.NewGame();
-    repaint = true;
-    PauseWait = 10;
+    imPlayingWhite.value = !imPlayingWhite.value;
+    owl.NewGame();
+    fruit.NewGame;
+    if (is64bitOK.value) lousy.NewGame();
+    repaint.value = true;
+    pauseWait.value = 10;
 
-    // Reset game time and status message using GetX
-    // startTime = DateTime.now();
-    // updateGameTime();
-    gameController.reset();
+    isCheck.value = false;
+    isCheckMate.value = false;
+    isStaleMate.value = false;
+    isRep3x.value = false;
+    gameResult.value = "";
+
+    txtYourMove.value = false;
+    txtThinking.value = false;
+
+    animTck.value = 0;
+    animFromSquare.value = 0;
+    animToSquare.value = 0;
+
+    // Resetting other game states in your gameController if necessary
+    gameController.resetGameState();
   }
 
   // Take back a move
-  TakeBack() {
-    dragSquare = -1;
-    dSquares = [];
+  // TakeBack() {
+  //   dragSquare = -1;
+  //   dSquares = [];
+
+  //   for (int i = 0; i < 2; i++) {
+  //     owl.TakeBack();
+  //     Fruit.TakeBack();
+  //     if (is64bitOK.value) Lousy.TakeBack();
+  //   }
+  //   repaint = true;
+  //   PauseWait = 10;
+  // }
+
+  void TakeBack() {
+    dragSquare.value = -1;
+    dSquares.clear();
 
     for (int i = 0; i < 2; i++) {
-      Owl.TakeBack();
-      Fruit.TakeBack();
-      if (is64bitOK) Lousy.TakeBack();
+      owl.TakeBack();
+      fruit.TakeBack();
+      if (is64bitOK.value) lousy.TakeBack();
     }
-    repaint = true;
-    PauseWait = 10;
+    repaint.value = true;
+    pauseWait.value = 10;
   }
+
+  // if (owl.MoveslistUcis.isNotEmpty) {
+  //   owl.TakeBack();
+  //   fruit.TakeBack();
+  //   if (is64bitOK.value) lousy.TakeBack();
+
+  //   isCheck.value = false;
+  //   isCheckMate.value = false;
+  //   isStaleMate.value = false;
+  //   isRep3x.value = false;
+  //   gameResult.value = "";
+
+  //   txtYourMove.value = false;
+  //   txtThinking.value = false;
+
+  //   repaint.value = true;
+  // }
+  // }
 
   // updates text messages
   void updateTexts() {
-    String s = Owl.Comment();
-    gameResult = "";
-    isCheck = (s.contains("Check!"));
-    isCheckMate = (s.contains("CheckMate!"));
-    isStaleMate = (s.contains("StaleMate!"));
-    if (isCheckMate) {
+    String s = owl.Comment();
+    gameResult.value = "";
+    isCheck.value = (s.contains("Check!"));
+    isCheckMate.value = (s.contains("CheckMate!"));
+    isStaleMate.value = (s.contains("StaleMate!"));
+    if (isCheckMate.value) {
       if (s.contains("1-0")) {
-        gameResult = "1-0";
+        gameResult.value = "1-0";
         gameController.updateGameResult("White Wins");
         // gameController.playerDefeated(); // Example to update level on defeat
       }
       if (s.contains("0-1")) {
-        gameResult = "0-1";
+        gameResult.value = "0-1";
         gameController.updateGameResult("Black Wins");
         // gameController.playerDefeated(); // Example to update level on defeat
       }
     }
     if (s.contains("1/2")) {
-      gameResult = "1/2-1/2";
+      gameResult.value = "1/2-1/2";
       gameController.updateGameResult("Draw");
     }
-    if (s.contains("Repetition")) isRep3x = true;
+    if (s.contains("Repetition")) {
+      isRep3x.value = true;
+      gameController.updateGameResult("Repetition");
+    }
   }
 
   // The main loop on animator.
   gameloop() {
-    if (PauseWait > 0) {
-      repaint = true;
-      PauseWait--;
-      if (PauseWait == 3) updateTexts();
+    if (pauseWait.value > 0) {
+      repaint.value = true;
+      pauseWait.value--;
+      if (pauseWait.value == 3) updateTexts();
       return;
     }
-    if (AnimTck > 0) {
-      AnimTck--;
-      if (AnimTck == 0) {
+    if (animTck.value > 0) {
+      animTck.value--;
+      if (animTck.value == 0) {
         MoveAfterAnimation();
-        PauseWait = 15;
+        pauseWait.value = 15;
       }
-      repaint = true;
+      repaint.value = true;
       return;
     }
 
-    if (Owl.LampTck > 0) {
-      Owl.LampTck--;
-      if (Owl.LampTck == 0) PauseWait = 15;
-      repaint = true;
+    if (owl.LampTck > 0) {
+      owl.LampTck--;
+      if (owl.LampTck == 0) pauseWait.value = 15;
+      repaint.value = true;
       return;
     }
 
-    if (Fruit.LampTck > 0) {
-      Fruit.LampTck--;
-      if (Fruit.LampTck == 0) PauseWait = 15;
-      repaint = true;
+    if (fruit.LampTck > 0) {
+      fruit.LampTck--;
+      if (fruit.LampTck == 0) pauseWait.value = 15;
+      repaint.value = true;
       return;
     }
 
-    if (is64bitOK) {
-      if (Lousy.LampTck > 0) {
-        Lousy.LampTck--;
-        if (Lousy.LampTck == 0) PauseWait = 15;
-        repaint = true;
+    if (is64bitOK.value) {
+      if (lousy.LampTck > 0) {
+        lousy.LampTck--;
+        if (lousy.LampTck == 0) pauseWait.value = 15;
+        repaint.value = true;
         return;
       }
     }
 
-    if (isCheckMate || isStaleMate) return;
+    if (isCheckMate.value || isStaleMate.value) return;
 
-    txtThinking = false;
-    txtYourMove = Owl.isItMyMove(ImPlayingWhite);
+    txtThinking.value = false;
+    txtYourMove.value = owl.isItMyMove(imPlayingWhite.value);
 
-    if (dragSquare == -1) {
+    if (dragSquare.value == -1) {
       String a = "";
-      if (Engine_Selected == Engine_OWL) a = Owl.Calculate(ImPlayingWhite);
-      if (Engine_Selected == Engine_FRUIT) a = Fruit.Calculate(ImPlayingWhite);
+      if (engineSelected.value == engineOwl) {
+        a = owl.Calculate(imPlayingWhite.value);
+      }
+      if (engineSelected.value == engineFruit) {
+        a = fruit.Calculate(imPlayingWhite.value);
+      }
 
-      if (Engine_Selected == Engine_LOUSY) {
-        a = Lousy.Calculate(ImPlayingWhite);
+      if (engineSelected.value == engineLousy) {
+        a = lousy.Calculate(imPlayingWhite.value);
         if (a.length >= 4) {
           // not sure all moves are ok
-          if (!Owl.areMovesOk(a)) {
-            Engine_Selected = Engine_OWL;
-            a = Owl.Calculate(ImPlayingWhite);
+          if (!owl.areMovesOk(a)) {
+            engineSelected.value = engineOwl;
+            a = owl.Calculate(imPlayingWhite.value);
           }
         }
       }
 
-      if (a.length == 1) txtThinking = true;
+      if (a.length == 1) txtThinking.value = true;
 
       if (a.length >= 4) {
         // chess move
-        int from_sq = Owl.at2square(a.substring(0, 2));
-        int to_sq = Owl.at2square(a.substring(2, 4));
+        int from_sq = owl.at2square(a.substring(0, 2));
+        int to_sq = owl.at2square(a.substring(2, 4));
         AnimToMove(from_sq, to_sq);
-        txtThinking = false;
+        txtThinking.value = false;
       }
-      if (a.length > 0) repaint = true;
+      if (a.length > 0) repaint.value = true;
     }
   }
 

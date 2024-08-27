@@ -55,7 +55,7 @@ class GameController extends GetxController {
   }
 
   // Reset game values
-  void reset() {
+  void resetGameState() {
     gameStatus.value = '';
     gameResult.value = 'In Progress';
     _startTimer(); // Restart the timer from 0

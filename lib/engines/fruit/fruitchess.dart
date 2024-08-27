@@ -5955,6 +5955,7 @@ class FruitChess {
 // init
     colour = PIECE_COLOUR(piece);
     pos = board.pos[from];
+    print("Here is POS Befor acces ${pos}");
     //ASSERT(437, pos >= 0);
 
 // from
