@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import 'controllers/auth_controller.dart';
 import 'controllers/game_controller.dart';
+import 'helper/painter_helper.dart';
 import 'services/firebase_service.dart';
 import 'views/auth_view.dart';
 import 'views/chess_home_view.dart';
@@ -18,6 +19,7 @@ Future<void> main() async {
   await Firebase.initializeApp(options: firebaseOptions);
   Get.put(AuthController());
   Get.put(GameController());
+  Get.put(PainterHelper());
 
   runApp(const MyApp());
 }

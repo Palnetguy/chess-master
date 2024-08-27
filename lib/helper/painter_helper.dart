@@ -26,7 +26,7 @@ class sqData {
 // Also some gesture detector helpers there. Mouse clicks or taps.
 //
 
-class PainterHelper {
+class PainterHelper extends GetxController {
   late CustomPainter CP;
   late Canvas canvas;
   late int width, height;
@@ -87,6 +87,10 @@ class PainterHelper {
   // Various status variables
   int dragSquare = -1;
   List<int> dSquares = [];
+
+  static PainterHelper get instance => Get.find<PainterHelper>();
+
+  int btnIndex = 0;
 
   // Game timing and status
   late DateTime startTime;
@@ -273,38 +277,38 @@ class PainterHelper {
 
     // verify buttons
 
-    for (i = 0; i < 7; i++) {
-      sqData Ob = btDatas[i];
+    // for (i = 0; i < 7; i++) {
+    //   sqData Ob = btDatas[i];
 
-      if (Ob.rect != null &&
-          (Ob.rect?.top)! <= y &&
-          (Ob.rect?.left)! <= x &&
-          (Ob.rect?.bottom)! >= y &&
-          (Ob.rect?.right)! >= x) {
-        if (i == 0) NewGame();
-        if (i == 1) TakeBack();
+    //   if (Ob.rect != null &&
+    //       (Ob.rect?.top)! <= y &&
+    //       (Ob.rect?.left)! <= x &&
+    //       (Ob.rect?.bottom)! >= y &&
+    //       (Ob.rect?.right)! >= x) {
+    //     if (btnIndex == 0) NewGame();
+    //     if (btnIndex == 1) TakeBack();
 
-        if (i == 2) {
-          Engine_Selected = Engine_OWL;
-          Owl.LampTck = 20;
-          print("Clicked OWL Engine");
-        }
-        if (i == 3) {
-          Engine_Selected = Engine_FRUIT;
-          Fruit.LampTck = 20;
-          print("Clicked Fruit Engine");
-        }
-        if (i == 4) {
-          Engine_Selected = Engine_LOUSY;
-          Lousy.LampTck = 20;
-          print("Clicked LOUSY Engine");
-        }
+    //     if (i == 2) {
+    //       Engine_Selected = Engine_OWL;
+    //       Owl.LampTck = 20;
+    //       print("Clicked OWL Engine");
+    //     }
+    //     if (i == 3) {
+    //       Engine_Selected = Engine_FRUIT;
+    //       Fruit.LampTck = 20;
+    //       print("Clicked Fruit Engine");
+    //     }
+    //     if (i == 4) {
+    //       Engine_Selected = Engine_LOUSY;
+    //       Lousy.LampTck = 20;
+    //       print("Clicked LOUSY Engine");
+    //     }
 
-        // allow for flutter build web
-        if (i == 5) goWorkSheet = false;
-        if (i == 6) goGitHub = false;
-      }
-    }
+    //     // allow for flutter build web
+    //     if (i == 5) goWorkSheet = false;
+    //     if (i == 6) goGitHub = false;
+    //   }
+    // }
   }
 
   // Set animation on
@@ -320,6 +324,33 @@ class PainterHelper {
     Owl.MakeMove(Anim_from_square, Anim_to_square);
     Fruit.MakeMove(Anim_from_square, Anim_to_square);
     if (is64bitOK) Lousy.MakeMove(Anim_from_square, Anim_to_square);
+  }
+
+  void bottomButtonAction(int i) {
+    // Trigger appropriate actions based on the button clicked
+    if (i == 0) NewGame();
+    if (i == 1) TakeBack();
+
+    if (i == 2) {
+      Engine_Selected = Engine_OWL;
+      Owl.LampTck = 20;
+      print("Clicked OWL Engine");
+    }
+    if (i == 3) {
+      Engine_Selected = Engine_FRUIT;
+      Fruit.LampTck = 20;
+      print("Clicked Fruit Engine");
+    }
+    if (i == 4) {
+      Engine_Selected = Engine_LOUSY;
+      Lousy.LampTck = 20;
+      print("Clicked LOUSY Engine");
+    }
+
+    // Mark the UI to be repainted
+    // repaint = true;
+
+    update();
   }
 
   // Start a new game

@@ -1,11 +1,11 @@
 import 'dart:ui' as ui;
 
+import 'package:chess_master/helper/painter_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../controllers/game_controller.dart';
-import '../helper/painter_helper.dart';
 import '../url_launcher_mixin.dart';
 
 //---
@@ -36,7 +36,8 @@ class Painter extends StatefulWidget {
 //
 class _GameBoardState extends State<Painter>
     with TickerProviderStateMixin, UrlLauncherMixin {
-  PainterHelper PH = PainterHelper(); // create helper object
+  // PainterHelper PH = PainterHelper(); // create helper object
+  PainterHelper PH = Get.find<PainterHelper>();
 
   late AnimationController animation;
 

@@ -3,8 +3,11 @@ import 'package:get/get.dart';
 import '../controllers/game_controller.dart';
 import '../helper/imagetext_painter.dart';
 import 'painter.dart';
+import '../helper/painter_helper.dart';
 
 class ChessHomeScreen extends StatelessWidget {
+  final PainterHelper painterHelper = PainterHelper.instance;
+
   ChessHomeScreen({super.key});
   String assetPath = "assets/images/";
 
@@ -102,11 +105,11 @@ class ChessHomeScreen extends StatelessWidget {
                   // buildBottomButton(Icons.house_siding, 'PIECES'),
                   // buildBottomButton(Icons.undo, 'UNDO'),
                   // buildBottomButton(Icons.lightbulb_outline, 'HINT'),
-                  gameBottomButton("${assetPath}newgame.png"),
-                  gameBottomButton("${assetPath}takeback.png"),
-                  gameBottomButton("${assetPath}owl.png"),
-                  gameBottomButton("${assetPath}fruit.png"),
-                  gameBottomButton("${assetPath}lousy.png"),
+                  gameBottomButton("${assetPath}newgame.png", 0),
+                  gameBottomButton("${assetPath}takeback.png", 1),
+                  gameBottomButton("${assetPath}owl.png", 2),
+                  gameBottomButton("${assetPath}fruit.png", 3),
+                  gameBottomButton("${assetPath}lousy.png", 4),
                 ],
               ),
             ),
@@ -116,26 +119,12 @@ class ChessHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildBottomButton(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: Colors.orange,
-          size: 40,
-        ),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white),
-        ),
-      ],
-    );
-  }
-
-  Widget gameBottomButton(String imgPath) {
+  Widget gameBottomButton(String imgPath, int index) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        // bottomButtonAction();
+        painterHelper.bottomButtonAction(index);
+      },
       child: CircleAvatar(
         foregroundImage: AssetImage(imgPath),
         minRadius: 27,
