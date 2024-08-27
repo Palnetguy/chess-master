@@ -287,19 +287,22 @@ class PainterHelper {
         if (i == 2) {
           Engine_Selected = Engine_OWL;
           Owl.LampTck = 20;
+          print("Clicked OWL Engine");
         }
         if (i == 3) {
           Engine_Selected = Engine_FRUIT;
           Fruit.LampTck = 20;
+          print("Clicked Fruit Engine");
         }
         if (i == 4) {
           Engine_Selected = Engine_LOUSY;
           Lousy.LampTck = 20;
+          print("Clicked LOUSY Engine");
         }
 
         // allow for flutter build web
-        if (i == 5) goWorkSheet = true;
-        if (i == 6) goGitHub = true;
+        if (i == 5) goWorkSheet = false;
+        if (i == 6) goGitHub = false;
       }
     }
   }
@@ -332,9 +335,9 @@ class PainterHelper {
     PauseWait = 10;
 
     // Reset game time and status message using GetX
-    startTime = DateTime.now();
-    updateGameTime();
-    // gameController.reset();
+    // startTime = DateTime.now();
+    // updateGameTime();
+    gameController.reset();
   }
 
   // Take back a move

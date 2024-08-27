@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controllers/game_controller.dart';
+import '../helper/imagetext_painter.dart';
 import 'painter.dart';
 
 class ChessHomeScreen extends StatelessWidget {
-  const ChessHomeScreen({super.key});
+  ChessHomeScreen({super.key});
+  String assetPath = "assets/images/";
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,7 @@ class ChessHomeScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         body: Column(
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Top section with user profile and level information
             Container(
@@ -29,21 +31,16 @@ class ChessHomeScreen extends StatelessWidget {
                   ),
                   Column(
                     children: [
-                      Obx(() => Text(
-                            gameController.gameResult.value,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.yellow,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )),
-                      // Obx(() => Text(
-                      //       gameController.gameStatus.value,
-                      //       style: const TextStyle(
-                      //         fontSize: 16,
-                      //         color: Colors.white,
-                      //       ),
-                      //     )),
+                      Obx(() {
+                        return Text(
+                          gameController.gameResult.value,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.yellow,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }),
                       Obx(() => Text(
                             gameController.gameTime.value,
                             style: const TextStyle(
@@ -61,29 +58,58 @@ class ChessHomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-
-            const Expanded(child: Painter()),
-
-            // Display the result message if the game is over
+            SizedBox(
+              height: 15,
+            ),
             Obx(() {
-              if (gameController.gameResult.value.isNotEmpty) {
-                return Container(
-                  padding: const EdgeInsets.all(16.0),
-                  color: Colors.black87,
-                  child: Center(
-                    child: Text(
-                      gameController.gameResult.value,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+              if (gameController.imageText.value != null) {
+                return CustomPaint(
+                  size:
+                      const Size(100, 30), // Set a suitable size for the image
+                  painter: ImageTextPainter(gameController.imageText.value),
+                );
+              } else {
+                return Text(
+                  gameController.gameResult.value,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.yellow,
+                    fontWeight: FontWeight.bold,
                   ),
                 );
               }
-              return const SizedBox.shrink(); // Return empty space if no result
             }),
+
+            SizedBox(
+              height: 50,
+            ),
+
+            // Flexible widget to allow the chessboard to resize based on available space
+            const Expanded(
+              child: Painter(),
+            ),
+
+            Text("Checking Here"),
+
+            // Bottom buttons (Restart, Pieces, Undo, Hint)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              color: Colors.brown[700],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  // buildBottomButton(Icons.refresh, 'RESTART'),
+                  // buildBottomButton(Icons.house_siding, 'PIECES'),
+                  // buildBottomButton(Icons.undo, 'UNDO'),
+                  // buildBottomButton(Icons.lightbulb_outline, 'HINT'),
+                  gameBottomButton("${assetPath}newgame.png"),
+                  gameBottomButton("${assetPath}takeback.png"),
+                  gameBottomButton("${assetPath}owl.png"),
+                  gameBottomButton("${assetPath}fruit.png"),
+                  gameBottomButton("${assetPath}lousy.png"),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -104,6 +130,17 @@ class ChessHomeScreen extends StatelessWidget {
           style: const TextStyle(color: Colors.white),
         ),
       ],
+    );
+  }
+
+  Widget gameBottomButton(String imgPath) {
+    return GestureDetector(
+      onTap: () {},
+      child: CircleAvatar(
+        foregroundImage: AssetImage(imgPath),
+        minRadius: 27,
+        // maxRadius: 35,
+      ),
     );
   }
 }

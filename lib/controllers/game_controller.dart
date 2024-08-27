@@ -1,11 +1,14 @@
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'dart:async';
+import 'dart:ui' as ui;
 
 class GameController extends GetxController {
-  var level = 'LEVEL 2'.obs; // Example level, replace with your logic
-  var gameStatus = ''.obs; // 'In Progress', 'You Win', 'You Lost'
-  var gameTime = ''.obs; // Time display
-  var gameResult = 'In Progress'.obs; // Result message: 'You Win' or 'You Lost'
+  var level = 'LEVEL 2'.obs;
+  var gameStatus = ''.obs;
+  var gameTime = ''.obs;
+  var gameResult = 'In Progress'.obs;
+  Rx<ui.Image?> imageText = Rx<ui.Image?>(null);
 
   Timer? _timer;
   int _elapsedSeconds = 0;
@@ -17,6 +20,10 @@ class GameController extends GetxController {
   }
 
   void _startTimer() {
+    _timer?.cancel(); // Cancel any existing timer before starting a new one
+    _elapsedSeconds = 0; // Reset the elapsed time
+    gameTime.value = _formatTime(_elapsedSeconds);
+
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _elapsedSeconds++;
       gameTime.value = _formatTime(_elapsedSeconds);
@@ -38,23 +45,26 @@ class GameController extends GetxController {
     gameTime.value = time;
   }
 
-  // void setGameResult(bool win) {
-  //   _stopTimer();
-  //   gameResult.value = win ? 'You Win' : 'You Lost';
-  // }
-
   // Update game result
   void updateGameResult(String result) {
-    gameResult.value = result;
-    _stopTimer();
+    // Use a delayed callback to avoid triggering state changes during rendering.
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      gameResult.value = result;
+      _stopTimer();
+    });
   }
 
   // Reset game values
   void reset() {
     gameStatus.value = '';
-    // gameTime.value = '0:00';
-    gameResult.value = '';
-    // _startTimer();
+    gameResult.value = 'In Progress';
+    _startTimer(); // Restart the timer from 0
+  }
+
+  void drawImageText(ui.Image? imageResultText) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      imageText.value = imageResultText;
+    });
     // update();
   }
 }

@@ -2,7 +2,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
+import '../controllers/game_controller.dart';
 import '../helper/painter_helper.dart';
 import '../url_launcher_mixin.dart';
 
@@ -151,6 +153,7 @@ class _GameBoardState extends State<Painter>
 //
 
 class myPainter extends CustomPainter {
+  final GameController gameController = Get.find<GameController>();
   PainterHelper PH;
 
   myPainter({required this.PH}) {
@@ -166,6 +169,7 @@ class myPainter extends CustomPainter {
     PH.adjustSqSize(size.width.toInt(), size.height.toInt());
 
     drawBoard();
+
     drawButtonsTexts();
     if (PH.AnimTck > 0) drawAnim();
   }
@@ -201,19 +205,54 @@ class myPainter extends CustomPainter {
       if (f) drawButtTxt(PH.but_Img(i), i);
     }
 
-    ui.Image? iT = null;
+    ui.Image? iT;
+    var gameStatus = '';
 
     // position 7 is text
-    if (PH.isRep3x) iT = PH.tRP;
+    // if (PH.isRep3x) iT = PH.tRP;
 
-    if (PH.txtYourMove) iT = PH.tYM;
+    // if (PH.txtYourMove) iT = PH.tYM;
 
-    if (PH.isStaleMate) iT = PH.tST;
-    if (PH.isCheck) iT = PH.tCK;
-    if (PH.isCheckMate) iT = (PH.gameResult == "1-0" ? PH.tCM10 : PH.tCM01);
+    // if (PH.isStaleMate) iT = PH.tST;
+    // if (PH.isCheck) iT = PH.tCK;
+    // if (PH.isCheckMate) iT = (PH.gameResult == "1-0" ? PH.tCM10 : PH.tCM01);
 
-    if (PH.txtThinking) iT = PH.tTH;
-    if (iT != null) drawButtTxt(iT, 7);
+    // if (PH.txtThinking) iT = PH.tTH;
+    // if (iT != null) drawButtTxt(iT, 7);
+
+    if (PH.isRep3x) {
+      iT = PH.tRP;
+      gameStatus = 'Repetition';
+    }
+
+    if (PH.txtYourMove) {
+      iT = PH.tYM;
+      gameStatus = 'Your Move';
+    }
+
+    if (PH.isStaleMate) {
+      iT = PH.tST;
+      gameStatus = 'Stale Mate';
+    }
+
+    if (PH.isCheck) {
+      iT = PH.tCK;
+      gameStatus = 'Check +';
+    }
+    if (PH.isCheckMate) {
+      iT = (PH.gameResult == "1-0" ? PH.tCM10 : PH.tCM01);
+      gameStatus = 'Check Mate';
+    }
+
+    if (PH.txtThinking) {
+      iT = PH.tTH;
+      gameStatus = 'Thinking';
+    }
+    if (iT != null) {
+      drawButtTxt(iT, 7);
+      // gameController.updateGameResult(gameStatus);
+      gameController.drawImageText(iT);
+    }
   }
 
   // chess-board
@@ -293,11 +332,11 @@ class myPainter extends CustomPainter {
 
     // layout
     if (PH.width > PH.height) {
-      y = I * sqSize + margin; // Apply margin to vertical position
+      y = I * sqSize; // Apply margin to vertical position
       x = 8 * sqSize + margin; // Apply margin to horizontal position
     } else {
       y = 8 * sqSize + margin; // Apply margin to vertical position
-      x = I * sqSize + margin; // Apply margin to horizontal position
+      x = I * sqSize; // Apply margin to horizontal position
     }
 
     // Draw a button on it
@@ -327,6 +366,7 @@ class myPainter extends CustomPainter {
     }
 
     PH.saveButTxtRect(I, rect);
+    // gameController.drawImageText(img);
   }
 
   // draw animation of moving piece
