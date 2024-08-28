@@ -48,12 +48,20 @@ class _GameBoardState extends State<Painter>
 
   @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     animation.dispose(); // remove on closing
     super.dispose();
   }
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     animation = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,

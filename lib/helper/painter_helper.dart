@@ -196,7 +196,10 @@ class PainterHelper extends GetxController {
   }
 
   saveSqRect(int sq, ui.Rect rect) {
-    sqDatas[sq].rect = rect;
+    if (sq >= 0 && sq < sqDatas.length) {
+      // Access sqDatas[sq] safely
+      sqDatas[sq].rect = rect;
+    }
   }
 
   saveButTxtRect(int i, ui.Rect rect) {
@@ -242,7 +245,7 @@ class PainterHelper extends GetxController {
           if (dragSquare.value != i) {
             List<int> legals = owl.LegalMovesToSquares(i);
             for (int j = 0; j < legals.length; j++) {
-              if (dragSquare.value != i) dSquares.clear();
+              if (dragSquare.value != i) dSquares = <int>[].obs;
               dragSquare.value = i;
               dSquares.add(legals[j]);
               repaint.value = true;
@@ -255,7 +258,9 @@ class PainterHelper extends GetxController {
                 AnimToMove(dragSquare.value, i);
                 dragSquare.value = -1;
                 dSquares.clear();
+                // dSquares = <int>[].obs;
                 repaint.value = true;
+                break;
               }
             }
           }
@@ -342,7 +347,7 @@ class PainterHelper extends GetxController {
   // Start a new game
   void NewGame() {
     dragSquare.value = -1;
-    dSquares.clear();
+    dSquares = <int>[].obs;
 
     imPlayingWhite.value = !imPlayingWhite.value;
     owl.NewGame();
@@ -351,18 +356,18 @@ class PainterHelper extends GetxController {
     repaint.value = true;
     pauseWait.value = 10;
 
-    isCheck.value = false;
-    isCheckMate.value = false;
-    isStaleMate.value = false;
-    isRep3x.value = false;
-    gameResult.value = "";
+    // isCheck.value = false;
+    // isCheckMate.value = false;
+    // isStaleMate.value = false;
+    // isRep3x.value = false;
+    // gameResult.value = "";
 
-    txtYourMove.value = false;
-    txtThinking.value = false;
+    // txtYourMove.value = false;
+    // txtThinking.value = false;
 
-    animTck.value = 0;
-    animFromSquare.value = 0;
-    animToSquare.value = 0;
+    // animTck.value = 0;
+    // animFromSquare.value = 0;
+    // animToSquare.value = 0;
 
     // Resetting other game states in your gameController if necessary
     gameController.resetGameState();
@@ -384,7 +389,7 @@ class PainterHelper extends GetxController {
 
   void TakeBack() {
     dragSquare.value = -1;
-    dSquares.clear();
+    dSquares = <int>[].obs;
 
     for (int i = 0; i < 2; i++) {
       owl.TakeBack();
@@ -508,16 +513,22 @@ class PainterHelper extends GetxController {
         }
       }
 
-      if (a.length == 1) txtThinking.value = true;
-
-      if (a.length >= 4) {
+      if (a.length == 1) {
+        txtThinking.value = true;
+      } else if (a.length >= 4) {
         // chess move
         int from_sq = owl.at2square(a.substring(0, 2));
         int to_sq = owl.at2square(a.substring(2, 4));
-        AnimToMove(from_sq, to_sq);
-        txtThinking.value = false;
+        if (from_sq >= 0 && from_sq < 64 && to_sq >= 0 && to_sq < 64) {
+          AnimToMove(from_sq, to_sq);
+          txtThinking.value = false;
+        } else {
+          // Handle invalid move gracefully
+          print("Invalid movge detected Here Boss");
+        }
+      } else if (a.length > 0) {
+        repaint.value = true;
       }
-      if (a.length > 0) repaint.value = true;
     }
   }
 

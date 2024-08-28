@@ -5955,7 +5955,7 @@ class FruitChess {
 // init
     colour = PIECE_COLOUR(piece);
     pos = board.pos[from];
-    print("Here is POS Befor acces ${pos}");
+
     //ASSERT(437, pos >= 0);
 
 // from
@@ -5973,7 +5973,14 @@ class FruitChess {
 
     if (!PIECE_IS_PAWN(piece)) {
       //ASSERT(442, board.piece[colour][pos] == from);
-      board.piece[colour][pos] = to;
+      // board.piece[colour][pos] = to;
+      // print("Here is POS Befor access ${pos}");
+      if (pos >= 0 && pos < board.piece[colour].length) {
+        board.piece[colour][pos] = to;
+      } else {
+        print("Error: Invalid pos value detected in square_move. pos = $pos");
+        // You may also want to throw an exception or handle it in another way
+      }
     } else {
       //ASSERT(443, board.pawn[colour][pos] == from);
       board.pawn[colour][pos] = to;
