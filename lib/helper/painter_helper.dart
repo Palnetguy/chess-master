@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../controllers/audio_controller.dart';
 import '../controllers/game_controller.dart';
 import '../engines/fruit.dart';
 import '../engines/lousy.dart';
@@ -78,7 +79,8 @@ class PainterHelper extends GetxController {
   RxInt dragSquare = (-1).obs;
   RxList<int> dSquares = <int>[].obs;
 
-  static PainterHelper get instance => Get.find<PainterHelper>();
+  // static PainterHelper get instance => Get.find<PainterHelper>();
+  final AudioController audioController = Get.find<AudioController>();
 
   int btnIndex = 0;
 
@@ -270,6 +272,10 @@ class PainterHelper extends GetxController {
 
     // verify buttons
 
+    if (isCheckMate.value) {
+      audioController.playSound("assets/sounds/checkmate.mp3");
+    }
+
     // for (var i = 0; i < 7; i++) {
     //   sqData Ob = btDatas[i];
 
@@ -308,6 +314,7 @@ class PainterHelper extends GetxController {
     animFromSquare.value = fromSq;
     animToSquare.value = toSq;
     owl.HidePieceSq(fromSq);
+    audioController.playSound("assets/sounds/sd2.mp3");
   }
 
   void MoveAfterAnimation() {
@@ -317,6 +324,7 @@ class PainterHelper extends GetxController {
     if (is64bitOK.value) {
       lousy.MakeMove(animFromSquare.value, animToSquare.value);
     }
+    // audioController.playSound("assets/sounds/sd2.mp3");
   }
 
   void bottomButtonAction(int i) {
@@ -353,6 +361,7 @@ class PainterHelper extends GetxController {
     owl.NewGame();
     fruit.NewGame;
     if (is64bitOK.value) lousy.NewGame();
+    audioController.playSound("assets/sounds/board-start.mp3");
     repaint.value = true;
     pauseWait.value = 10;
 
@@ -397,6 +406,7 @@ class PainterHelper extends GetxController {
       if (is64bitOK.value) lousy.TakeBack();
     }
     repaint.value = true;
+    audioController.playSound("assets/sounds/sd1.mp3");
     pauseWait.value = 10;
   }
 

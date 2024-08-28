@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../controllers/audio_controller.dart';
 import '../controllers/game_controller.dart';
 import '../url_launcher_mixin.dart';
 
@@ -174,6 +175,7 @@ class _GameBoardState extends State<Painter>
 class myPainter extends CustomPainter {
   final GameController gameController = Get.find<GameController>();
   final PainterHelper PH;
+  final AudioController audioController = Get.find<AudioController>();
 
   myPainter({required this.PH}) {
     PH.CP = this;
@@ -260,6 +262,7 @@ class myPainter extends CustomPainter {
     }
     if (PH.isCheckMate.value) {
       iT = (PH.gameResult.value == "1-0" ? PH.tCM10 : PH.tCM01);
+
       // gameStatus = 'Check Mate';
     }
 
@@ -276,9 +279,10 @@ class myPainter extends CustomPainter {
 
   // chess-board
   void drawBoard() {
-    for (int v = 7; v >= 0; v--) for (int h = 0; h < 8; h++) {
-      drawSquare(v, h);
-    }
+    for (int v = 7; v >= 0; v--)
+      for (int h = 0; h < 8; h++) {
+        drawSquare(v, h);
+      }
   }
 
   // chess-square

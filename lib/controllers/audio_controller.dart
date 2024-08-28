@@ -9,11 +9,13 @@ class AudioController extends GetxController {
 
   SoLoud? _soloud;
   SoundHandle? _musicHandle;
+  final Map<String, AudioSource> _loadedSounds = {};
 
   // Volume and sound control properties
   var gameVolume = 0.5.obs;
   var musicVolume = 0.5.obs;
   var soundEffectsEnabled = true.obs;
+  var backgroundMusicEnabled = true.obs;
 
   @override
   Future<void> onInit() async {
@@ -23,12 +25,42 @@ class AudioController extends GetxController {
 
     // Set initial global volume
     _soloud!.setGlobalVolume(gameVolume.value);
+
+    // Preload sound effects
+    await _preloadSounds();
+  }
+
+  Future<void> _preloadSounds() async {
+    final soundEffects = [
+      'assets/sounds/board-start.mp3',
+      'assets/sounds/checkmate.mp3',
+      'assets/sounds/sd1.mp3',
+      'assets/sounds/sd2.mp3',
+    ];
+
+    for (final soundPath in soundEffects) {
+      try {
+        final sound = await _soloud!.loadAsset(soundPath);
+        _loadedSounds[soundPath] = sound;
+        _log.info('Preloaded sound: $soundPath');
+      } catch (e) {
+        _log.severe('Failed to preload sound: $soundPath', e);
+      }
+    }
   }
 
   @override
   void dispose() {
-    super.dispose();
+    _disposeLoadedSounds();
     _soloud?.deinit();
+    super.dispose();
+  }
+
+  void _disposeLoadedSounds() {
+    for (final sound in _loadedSounds.values) {
+      _soloud?.disposeSource(sound);
+    }
+    _loadedSounds.clear();
   }
 
   // Method to play one-shot sound effects
@@ -38,8 +70,14 @@ class AudioController extends GetxController {
       return;
     }
     try {
-      final source = await _soloud!.loadAsset(assetKey);
-      await _soloud!.play(source);
+      if (_loadedSounds.containsKey(assetKey)) {
+        await _soloud!.play(_loadedSounds[assetKey]!);
+      } else {
+        _log.warning("Sound not preloaded: $assetKey. Loading now...");
+        final source = await _soloud!.loadAsset(assetKey);
+        _loadedSounds[assetKey] = source;
+        await _soloud!.play(source);
+      }
     } on SoLoudException catch (e) {
       _log.severe("Cannot play sound '$assetKey'. Ignoring.", e);
     }
@@ -47,6 +85,10 @@ class AudioController extends GetxController {
 
   // Method to start playing background music
   Future<void> startMusic() async {
+    if (!backgroundMusicEnabled.value) {
+      _log.info("Background Music is disabled. Not playing");
+      return;
+    }
     if (_musicHandle != null) {
       if (_soloud!.getIsValidVoiceHandle(_musicHandle!)) {
         _log.info('Music is already playing. Stopping first.');
@@ -111,5 +153,15 @@ class AudioController extends GetxController {
   // Method to enable or disable sound effects
   void toggleSoundEffects(bool value) {
     soundEffectsEnabled.value = value;
+  }
+
+  // Method to enable or disable background music
+  void toggleBackgroundMusic(bool value) {
+    backgroundMusicEnabled.value = value;
+    if (backgroundMusicEnabled.value) {
+      startMusic();
+    } else {
+      fadeOutMusic();
+    }
   }
 }

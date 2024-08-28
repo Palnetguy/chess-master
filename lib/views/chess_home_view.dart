@@ -148,7 +148,6 @@ class ChessHomeScreen extends StatelessWidget {
             onTap: () {
               if (kDebugMode) {
                 print("Selected Index is $index");
-                audioController.startMusic();
               }
               if (kDebugMode) {
                 print(

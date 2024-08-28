@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import '../controllers/audio_controller.dart';
+import '../services/share_app_service.dart';
+import '../views/about_us_view.dart';
 
 class SettingsDrawer extends StatelessWidget {
   SettingsDrawer({Key? key}) : super(key: key);
@@ -14,8 +17,10 @@ class SettingsDrawer extends StatelessWidget {
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.brown,
-            ),
+                // color: Colors.brown,
+                image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage("assets/media/chess2.jpg"))),
             child: Text('Settings',
                 style: TextStyle(
                   color: Colors.white,
@@ -88,7 +93,11 @@ class SettingsDrawer extends StatelessWidget {
             }),
           ),
           ListTile(
-            title: Text('Enable Sound Effects'),
+            title: Obx(() {
+              return Text(audioController.soundEffectsEnabled.value
+                  ? 'Disable Sound Effects'
+                  : 'Enable Sound Effects');
+            }),
             trailing: Obx(() {
               return Switch(
                 value: audioController.soundEffectsEnabled.value,
@@ -99,15 +108,36 @@ class SettingsDrawer extends StatelessWidget {
             }),
           ),
           ListTile(
+            title: Obx(() {
+              return Text(audioController.backgroundMusicEnabled.value
+                  ? 'Disable Background Music'
+                  : 'Enable Background Music');
+            }),
+            trailing: Obx(() {
+              return Switch(
+                value: audioController.backgroundMusicEnabled.value,
+                onChanged: (value) {
+                  audioController.toggleBackgroundMusic(value);
+                },
+              );
+            }),
+          ),
+          ListTile(
             title: const Text('About Us'),
             onTap: () {
               // Navigate to About Us screen
+              Get.to(() => const AboutUsScreen());
             },
           ),
           ListTile(
             title: const Text('Share App'),
             onTap: () {
               // Share the app
+              // ShareService.shareApp();
+              Share.share(
+                'Check out this awesome Chess app! https://tak-kinship-devs.vercel.app/',
+                subject: 'Chess Master App',
+              );
             },
           ),
           ListTile(
