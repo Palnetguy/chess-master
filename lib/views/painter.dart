@@ -19,8 +19,8 @@ import '../url_launcher_mixin.dart';
 //
 class Painter extends StatefulWidget {
   const Painter({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<Painter> createState() => _GameBoardState();
@@ -80,38 +80,38 @@ class _GameBoardState extends State<Painter>
 
     String A = "assets/images/";
     // preload images from assets
-    ldImg(A + "wking.png").then((r) => setState(() => PH.wk = r));
-    ldImg(A + "wqueen.png").then((r) => setState(() => PH.wq = r));
-    ldImg(A + "wrook.png").then((r) => setState(() => PH.wr = r));
-    ldImg(A + "wbishop.png").then((r) => setState(() => PH.wb = r));
-    ldImg(A + "wknight.png").then((r) => setState(() => PH.wn = r));
-    ldImg(A + "wpawn.png").then((r) => setState(() => PH.wp = r));
-    ldImg(A + "bking.png").then((r) => setState(() => PH.bk = r));
-    ldImg(A + "bqueen.png").then((r) => setState(() => PH.bq = r));
-    ldImg(A + "brook.png").then((r) => setState(() => PH.br = r));
-    ldImg(A + "bbishop.png").then((r) => setState(() => PH.bb = r));
-    ldImg(A + "bknight.png").then((r) => setState(() => PH.bn = r));
-    ldImg(A + "bpawn.png").then((r) => setState(() => PH.bp = r));
-    ldImg(A + "expl1.png").then((r) => setState(() => PH.ex1 = r));
-    ldImg(A + "expl2.png").then((r) => setState(() => PH.ex2 = r));
-    ldImg(A + "expl3.png").then((r) => setState(() => PH.ex3 = r));
-    ldImg(A + "expl4.png").then((r) => setState(() => PH.ex4 = r));
-    ldImg(A + "red-off-16.png").then((r) => setState(() => PH.lm0 = r));
-    ldImg(A + "red-on-16.png").then((r) => setState(() => PH.lm1 = r));
-    ldImg(A + "newgame.png").then((r) => setState(() => PH.bNG = r));
-    ldImg(A + "takeback.png").then((r) => setState(() => PH.bTB = r));
-    ldImg(A + "pgnview.png").then((r) => setState(() => PH.bPG = r));
-    ldImg(A + "about.png").then((r) => setState(() => PH.bGI = r));
-    ldImg(A + "owl.png").then((r) => setState(() => PH.bOw = r));
-    ldImg(A + "fruit.png").then((r) => setState(() => PH.bFr = r));
-    ldImg(A + "lousy.png").then((r) => setState(() => PH.bLo = r));
-    ldImg(A + "yourmove.png").then((r) => setState(() => PH.tYM = r));
-    ldImg(A + "thinking.png").then((r) => setState(() => PH.tTH = r));
-    ldImg(A + "stalemate.png").then((r) => setState(() => PH.tST = r));
-    ldImg(A + "check.png").then((r) => setState(() => PH.tCK = r));
-    ldImg(A + "checkmate_10.png").then((r) => setState(() => PH.tCM10 = r));
-    ldImg(A + "checkmate_01.png").then((r) => setState(() => PH.tCM01 = r));
-    ldImg(A + "repeating.png").then((r) => setState(() => PH.tRP = r));
+    ldImg("${A}wking.png").then((r) => setState(() => PH.wk = r));
+    ldImg("${A}wqueen.png").then((r) => setState(() => PH.wq = r));
+    ldImg("${A}wrook.png").then((r) => setState(() => PH.wr = r));
+    ldImg("${A}wbishop.png").then((r) => setState(() => PH.wb = r));
+    ldImg("${A}wknight.png").then((r) => setState(() => PH.wn = r));
+    ldImg("${A}wpawn.png").then((r) => setState(() => PH.wp = r));
+    ldImg("${A}bking.png").then((r) => setState(() => PH.bk = r));
+    ldImg("${A}bqueen.png").then((r) => setState(() => PH.bq = r));
+    ldImg("${A}brook.png").then((r) => setState(() => PH.br = r));
+    ldImg("${A}bbishop.png").then((r) => setState(() => PH.bb = r));
+    ldImg("${A}bknight.png").then((r) => setState(() => PH.bn = r));
+    ldImg("${A}bpawn.png").then((r) => setState(() => PH.bp = r));
+    ldImg("${A}expl1.png").then((r) => setState(() => PH.ex1 = r));
+    ldImg("${A}expl2.png").then((r) => setState(() => PH.ex2 = r));
+    ldImg("${A}expl3.png").then((r) => setState(() => PH.ex3 = r));
+    ldImg("${A}expl4.png").then((r) => setState(() => PH.ex4 = r));
+    ldImg("${A}red-off-16.png").then((r) => setState(() => PH.lm0 = r));
+    ldImg("${A}red-on-16.png").then((r) => setState(() => PH.lm1 = r));
+    ldImg("${A}newgame.png").then((r) => setState(() => PH.bNG = r));
+    ldImg("${A}takeback.png").then((r) => setState(() => PH.bTB = r));
+    ldImg("${A}pgnview.png").then((r) => setState(() => PH.bPG = r));
+    ldImg("${A}about.png").then((r) => setState(() => PH.bGI = r));
+    ldImg("${A}owl.png").then((r) => setState(() => PH.bOw = r));
+    ldImg("${A}fruit.png").then((r) => setState(() => PH.bFr = r));
+    ldImg("${A}lousy.png").then((r) => setState(() => PH.bLo = r));
+    ldImg("${A}yourmove.png").then((r) => setState(() => PH.tYM = r));
+    ldImg("${A}thinking.png").then((r) => setState(() => PH.tTH = r));
+    ldImg("${A}stalemate.png").then((r) => setState(() => PH.tST = r));
+    ldImg("${A}check.png").then((r) => setState(() => PH.tCK = r));
+    ldImg("${A}checkmate_10.png").then((r) => setState(() => PH.tCM10 = r));
+    ldImg("${A}checkmate_01.png").then((r) => setState(() => PH.tCM01 = r));
+    ldImg("${A}repeating.png").then((r) => setState(() => PH.tRP = r));
     super.initState();
   }
 
@@ -276,7 +276,9 @@ class myPainter extends CustomPainter {
 
   // chess-board
   void drawBoard() {
-    for (int v = 7; v >= 0; v--) for (int h = 0; h < 8; h++) drawSquare(v, h);
+    for (int v = 7; v >= 0; v--) for (int h = 0; h < 8; h++) {
+      drawSquare(v, h);
+    }
   }
 
   // chess-square
@@ -297,8 +299,8 @@ class myPainter extends CustomPainter {
         rect0,
         Paint()
           ..color = PH.isDarkSq(sq)
-              ? ui.Color.fromARGB(255, 100, 61, 43)
-              : ui.Color.fromARGB(255, 240, 239, 202));
+              ? const ui.Color.fromARGB(255, 100, 61, 43)
+              : const ui.Color.fromARGB(255, 240, 239, 202));
 
     PH.saveSqRect(sq, rect0);
 
@@ -334,7 +336,7 @@ class myPainter extends CustomPainter {
       if (PH.dSquares[k] == sq) {
         final Paint drag = Paint()
           ..style = PaintingStyle.stroke
-          ..color = ui.Color.fromARGB(255, 235, 0, 71)
+          ..color = const ui.Color.fromARGB(255, 235, 0, 71)
           ..strokeWidth = 3.0;
 
         canvas.drawRect(rect0, drag);

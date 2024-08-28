@@ -81,7 +81,9 @@ class MLINE {
   late List<MOVETYPE> a = [];
   MLINE() {
     int i = 0;
-    while ((i++) < MAXPLY + 2) a.add(MOVETYPE());
+    while ((i++) < MAXPLY + 2) {
+      a.add(MOVETYPE());
+    }
   }
 }
 
@@ -196,7 +198,9 @@ class OWL {
   }
 
   ClearBoard() {
-    for (int sq = 0; sq <= 0x77; sq++) Board[sq] = BOARDTYPE();
+    for (int sq = 0; sq <= 0x77; sq++) {
+      Board[sq] = BOARDTYPE();
+    }
   }
 
 /*
@@ -204,12 +208,16 @@ class OWL {
  */
 
   ClearIndex() {
-    var square, col, index;
+    int square, col, index;
 
-    for (square = 0; square <= 0x77; square++) Board[square].index = 16;
+    for (square = 0; square <= 0x77; square++) {
+      Board[square].index = 16;
+    }
     for (col = white; col <= black; col++) {
       PieceTab[col] = [];
-      for (index = 0; index <= 16; index++) PieceTab[col].add(PIECETAB());
+      for (index = 0; index <= 16; index++) {
+        PieceTab[col].add(PIECETAB());
+      }
     }
 
     OfficerNo = [-1, -1];
@@ -244,10 +252,11 @@ class OWL {
         }
         square ^= 0x77;
         if ((square & 4) == 0) {
-          if (square >= 0x70)
+          if (square >= 0x70) {
             square = (square + 0x11) & 0x73;
-          else
+          } else {
             square += 0x10;
+          }
         }
       } while (square != 0);
     }
@@ -290,9 +299,11 @@ class OWL {
 
   CalcAttackTab() {
     int dir, i;
-    var o;
+    ATTACKTABTYPE o;
 
-    for (i = 0; i <= (120 + 0x77); i++) AttackTab.add(ATTACKTABTYPE());
+    for (i = 0; i <= (120 + 0x77); i++) {
+      AttackTab.add(ATTACKTABTYPE());
+    }
     for (dir = 7; dir >= 0; dir--) {
       for (i = 1; i < 8; i++) {
         o = AttackTab[120 + (DirTab[dir] * i)];
@@ -313,14 +324,13 @@ class OWL {
 
   bool PieceAttacks(int apiece, int acolor, int asquare, int square) {
     int x = square - asquare;
-    if (apiece == pawn) /*  pawn attacks  */
+    if (apiece == pawn) {
+      /*  pawn attacks  */
       return ((x - PawnDir[acolor]).abs() == 1);
-
-    /*  other attacks: can the piece move to the square?  */
-    else if ((AttackTab[120 + x].pieceset & BitTab[apiece]) != 0) {
-      if (apiece == king || apiece == knight)
+    } else if ((AttackTab[120 + x].pieceset & BitTab[apiece]) != 0) {
+      if (apiece == king || apiece == knight) {
         return true;
-      else {
+      } else {
         /*  are there any blocking pieces in between?  */
         var sq = asquare;
         do {
@@ -355,13 +365,17 @@ class OWL {
  */
 
   bool Attacks(int acolor, int square) {
-    if (PawnAttacks(acolor, square)) /*  pawn attacks  */
+    if (PawnAttacks(acolor, square)) {
+      /*  pawn attacks  */
       return true;
+    }
     /*  Other attacks:  try all pieces, starting with the smallest  */
     for (var i = OfficerNo[acolor]; i >= 0; i--) {
       var o = PieceTab[acolor][i];
       if (o.ipiece != empty) if (PieceAttacks(
-          o.ipiece, acolor, o.isquare, square)) return true;
+          o.ipiece, acolor, o.isquare, square)) {
+        return true;
+      }
     }
     return false;
   }
@@ -417,7 +431,9 @@ class OWL {
 
   int FiftyMoveCnt() {
     var cnt = 0;
-    while (RepeatMove(MovTab[mc - cnt])) cnt++;
+    while (RepeatMove(MovTab[mc - cnt])) {
+      cnt++;
+    }
     return cnt;
   }
 
@@ -445,19 +461,21 @@ class OWL {
     compdep = samedepth - 4; /*  First position to compare  */
 
     /*  MovTab contains previous relevant moves  */
-    while (RepeatMove(MovTab[lastdep - 1]) && (compdep < lastdep || !immediate))
+    while (RepeatMove(MovTab[lastdep - 1]) && (compdep < lastdep || !immediate)) {
       lastdep--;
+    }
     if (compdep < lastdep) return 1;
     checkdep = samedepth;
     for (;;) {
       checkdep--;
       checksq = MovTab[checkdep].nw1;
       bool f = true;
-      for (tracedep = checkdep + 2; tracedep < samedepth; tracedep += 2)
+      for (tracedep = checkdep + 2; tracedep < samedepth; tracedep += 2) {
         if (MovTab[tracedep].old == checksq) {
           f = false;
           break;
         }
+      }
 
       if (f) {
         /*  Trace the move backward to see if it has been 'undone' earlier  */
@@ -507,7 +525,7 @@ class OWL {
 
   bool KillMovGen(MOVETYPE move) {
     int castsq, promote = 0, castdir, cast = 0;
-    var q;
+    BOARDTYPE q;
     bool killmov = false;
 
     if (move.spe && (move.movpiece == king)) {
@@ -519,12 +537,19 @@ class OWL {
         castsq = ((move.nw1 + move.old) >>> 1);
         /*  Are the squares empty ?  */
         if (Board[move.nw1].piece == empty) if (Board[castsq].piece ==
-            empty) if ((move.nw1 >
+            empty) {
+          if ((move.nw1 >
                 move.old) ||
-            (Board[move.nw1 - 1].piece == empty))
-        /*  Are the squares unattacked  */
-        if (!Attacks(Opponent, move.old)) if (!Attacks(
-            Opponent, move.nw1)) if (!Attacks(Opponent, castsq)) killmov = true;
+            (Board[move.nw1 - 1].piece == empty)) {
+              /*  Are the squares unattacked  */
+        if (!Attacks(Opponent, move.old)) {
+          if (!Attacks(
+            Opponent, move.nw1)) {
+          if (!Attacks(Opponent, castsq)) killmov = true;
+        }
+            }
+        }
+        }
       }
     } else {
       if (move.spe && (move.movpiece == pawn)) {
@@ -532,8 +557,9 @@ class OWL {
         /*  Was the Opponent's move a 2 square move?  */
         if (Mpre.movpiece == pawn) if ((Mpre.nw1 - Mpre.old).abs() >= 0x20) {
           q = Board[move.old];
-          if ((q.piece == pawn) && (q.color == Player))
+          if ((q.piece == pawn) && (q.color == Player)) {
             killmov = (move.nw1 == ((Mpre.nw1 + Mpre.old) >>> 1));
+          }
         }
       } else {
         if (move.spe) /*  Normal test  */
@@ -544,19 +570,25 @@ class OWL {
 
         /*  Is the content of Old and nw1 squares correct?  */
         if (Board[move.old].piece == move.movpiece) if (Board[move.old].color ==
-            Player) if (Board[move.nw1].piece == move.content) if (move
+            Player) {
+          if (Board[move.nw1].piece == move.content) {
+              if (move
                     .content ==
                 empty ||
             Board[move.nw1].color == Opponent) {
           if (move.movpiece == pawn) /*  Is the move possible?  */
           {
-            if ((move.nw1 - move.old).abs() < 0x20)
+            if ((move.nw1 - move.old).abs() < 0x20) {
               killmov = true;
-            else
+            } else {
               killmov = Board[(move.nw1 + move.old) >>> 1].piece == empty;
-          } else
+            }
+          } else {
             killmov = PieceAttacks(move.movpiece, Player, move.old, move.nw1);
+          }
         }
+        }
+            }
         if (move.spe) move.movpiece = promote;
       }
     }
@@ -568,7 +600,9 @@ class OWL {
  */
 
   Generate() {
-    while (Buffer.length <= (BufCount + 1)) Buffer.add(MOVETYPE());
+    while (Buffer.length <= (BufCount + 1)) {
+      Buffer.add(MOVETYPE());
+    }
     Buffer[++BufCount] = cloneMove(Next); /* new copied MOVETYPE() */
   }
 
@@ -596,17 +630,19 @@ class OWL {
     Next.content = Board[Next.nw1].piece;
     Next.movpiece = pawn;
     nextsq = Next.nw1 - PawnDir[Player];
-    for (sq = nextsq - 1; sq <= nextsq + 1; sq++)
+    for (sq = nextsq - 1; sq <= nextsq + 1; sq++) {
       if (sq != nextsq) if ((sq & 0x88) == 0) {
         o = Board[sq];
         if (o.piece == pawn && o.color == Player) {
           Next.old = sq;
-          if (Next.nw1 < 8 || Next.nw1 >= 0x70)
+          if (Next.nw1 < 8 || Next.nw1 >= 0x70) {
             PawnPromotionGen();
-          else
+          } else {
             Generate();
+          }
         }
       }
+    }
     /*  Other captures, starting with the smallest pieces  */
     for (i = OfficerNo[Player]; i >= 0; i--) {
       o = PieceTab[Player][i];
@@ -671,9 +707,9 @@ class OWL {
       case pawn:
         Next.nw1 = Next.old + PawnDir[Player]; /*  one square forward  */
         if (Board[Next.nw1].piece == empty) {
-          if (Next.nw1 < 8 || Next.nw1 >= 0x70)
+          if (Next.nw1 < 8 || Next.nw1 >= 0x70) {
             PawnPromotionGen();
-          else {
+          } else {
             Generate();
             if (Next.old < 0x18 || Next.old >= 0x60) {
               Next.nw1 += (Next.nw1 - Next.old); /* 2 squares forward */
@@ -743,11 +779,12 @@ class OWL {
       Next.movpiece = pawn;
       Next.content = empty;
       Next.nw1 = (Mpre.nw1 + Mpre.old) >>> 1;
-      for (sq = Mpre.nw1 - 1; sq <= Mpre.nw1 + 1; sq++)
+      for (sq = Mpre.nw1 - 1; sq <= Mpre.nw1 + 1; sq++) {
         if (sq != Mpre.nw1) if ((sq & 0x88) == 0) {
           Next.old = sq;
           if (KillMovGen(Next)) Generate();
         }
+      }
     }
   }
 
@@ -757,9 +794,9 @@ class OWL {
  */
 
   MovGen() {
-    if (BufPnt >= BufCount)
+    if (BufPnt >= BufCount) {
       Next = ZeroMove;
-    else {
+    } else {
       Next = Buffer[++BufPnt];
     }
   }
@@ -798,21 +835,19 @@ class OWL {
     if (!possiblemove) {
       if (check) {
         checkmate = true;
-        s += "CheckMate! " + (Opponent == white ? "1-0" : "0-1");
-      } else
+        s += "CheckMate! ${Opponent == white ? "1-0" : "0-1"}";
+      } else {
         s += "StaleMate! 1/2-1/2";
+      }
     } else if (MainEvalu >= MATEVALUE - DEPTHFACTOR * 16) {
       var nummoves = ((MATEVALUE - MainEvalu + 0x40) ~/ (DEPTHFACTOR * 2));
-      if (nummoves > 0)
-        s += "Mate in " +
-            nummoves.toString() +
-            " move" +
-            ((nummoves > 1) ? "s" : "") +
-            "!";
+      if (nummoves > 0) {
+        s += "Mate in $nummoves move${(nummoves > 1) ? "s" : ""}!";
+      }
     }
-    if (check && !checkmate)
+    if (check && !checkmate) {
       s += "Check!";
-    else //test 50 move rule and repetition of moves
+    } else //test 50 move rule and repetition of moves
     {
       if (FiftyMoveCnt() >= 100) {
         s += "50 Move rule";
@@ -821,7 +856,7 @@ class OWL {
       } else //Resign if the position is hopeless
       if (Opponent == ProgramColor &&
           (-25500 < MainEvalu && MainEvalu < -0x880)) {
-        s += (Opponent == white ? "White" : "Black") + " resigns";
+        s += "${Opponent == white ? "White" : "Black"} resigns";
       }
     }
     return s;
@@ -843,7 +878,7 @@ class OWL {
     if (move.movpiece != empty) {
       if (move.spe && move.movpiece == king) /*  castling  */
       {
-        return "O-O" + ((move.nw1 > move.old) ? "" : "-O");
+        return "O-O${(move.nw1 > move.old) ? "" : "-O"}";
       } else {
         var s = "", piece = Board[move.old].piece, ispawn = (piece == pawn);
         var c = (move.content != 0) ||
@@ -853,7 +888,7 @@ class OWL {
         s += sq2str(move.old);
         s += (c ? 'x' : '-');
         s += sq2str(move.nw1);
-        if (p) s += "=" + ("QRBN")[move.movpiece - 2];
+        if (p) s += "=${("QRBN")[move.movpiece - 2]}";
         return s;
       }
     }
@@ -867,9 +902,8 @@ class OWL {
     InitMovGen();
     for (var i = 0; i < BufCount; i++) {
       MovGen();
-      if (!IllegalMove(Next)) s += "," + MoveStr(Next);
+      if (!IllegalMove(Next)) s += ",${MoveStr(Next)}";
     }
-    ;
     return s.substring(1);
   }
 
@@ -998,15 +1032,15 @@ class OWL {
         break;
       }
     }
-    ;
     return ret;
   }
 
   Perform(MOVETYPE move, bool resetmove) {
     if (resetmove) {
       MovePiece(move.old, move.nw1);
-      if (move.content != empty)
+      if (move.content != empty) {
         InsertPTabPiece(move.content, Opponent, move.nw1);
+      }
     } else {
       if (move.content != empty) DeletePiece(move.nw1);
       MovePiece(move.nw1, move.old);
@@ -1024,15 +1058,17 @@ class OWL {
       } else {
         if (move.movpiece == pawn) {
           var epsquare = (move.nw1 & 7) + (move.old & 0x70); /* E.p. capture */
-          if (resetmove)
+          if (resetmove) {
             InsertPTabPiece(pawn, Opponent, epsquare);
-          else
+          } else {
             DeletePiece(epsquare);
+          }
         } else {
-          if (resetmove)
+          if (resetmove) {
             ChangeType(pawn, move.old);
-          else
+          } else {
             ChangeType(move.movpiece, move.nw1);
+          }
         }
       }
     }
@@ -1041,7 +1077,9 @@ class OWL {
       MovTab[mc--] = MOVETYPE();
     } else {
       MovTab[mc++] = cloneMove(move);
-      while (MovTab.length <= mc) MovTab.add(MOVETYPE());
+      while (MovTab.length <= mc) {
+        MovTab.add(MOVETYPE());
+      }
     }
     Mo = MovTab[mc];
     Mpre = MovTab[mc - 1];
@@ -1229,7 +1267,7 @@ class OWL {
     totalmaterial = 0;
     mating = false;
 
-    for (square = 0; square < 0x78; square++)
+    for (square = 0; square < 0x78; square++) {
       if ((square & 0x88) == 0) {
         o = Board[square];
         p = o.piece;
@@ -1241,6 +1279,7 @@ class OWL {
           material -= t;
         }
       }
+    }
     materiallevel = (max(0, totalmaterial - 0x2000) ~/ 0x100);
     /*  Set mating if weakest player has less than the equivalence
     of two bishops and the advantage is at least a rook for a bishop  */
@@ -1268,18 +1307,22 @@ class OWL {
         /*  Importance of the 8 squares around the opponent's King  */
         for (dir = 0; dir < 8; dir++) {
           sq = PieceTab[oppcolor][0].isquare + DirTab[dir];
-          if ((sq & 0x88) == 0)
+          if ((sq & 0x88) == 0) {
             attackvalue[color][sq] += ((12 * (materiallevel + 8)) >> 5);
+          }
         }
     }
 
     /*  Calculate PVControl  */
-    for (square = 0x77; square >= 0; square--)
+    for (square = 0x77; square >= 0; square--) {
       if ((square & 0x88) == 0)
-        for (color = white; color <= black; color++)
-          for (piececount = rook; piececount <= bishop; piececount++)
+        for (color = white; color <= black; color++) {
+          for (piececount = rook; piececount <= bishop; piececount++) {
             pvcontrol[color][piececount][square] = 0;
-    for (square = 0x77; square >= 0; square--)
+    }
+        }
+          }
+    for (square = 0x77; square >= 0; square--) {
       if ((square & 0x88) == 0)
         for (color = white; color <= black; color++) {
           for (dir = 7; dir >= 0; dir--) {
@@ -1297,20 +1340,23 @@ class OWL {
               sq += DirTab[dir];
               if ((sq & 0x88) != 0) break; //goto TEN
               t = attackvalue[color][sq];
-              if (direct)
+              if (direct) {
                 cnt += t;
-              else
+              } else {
                 cnt += (t >> 1);
+              }
               p = Board[sq].piece;
-              if (p != empty) if ((p != piececount) && (p != queen))
+              if (p != empty) if ((p != piececount) && (p != queen)) {
                 direct = false;
+              }
             } while (p != pawn);
 /*TEN:*/ pvcontrol[color][piececount][square] += (cnt >> 2);
           }
         }
+    }
 
     /*  Calculate PVTable, value by value  */
-    for (square = 0x77; square >= 0; square--)
+    for (square = 0x77; square >= 0; square--) {
       if ((square & 0x88) == 0) {
         for (color = white; color <= black; color++) {
           oppcolor = (color ^ 1);
@@ -1359,21 +1405,25 @@ class OWL {
                   posval = (cnt >> 1) - dist * 3;
                   break;
                 case pawn:
-                  if ((rank != 0) && (rank != 7))
+                  if ((rank != 0) && (rank != 7)) {
                     posval =
                         pawnrank[rank] + pawnfilefactor[line] * (rank + 2) - 12;
+                  }
               }
             }
             PVTable[color][piececount][square] = posval;
           }
         }
       }
+    }
 
     /*  Calculate pawntab (indicates which squares contain pawns)  */
 
     for (color = white; color <= black; color++)
-      for (rank = 0; rank < 8; rank++) pawntab[color][rank] = 0;
-    for (square = 0x77; square >= 0; square--)
+      for (rank = 0; rank < 8; rank++) {
+        pawntab[color][rank] = 0;
+      }
+    for (square = 0x77; square >= 0; square--) {
       if ((square & 0x88) == 0) {
         o = Board[square];
         if (o.piece == pawn) {
@@ -1382,6 +1432,7 @@ class OWL {
           pawntab[o.color][rank] |= filebittab[square & 7];
         }
       }
+    }
     for (color = white; color <= black; color++) /*  initialize pawnbit  */
     {
       o = pawnbit[color][0];
@@ -1428,16 +1479,17 @@ class OWL {
         bit = 1;
         while (bit != 0) {
           strval = 0;
-          if ((bit & sidetab) != 0)
+          if ((bit & sidetab) != 0) {
             strval = SIDEPAWN;
-          else if ((bit & chaintab) != 0) strval = CHAINPAWN;
+          } else if ((bit & chaintab) != 0) strval = CHAINPAWN;
           if ((bit & leftcovertab) != 0) strval += COVERPAWN;
           if ((bit & rightcovertab) != 0) strval += COVERPAWN;
           if ((bit & pawnfiletab) != 0) strval += NOTMOVEPAWN;
           PVTable[color][pawn][sq] += strval;
           if ((materiallevel <= 0) || (oppcolor != ProgramColor)) {
-            if ((bit & oppasstab) != 0)
+            if ((bit & oppasstab) != 0) {
               PVTable[oppcolor][pawn][sq] += passpawnrank[7 - rank];
+            }
             if ((bit & behindoppass) != 0) {
               t = sq ^ 0x10;
               for (t3 = black; t3 >= white; t3--) {
@@ -1454,21 +1506,26 @@ class OWL {
     /*  Calculate penalty for blocking center pawns with a bishop  */
     for (sq = 3; sq < 5; sq++) {
       o = Board[sq + 0x10];
-      if ((o.piece == pawn) && (o.color == white))
+      if ((o.piece == pawn) && (o.color == white)) {
         PVTable[white][bishop][sq + 0x20] -= BISHOPBLOCKVALUE;
+      }
       o = Board[sq + 0x60];
-      if ((o.piece == pawn) && (o.color == black))
+      if ((o.piece == pawn) && (o.color == black)) {
         PVTable[black][bishop][sq + 0x50] -= BISHOPBLOCKVALUE;
+      }
     }
-    for (square = 0x77; square >= 0; square--) /*  Calculate RootValue  */
+    for (square = 0x77; square >= 0; square--) {
+      /*  Calculate RootValue  */
       if ((square & 0x88) == 0) {
         o = Board[square];
         p = o.piece;
-        if (p != empty) if (o.color == Player)
+        if (p != empty) if (o.color == Player) {
           RootValue += PiecePosVal(p, Player, square);
-        else
+        } else {
           RootValue -= PiecePosVal(p, Opponent, square);
+        }
       }
+    }
   }
 
 /*
@@ -1509,10 +1566,11 @@ class OWL {
       GenCastSquare(move.nw1, Cast);
       value = PiecePosVal(rook, Player, Cast.castsquare) -
           PiecePosVal(rook, Player, Cast.cornersquare);
-      if (move.nw1 > move.old)
+      if (move.nw1 > move.old) {
         value += castvalue[shrt - 1];
-      else
+      } else {
         value += castvalue[lng - 1];
+      }
     } else if (move.movpiece == pawn) {
       var epsquare = move.nw1 - PawnDir[Player]; /*  E.p. capture  */
       value = PiecePosVal(pawn, Opponent, epsquare);
@@ -1526,16 +1584,21 @@ class OWL {
       value += PiecePosVal(move.content, Opponent, move.nw1);
       /*  Penalty for exchanging pieces when behind in material  */
       if ((MainEvalu).abs() >= 0x100) if (move.content !=
-          pawn) if ((ProgramColor == Opponent) == (MainEvalu >= 0))
-        value -= EXCHANGEVALUE;
+          pawn) {
+        if ((ProgramColor == Opponent) == (MainEvalu >= 0)) {
+            value -= EXCHANGEVALUE;
+      }
+          }
     }
     /*  calculate pawnbit  */
     copyPwBt(pawnbit[black][Depth], pawnbit[black][Depth - 1]);
     copyPwBt(pawnbit[white][Depth], pawnbit[white][Depth - 1]);
-    if ((move.movpiece == pawn) && ((move.content != empty) || move.spe))
+    if ((move.movpiece == pawn) && ((move.content != empty) || move.spe)) {
       value += movepawnstrval(Player, move.nw1 & 7, move.old & 7);
-    if ((move.content == pawn) || move.spe && (move.movpiece == pawn))
+    }
+    if ((move.content == pawn) || move.spe && (move.movpiece == pawn)) {
       value -= decpawnstrval(Opponent, move.nw1 & 7);
+    }
     /*  Calculate value of move  */
     return (value +
         PiecePosVal(move.movpiece, Player, move.nw1) -
@@ -1580,7 +1643,9 @@ class OWL {
 
   List<MOVETYPE> copyMLine(List<MOVETYPE> a) {
     List<MOVETYPE> b = [];
-    for (int i = 0; i < a.length;) b.add(cloneMove(a[i++]));
+    for (int i = 0; i < a.length;) {
+      b.add(cloneMove(a[i++]));
+    }
     return b;
   }
 
@@ -1596,14 +1661,7 @@ class OWL {
           (preDisp_mxdp < MaxDepth || !EqMove(preDispMv, move))) {
         preDispMv = cloneMove(move);
         preDisp_mxdp = MaxDepth;
-        log_print(MaxDepth.toString() +
-            " ply " +
-            timer.elapsed.toString() +
-            " sec. " +
-            Nodes.toString() +
-            " nodes " +
-            sq2str(move.old) +
-            sq2str(move.nw1));
+        log_print("$MaxDepth ply ${timer.elapsed} sec. $Nodes nodes ${sq2str(move.old)}${sq2str(move.nw1)}");
         PrintBestMove();
       }
     }
@@ -1615,7 +1673,7 @@ class OWL {
     for (;;) {
       var move = MainLine.a[dep++];
       if (move.movpiece == empty) break;
-      s += sq2str(move.old) + sq2str(move.nw1) + " ";
+      s += "${sq2str(move.old)}${sq2str(move.nw1)} ";
     }
 
     log_print('ev:' + EvValStr() + " " + s);
@@ -1634,11 +1692,13 @@ class OWL {
 
   clearkillmove() {
     int dep, col, sq, i;
-    var o;
+    BOARDTYPE o;
 
     for (i = 0; i < 2; i++) {
       killingmove[i] = [];
-      for (dep = 0; dep <= MAXPLY; dep++) killingmove[i].add(ZeroMove);
+      for (dep = 0; dep <= MAXPLY; dep++) {
+        killingmove[i].add(ZeroMove);
+      }
     }
     checktab[0] = false;
     passedpawn[0] = -1; /*  No check at first ply  */
@@ -1647,10 +1707,11 @@ class OWL {
     for (col = white; col <= black; col++)
       for (sq = rank7[col]; sq <= rank7[col] + 7; sq++) {
         o = Board[sq];
-        if ((o.piece == pawn) && (o.color == col)) if (col == Player)
+        if ((o.piece == pawn) && (o.color == col)) if (col == Player) {
           passedpawn[0] = sq;
-        else
+        } else {
           passedpawn[1] = sq;
+        }
       }
   }
 
@@ -1681,9 +1742,11 @@ class OWL {
     if (P.S.movgentype != mane) {
       if (EqMove(Mo, P.bestline.a[Depth])) return true;
 
-      if (!P.S.capturesearch) if (P.S.movgentype != kill)
-        for (var i = 0; i < 2; i++)
+      if (!P.S.capturesearch) if (P.S.movgentype != kill) {
+        for (var i = 0; i < 2; i++) {
           if (EqMove(Mo, killingmove[i][Depth])) return true;
+      }
+        }
     }
     return false;
   }
@@ -1716,8 +1779,9 @@ class OWL {
     {
       Perform(Mo, false); /*  Perform Move on the board  */
       /*  Check if Move is legal  */
-      if (Attacks(Opponent, PieceTab[Player][0].isquare))
+      if (Attacks(Opponent, PieceTab[Player][0].isquare)) {
         return tkbkmv(); //TAKEBACKMOVE
+      }
       if (Depth == 1) LegalMoves++;
       checktab[Depth] = false;
       passedpawn[1 + Depth] = -1;
@@ -1726,10 +1790,12 @@ class OWL {
       d.evaluation = 0;
       if (P.S.nextply <= 0) /*  Calculate chech and perform evt. cut-off  */
       {
-        if (P.S.nextply == 0)
+        if (P.S.nextply == 0) {
           checktab[Depth] = Attacks(Player, PieceTab[Opponent][0].isquare);
-        if (!checktab[Depth]) if (cut(P.S.next.value, P))
+        }
+        if (!checktab[Depth]) if (cut(P.S.next.value, P)) {
           return tkbkmv(); //TAKEBACKMOVE
+        }
       }
 
       DisplayMove();
@@ -1768,8 +1834,9 @@ class OWL {
     } // CUTMOVE
     Perform(Mo, false); /*  perform move on the board  */
     /*  check if move is legal  */
-    if (Attacks(Opponent, PieceTab[Player][0].isquare))
+    if (Attacks(Opponent, PieceTab[Player][0].isquare)) {
       return tkbkmv(); //TAKEBACKMOVE
+    }
     var p = passedpawn[1 + Depth];
     if (p >= 0) /*  check passedpawn  */
     {
@@ -1800,12 +1867,14 @@ class OWL {
         return true;
       }
       var drawcount = 0;
-      if (searchfifty >= 96) /*  48 moves without pawn moves or captures */
+      if (searchfifty >= 96) {
+        /*  48 moves without pawn moves or captures */
         drawcount = 3;
-      else {
-        if (searchrepeat >= 2) /*  2nd repetition  */
+      } else {
+        if (searchrepeat >= 2) {
+          /*  2nd repetition  */
           drawcount = 2;
-        else if (searchfifty >= 20) /*  10 moves without pawn moves or  */
+        } else if (searchfifty >= 20) /*  10 moves without pawn moves or  */
           drawcount = 1; /*  captures  */
       }
       var n = ((repeatevalu * drawcount) ~/ 4); // int
@@ -1853,10 +1922,11 @@ class OWL {
     /*  Zerowindow indicates zero - width alpha - beta window  */
     P.S.next.principv = false;
     P.S.zerowindow = false;
-    if (P.inf.principv) if (P.S.movgentype == mane)
+    if (P.inf.principv) if (P.S.movgentype == mane) {
       P.S.next.principv = (P.bestline.a[Depth + 1].movpiece != empty);
-    else
+    } else {
       P.S.zerowindow = (P.S.maxval >= P.alpha);
+    }
 
     for (;;) {
 //REPEATSEARCH:
@@ -1864,7 +1934,9 @@ class OWL {
       if (update(P)) return false;
       bool f = true;
       if (MateSrch) /*  stop evt. search  */
-      if ((P.S.nextply <= 0) && !checktab[Depth]) f = false;
+      if ((P.S.nextply <= 0) && !checktab[Depth]) {
+        f = false;
+      }
       if (f && drawgame(P.S)) f = false;
       if (f && Depth >= MAXPLY) f = false;
       if (f) {
@@ -1873,12 +1945,13 @@ class OWL {
         Player = Opponent;
         Opponent = oldplayer;
         Depth++;
-        if (P.S.zerowindow)
+        if (P.S.zerowindow) {
           P.S.next.evaluation =
               -search(-P.alpha - 1, -P.alpha, P.S.nextply, P.S.next, P.S.line);
-        else
+        } else {
           P.S.next.evaluation =
               -search(-P.beta, -P.alpha, P.S.nextply, P.S.next, P.S.line);
+        }
         Depth--;
         oldplayer = Opponent;
         Opponent = Player;
@@ -1892,15 +1965,18 @@ class OWL {
         if (MaxDepth <= 1) SkipSearch = false;
       }
       P.S.maxval = max(P.S.maxval, P.S.next.evaluation); /*  Update Maxval  */
-      if (EqMove(P.bestline.a[Depth], Mo)) /*  Update evt. bestline  */
+      if (EqMove(P.bestline.a[Depth], Mo)) {
+        /*  Update evt. bestline  */
         updatebestline(P);
+      }
       if (P.alpha < P.S.maxval) /*  update alpha and test cutoff */
       {
         updatebestline(P);
         if (P.S.maxval >= P.beta) return true;
         /*  Adjust maxval (tolerance search)  */
-        if (P.ply >= 2 && P.inf.principv && !P.S.zerowindow)
+        if (P.ply >= 2 && P.inf.principv && !P.S.zerowindow) {
           P.S.maxval = min(P.S.maxval + TOLERANCE, P.beta - 1);
+        }
         P.alpha = P.S.maxval;
         if (P.S.zerowindow && !SkipSearch) {
           /*  repeat search with full window  */
@@ -1939,7 +2015,7 @@ class OWL {
     Mo.nw1 = newsq;
     Mo.movpiece = pawn; /*  pawn captures  */
     nxtsq = Mo.nw1 - PawnDir[Player];
-    for (sq = nxtsq - 1; sq <= nxtsq + 1; sq++)
+    for (sq = nxtsq - 1; sq <= nxtsq + 1; sq++) {
       if (sq != nxtsq) if ((sq & 0x88) == 0) {
         b = Board[sq];
         if (b.piece == pawn && b.color == Player) {
@@ -1949,6 +2025,7 @@ class OWL {
           } else if (loopbody(P)) return true;
         }
       }
+    }
     for (i = OfficerNo[Player]; i >= 0; i--) /*  other captures  */
     {
       m = PieceTab[Player][i];
@@ -1999,9 +2076,9 @@ class OWL {
       case bishop:
         first = 7;
         last = 0;
-        if (Mo.movpiece == rook)
+        if (Mo.movpiece == rook) {
           first = 3;
-        else if (Mo.movpiece == bishop) last = 4;
+        } else if (Mo.movpiece == bishop) last = 4;
         for (dir = first; dir >= last; dir--) {
           direction = DirTab[dir];
           newsq = Mo.old + direction;
@@ -2059,11 +2136,12 @@ class OWL {
       Mo.movpiece = pawn;
       Mo.content = empty;
       Mo.nw1 = (Mpre.nw1 + Mpre.old) ~/ 2;
-      for (var sq = Mpre.nw1 - 1; sq <= Mpre.nw1 + 1; sq++)
+      for (var sq = Mpre.nw1 - 1; sq <= Mpre.nw1 + 1; sq++) {
         if (sq != Mpre.nw1) if ((sq & 0x88) == 0) {
           Mo.old = sq;
           if (KillMovGen(Mo)) if (loopbody(P)) return true;
         }
+      }
     }
     return false;
   }
@@ -2109,14 +2187,17 @@ class OWL {
     for (index = 1; index <= PawnNo[Opponent]; index++) {
       u = PieceTab[Opponent][index];
       if (u.ipiece != empty) if (Mpre.movpiece == empty ||
-          u.isquare != Mpre.nw1) if (capmovgen(u.isquare, P)) return;
+          u.isquare != Mpre.nw1) {
+        if (capmovgen(u.isquare, P)) return;
+      }
     }
     if (P.S.capturesearch) {
       p = passedpawn[1 + (Depth - 2)];
       if (p >= 0) {
         BOARDTYPE o = Board[p];
-        if (o.piece == pawn && o.color == Player) if (noncapmovgen(p, P))
+        if (o.piece == pawn && o.color == Player) if (noncapmovgen(p, P)) {
           return;
+        }
       }
     }
     if (!P.S.capturesearch) /*  non-captures  */
@@ -2214,7 +2295,9 @@ class OWL {
 
     pawnbit = [[], []];
     for (int c = 0; c < 2; c++)
-      for (int i = 0; i <= MAXPLY; i++) pawnbit[c].add(PAWNBITTYPE());
+      for (int i = 0; i <= MAXPLY; i++) {
+        pawnbit[c].add(PAWNBITTYPE());
+      }
 
     CalcPVTable();
     startinf.value = -RootValue;
@@ -2292,7 +2375,9 @@ class OWL {
  */
 
   FirstLibNo() {
-    while ((OwlBook.Openings[LibNo - 1] & 64) == 0) PreviousLibNo();
+    while ((OwlBook.Openings[LibNo - 1] & 64) == 0) {
+      PreviousLibNo();
+    }
   }
 
 /*
@@ -2301,9 +2386,9 @@ class OWL {
  */
 
   NextLibNo(bool skip) {
-    if (OwlBook.Openings[LibNo] >= 128)
+    if (OwlBook.Openings[LibNo] >= 128) {
       FirstLibNo();
-    else {
+    } else {
       int n = 0;
       do {
         var o = OwlBook.Openings[LibNo];
@@ -2381,9 +2466,13 @@ class OWL {
     int cnt = 0, p = 0, countp = 1;
 
     int r = rnd.nextInt(16); /*  calculate weighted random number in 0..16  */
-    while (r >= weight[p]) p++;
-    for (; countp <= p; countp++) /* find corresponding node */
+    while (r >= weight[p]) {
+      p++;
+    }
+    for (; countp <= p; countp++) {
+      /* find corresponding node */
       NextLibNo(true);
+    }
     OpCount = OwlBook.Openings[LibNo] & 63; /*  generate the move  */
 
     InitMovGen();
@@ -2416,8 +2505,10 @@ class OWL {
 
   playSampleAIvsAI() {
     // randomize more
-    int roll_rnd = DateTime.now().second << 2;
-    while ((roll_rnd--) > 0) rnd.nextInt(1);
+    int rollRnd = DateTime.now().second << 2;
+    while ((rollRnd--) > 0) {
+      rnd.nextInt(1);
+    }
 
 //
 // AI vs AI game for testing...
@@ -2439,13 +2530,9 @@ class OWL {
       if (!LibFound) {
         foundmove = FindMove(); // let the engine search
       }
-      log_print(foundmove +
-          " Eval = " +
-          EvValStr() +
-          " , nodes = " +
-          Nodes.toString());
+      log_print("$foundmove Eval = ${EvValStr()} , nodes = $Nodes");
 
-      if (foundmove.length == 0) break;
+      if (foundmove.isEmpty) break;
 
       // style g7-g8=Q
       String notated = DoMoveByStr(foundmove);
@@ -2461,7 +2548,9 @@ class OWL {
       resigned = s.contains("resigns");
 
       notated += (checkmate ? "#" : (check ? "+" : ""));
-      while (PGN.length < mc) PGN.add("");
+      while (PGN.length < mc) {
+        PGN.add("");
+      }
       PGN[mc - 1] = notated;
       log_print(notated);
 
@@ -2475,11 +2564,11 @@ class OWL {
 
       String pgn = "";
       for (int i = 1; i <= (mc - 1); i++) {
-        pgn += (i % 2 == 1 ? ((i + 1) >>> 1).toString() + "." : "");
+        pgn += (i % 2 == 1 ? "${(i + 1) >>> 1}." : "");
         pgn += PGN[i] + " ";
       }
 
-      if (GameOver) pgn += "{" + s + "}";
+      if (GameOver) pgn += "${"{" + s}}";
       printboard();
 
       log_print(pgn);

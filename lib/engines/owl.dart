@@ -17,8 +17,10 @@ class OwlEngine {
     MAXSECS = 4;
 
     // randomize more
-    int roll_rnd = DateTime.now().second << 2;
-    while ((roll_rnd--) > 0) OWL.rnd.nextInt(1);
+    int rollRnd = DateTime.now().second << 2;
+    while ((rollRnd--) > 0) {
+      OWL.rnd.nextInt(1);
+    }
   }
 
   int toOwlSquare(int sq) {
@@ -75,7 +77,7 @@ class OwlEngine {
     String from = owl.sq2str(f), to = owl.sq2str(t);
     String ucimove = from + to;
     owl.DoMoveByStr(ucimove);
-    MoveslistUcis += ucimove + "_";
+    MoveslistUcis += "${ucimove}_";
   }
 
   // Do engine shoud make a move? Then calculate and do it.
@@ -94,7 +96,7 @@ class OwlEngine {
             foundmove = owl.FindMove(); // let the engine search
           }
 
-          if (foundmove.length > 0) {
+          if (foundmove.isNotEmpty) {
             // style g7-g8=Q
             return foundmove;
           }

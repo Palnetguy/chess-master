@@ -19,7 +19,7 @@ class NotificationService {
   void _configureLocalNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    final InitializationSettings initializationSettings =
+    const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
     await _localNotificationsPlugin.initialize(initializationSettings);
   }
@@ -29,7 +29,7 @@ class NotificationService {
       message.hashCode,
       message.notification?.title,
       message.notification?.body,
-      NotificationDetails(
+      const NotificationDetails(
         android: AndroidNotificationDetails('channel_id', 'channel_name'),
       ),
     );

@@ -4,7 +4,7 @@ import 'package:chess/chess.dart' as chess;
 class ChessBoard extends StatelessWidget {
   final String fen;
 
-  ChessBoard({required this.fen});
+  const ChessBoard({super.key, required this.fen});
 
   @override
   Widget build(BuildContext context) {

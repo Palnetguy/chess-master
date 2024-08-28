@@ -24,7 +24,7 @@ class GameController extends GetxController {
     _elapsedSeconds = 0; // Reset the elapsed time
     gameTime.value = _formatTime(_elapsedSeconds);
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _elapsedSeconds++;
       gameTime.value = _formatTime(_elapsedSeconds);
     });

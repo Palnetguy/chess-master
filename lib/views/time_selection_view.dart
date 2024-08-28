@@ -15,6 +15,8 @@ class TimeSelectionView extends StatelessWidget {
     "30 min"
   ];
 
+  TimeSelectionView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

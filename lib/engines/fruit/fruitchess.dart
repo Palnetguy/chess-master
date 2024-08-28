@@ -30,7 +30,7 @@ class alist_t {
 }
 
 class alists_t {
-  List<alist_t> alist = [new alist_t(), new alist_t()]; //alist_t [ColourNb][1]
+  List<alist_t> alist = [alist_t(), alist_t()]; //alist_t [ColourNb][1]
 }
 
 class attack_t {
@@ -174,8 +174,8 @@ class search_best_t {
 }
 
 class search_current_t {
-  board_t board = new board_t(); // board_t[1]
-  my_timer_t timer = new my_timer_t(); // my_timer_t[1]
+  board_t board = board_t(); // board_t[1]
+  my_timer_t timer = my_timer_t(); // my_timer_t[1]
   int mate = 0; // int
   int depth = 0; // int
   int max_depth = 0; // int
@@ -193,8 +193,8 @@ class search_info_t {
 }
 
 class search_input_t {
-  board_t board = new board_t(); // board_t[1]
-  list_t list = new list_t(); // list_t[1]
+  board_t board = board_t(); // board_t[1]
+  list_t list = list_t(); // list_t[1]
   bool infinite = false; // bool
   bool depth_is_limited = false; // bool
   int depth_limit = 0; // int
@@ -204,7 +204,7 @@ class search_input_t {
 }
 
 class search_root_t {
-  list_t list = new list_t(); // list_t[1]
+  list_t list = list_t(); // list_t[1]
   int depth = 0; // int
   int move = 0; // int
   int move_pos = 0; // int
@@ -229,8 +229,8 @@ class sort_t {
   int value = 0; // int
   late board_t board; // board_t *
   late attack_t attack; // attack_t *
-  list_t list = new list_t(); // list_t[1]
-  list_t bad = new list_t(); // list_t[1]
+  list_t list = list_t(); // list_t[1]
+  list_t bad = list_t(); // list_t[1]
 }
 
 class string_t {
@@ -312,15 +312,15 @@ class FruitChess {
   List<List<int>> PieceDeltaSize = []; // int[4][256]      4kB
   List<List<List<int>>> PieceDeltaDelta = []; // int[4][256][4]  16kB
 
-  trans_t Trans = new trans_t(); // trans_t [1]
-  trans_rtrv TransRv = new trans_rtrv(); // retriever
+  trans_t Trans = trans_t(); // trans_t [1]
+  trans_rtrv TransRv = trans_rtrv(); // retriever
 
   int MaterialWeight = 256; // 100% int
-  material_t Material = new material_t(); // material_t[1]
+  material_t Material = material_t(); // material_t[1]
 
   List<int> CastleMask = List.filled(SquareNb, 0xF); // int[SquareNb]
 
-  pawn_t Pawn = new pawn_t(); // pawn_t[1]
+  pawn_t Pawn = pawn_t(); // pawn_t[1]
 
   List<int> Bonus = List.filled(RankNb, 0); // int[RankNb]
 
@@ -402,16 +402,18 @@ class FruitChess {
 
   List<int> Distance = List.filled(DeltaNb, -1); // int[DeltaNb]
 
-  search_input_t SearchInput = new search_input_t(); // search_input_t[1]
-  search_info_t SearchInfo = new search_info_t(); // search_info_t[1]
-  search_root_t SearchRoot = new search_root_t(); // search_root_t[1]
+  search_input_t SearchInput = search_input_t(); // search_input_t[1]
+  search_info_t SearchInfo = search_info_t(); // search_info_t[1]
+  search_root_t SearchRoot = search_root_t(); // search_root_t[1]
   search_current_t SearchCurrent =
-      new search_current_t(); // search_current_t[1]
-  search_best_t SearchBest = new search_best_t(); // search_best_t[1]
+      search_current_t(); // search_current_t[1]
+  search_best_t SearchBest = search_best_t(); // search_best_t[1]
 
   FruitChess() {
-    int roll_rnd = DateTime.now().second << 2;
-    while ((roll_rnd--) > 0) rnd.nextInt(1); // roll random little
+    int rollRnd = DateTime.now().second << 2;
+    while ((rollRnd--) > 0) {
+      rnd.nextInt(1); // roll random little
+    }
 
     main_init(); // prepare arrays
   }
@@ -452,13 +454,13 @@ class FruitChess {
 // should be true, or error otherwise
   ASSERT(int id, bool logic) {
     if (!logic) {
-      print_out("//ASSERT FAIL on id=" + id.toString());
+      print_out("//ASSERT FAIL on id=$id");
     }
   }
 
 // for error case
   my_fatal(String errmess) {
-    print_out("my-error: " + errmess);
+    print_out("my-error: $errmess");
   }
 
   send(String str1) {
@@ -717,7 +719,9 @@ class FruitChess {
   square_init() {
     int sq; // int
 
-    for (sq = 0; sq <= 63; sq++) SquareTo64[SquareFrom64[sq]] = sq;
+    for (sq = 0; sq <= 63; sq++) {
+      SquareTo64[SquareFrom64[sq]] = sq;
+    }
     for (sq = 0; sq < SquareNb; sq++) {
       SquareIsPromote[sq] = SQUARE_IS_OK(sq) &&
           (SQUARE_RANK(sq) == Rank1 || SQUARE_RANK(sq) == Rank8);
@@ -757,10 +761,10 @@ class FruitChess {
     String c2 = " "; // char
 
     c1 = str1.v[0];
-    if (("abcdefgh").indexOf(c1) < 0) return SquareNone;
+    if (!("abcdefgh").contains(c1)) return SquareNone;
 
     c2 = str1.v[1];
-    if (("12345678").indexOf(c2) < 0) return SquareNone;
+    if (!("12345678").contains(c2)) return SquareNone;
 
     file = file_from_char(c1);
     rank = rank_from_char(c2);
@@ -771,7 +775,7 @@ class FruitChess {
   if_fen_err(bool logic, String fenstr, int pos) {
     if (logic) {
       my_fatal(
-          "board_from_fen: bad FEN " + fenstr + " at pos=" + pos.toString());
+          "board_from_fen: bad FEN $fenstr at pos=$pos");
     }
   }
 
@@ -797,7 +801,7 @@ class FruitChess {
     for (rank = Rank8; rank >= Rank1; rank--) {
       file = FileA;
       while (file <= FileH) {
-        if (("12345678").indexOf(c) >= 0) {
+        if (("12345678").contains(c)) {
           // empty square(s)
 
           len = (c.codeUnitAt(0) - 48);
@@ -908,7 +912,7 @@ class FruitChess {
       pos++;
       c = fen[pos];
     } else {
-      if_fen_err((("abcdefgh").indexOf(c) < 0), fen, pos);
+      if_fen_err((!("abcdefgh").contains(c)), fen, pos);
       file = file_from_char(c);
       pos++;
       c = fen[pos];
@@ -948,7 +952,7 @@ class FruitChess {
       pos++;
       c = fen[pos];
 
-      if (("0123456789").indexOf(c) < 0) {
+      if (!("0123456789").contains(c)) {
         if (!Strict) {
           gotoupdate = true;
         } else {
@@ -975,7 +979,7 @@ class FruitChess {
     String c = " "; // string
     int len; // int
     String fen = ""; // string
-    string_t str1 = new string_t();
+    string_t str1 = string_t();
 
 // piece placement
     for (rank = Rank8; rank >= Rank1; rank--) {
@@ -1003,16 +1007,16 @@ class FruitChess {
         fen += c;
       }
 
-      if (rank != Rank1) fen = fen + "/";
+      if (rank != Rank1) fen = "$fen/";
     }
 
 // active colour
-    fen += " " + (COLOUR_IS_WHITE(board.turn) ? "w" : "b") + " ";
+    fen += " ${COLOUR_IS_WHITE(board.turn) ? "w" : "b"} ";
 
 // castling
-    if (board.flags == FlagsNone)
+    if (board.flags == FlagsNone) {
       fen += "-";
-    else {
+    } else {
       if ((board.flags & FlagsWhiteKingCastle) != 0) fen += "K";
       if ((board.flags & FlagsWhiteQueenCastle) != 0) fen += "Q";
       if ((board.flags & FlagsBlackKingCastle) != 0) fen += "k";
@@ -1022,9 +1026,9 @@ class FruitChess {
     fen += " ";
 
 // en-passant
-    if (board.ep_square == SquareNone)
+    if (board.ep_square == SquareNone) {
       fen += "-";
-    else {
+    } else {
       square_to_string(board.ep_square, str1);
       fen += str1.v;
     }
@@ -1032,7 +1036,7 @@ class FruitChess {
     fen += " ";
 
 // ignoring halfmove clock
-    fen += "0 " + board.movenumb.toString();
+    fen += "0 ${board.movenumb}";
 
     strfen.v = fen;
   }
@@ -1043,7 +1047,7 @@ class FruitChess {
     int rank; // int
     int sq; // int
     int piece; // int
-    string_t str1 = new string_t();
+    string_t str1 = string_t();
     String s = ""; //  string
     board_t board = SearchInput.board;
 
@@ -1056,7 +1060,7 @@ class FruitChess {
         piece = board.square[sq];
         //ASSERT(248, piece == Empty || piece_is_ok(piece));
 
-        s += ((piece == Empty) ? "." : piece_to_char(piece)) + " ";
+        s += "${(piece == Empty) ? "." : piece_to_char(piece)} ";
 
         file++;
       }
@@ -1066,7 +1070,7 @@ class FruitChess {
 
     board_to_fen(board, str1);
 
-    s += str1.v + "\n";
+    s += "${str1.v}\n";
 
     print_out(s);
   }
@@ -1151,8 +1155,9 @@ class FruitChess {
   bool delta_is_ok(int delta) {
     if (delta < -119 || delta > 119) return false;
 
-    if ((delta & 0xF) == 8)
+    if ((delta & 0xF) == 8) {
       return false; // delta % 16 would be ill-defined for negative numbers
+    }
 
     return true;
   }
@@ -1282,8 +1287,9 @@ class FruitChess {
       PieceDeltaSize.add(List.filled(256, 0));
       PieceDeltaDelta.add([]);
 
-      for (delta = 0; delta < 256; delta++)
+      for (delta = 0; delta < 256; delta++) {
         PieceDeltaDelta[piece].add(List.filled(4, 0));
+      }
     }
 
     for (king = 0; king < SquareNb; king++) {
@@ -1375,8 +1381,9 @@ class FruitChess {
     //ASSERT(18, size >= 0 && size < 3);
 
     for (i = 0; i < size; i++) {
-      if (PieceDeltaDelta[piece][DeltaOffset + king][i] == target)
+      if (PieceDeltaDelta[piece][DeltaOffset + king][i] == target) {
         return; // already in the table
+      }
     }
 
     if (size < 2) {
@@ -1608,7 +1615,7 @@ class FruitChess {
 
   bool piece_attack_king(board_t board, int piece, int from, int king) {
     int code; // int
-    int delta_ptr; // int
+    int deltaPtr; // int
     int delta; // int
     int inc; // int
     int to; // int
@@ -1622,9 +1629,9 @@ class FruitChess {
     //ASSERT(40, code >= 0 && code < 4);
 
     if (PIECE_IS_SLIDER(piece)) {
-      delta_ptr = 0;
+      deltaPtr = 0;
       for (;;) {
-        delta = PieceDeltaDelta[code][DeltaOffset + (king - from)][delta_ptr];
+        delta = PieceDeltaDelta[code][DeltaOffset + (king - from)][deltaPtr];
         if (delta == DeltaNone) break;
 
         //ASSERT(41, delta_is_ok(delta));
@@ -1644,14 +1651,14 @@ class FruitChess {
           if (board.square[sq] != Empty) break;
         }
 
-        delta_ptr++;
+        deltaPtr++;
       }
     } else {
       // non-slider
 
-      delta_ptr = 0;
+      deltaPtr = 0;
       for (;;) {
-        delta = PieceDeltaDelta[code][DeltaOffset + (king - from)][delta_ptr];
+        delta = PieceDeltaDelta[code][DeltaOffset + (king - from)][deltaPtr];
         if (delta == DeltaNone) break;
 
         //ASSERT(44, delta_is_ok(delta));
@@ -1663,7 +1670,7 @@ class FruitChess {
           return true;
         }
 
-        delta_ptr++;
+        deltaPtr++;
       }
     }
 
@@ -1676,12 +1683,12 @@ class FruitChess {
     int from; // int
     int to; // int
     int value; // int
-    int piece_value; // int
+    int pieceValue; // int
     int piece; // int
     int capture; // int
     int pos; // int
-    alists_t alists = new alists_t(); // alists_t[1]
-    alist_t alist = new alist_t(); // alist_t *
+    alists_t alists = alists_t(); // alists_t[1]
+    alist_t alist = alist_t(); // alist_t *
 
     //ASSERT(745, move_is_ok(move));
 
@@ -1691,7 +1698,7 @@ class FruitChess {
 
 // move the piece
 
-    piece_value = 0;
+    pieceValue = 0;
 
     piece = board.square[from];
     //ASSERT(747, piece_is_ok(piece));
@@ -1708,7 +1715,7 @@ class FruitChess {
       //ASSERT(750, COLOUR_IS(piece, att));
     }
 
-    piece_value += ValuePiece[piece];
+    pieceValue += ValuePiece[piece];
 
 // clear attacker lists
 
@@ -1760,13 +1767,15 @@ class FruitChess {
 // remove the moved piece (if it's an attacker)
 
     pos = 0;
-    while (pos < alist.size && alist.square[pos] != from) pos++;
+    while (pos < alist.size && alist.square[pos] != from) {
+      pos++;
+    }
 
     if (pos < alist.size) alist_remove(alist, pos);
 
 // SEE search
 
-    value -= see_rec(alists, board, def, to, piece_value);
+    value -= see_rec(alists, board, def, to, pieceValue);
 
     return value;
   }
@@ -1774,10 +1783,10 @@ class FruitChess {
   int see_square(board_t board, int to, int colour) {
     int att; // int
     int def; // int
-    int piece_value; // int
+    int pieceValue; // int
     int piece; // int
-    alists_t alists = new alists_t(); // alists_t[1]
-    alist_t alist = new alist_t(); // alist_t *
+    alists_t alists = alists_t(); // alists_t[1]
+    alist_t alist = alist_t(); // alist_t *
 
     //ASSERT(756, SQUARE_IS_OK(to));
     //ASSERT(757, COLOUR_IS_OK(colour));
@@ -1807,15 +1816,15 @@ class FruitChess {
     //ASSERT(759, piece_is_ok(piece));
     //ASSERT(760, COLOUR_IS(piece, def));
 
-    piece_value = ValuePiece[piece];
+    pieceValue = ValuePiece[piece];
 
 // SEE search
 
-    return see_rec(alists, board, att, to, piece_value);
+    return see_rec(alists, board, att, to, pieceValue);
   }
 
   int see_rec(
-      alists_t alists, board_t board, int colour, int to, int piece_value) {
+      alists_t alists, board_t board, int colour, int to, int pieceValue) {
     int from; // int
     int piece; // int
     int value; // int
@@ -1835,7 +1844,7 @@ class FruitChess {
 
 // calculate the capture value
 
-    value = piece_value; // captured piece
+    value = pieceValue; // captured piece
     if (value == ValueKing) {
       return value; // do not allow an answer to a king capture
     }
@@ -1843,18 +1852,18 @@ class FruitChess {
     piece = board.square[from];
     //ASSERT(766, piece_is_ok(piece));
     //ASSERT(767, COLOUR_IS(piece, colour));
-    piece_value = ValuePiece[piece];
+    pieceValue = ValuePiece[piece];
 
 // promote
 
-    if (piece_value == ValuePawn && SquareIsPromote[to]) {
+    if (pieceValue == ValuePawn && SquareIsPromote[to]) {
       // PIECE_IS_PAWN(piece)
       //ASSERT(768, PIECE_IS_PAWN(piece));
-      piece_value = ValueQueen;
+      pieceValue = ValueQueen;
       value += ValueQueen - ValuePawn;
     }
 
-    value -= see_rec(alists, board, COLOUR_OPP(colour), to, piece_value);
+    value -= see_rec(alists, board, COLOUR_OPP(colour), to, pieceValue);
 
     if (value < 0) value = 0;
 
@@ -2068,8 +2077,9 @@ class FruitChess {
         if (pos != 0 && PIECE_IS_KING(piece)) return false;
         if (pos != 0 &&
             PieceOrder[piece] >
-                PieceOrder[board.square[board.piece[colour][pos - 1]]])
+                PieceOrder[board.square[board.piece[colour][pos - 1]]]) {
           return false;
+        }
       }
 
       sq = board.piece[colour][size];
@@ -2115,8 +2125,9 @@ class FruitChess {
     if (!COLOUR_IS_OK(board.turn)) return false;
     if (board.ply_nb < 0) return false;
     if (board.sp < board.ply_nb) return false;
-    if (board.cap_sq != SquareNone && (!SQUARE_IS_OK(board.cap_sq)))
+    if (board.cap_sq != SquareNone && (!SQUARE_IS_OK(board.cap_sq))) {
       return false;
+    }
     if (board.opening != board_opening(board)) return false;
     if (board.endgame != board_endgame(board)) return false;
     return true;
@@ -2147,32 +2158,50 @@ class FruitChess {
 
     //ASSERT(48, board_is_ok(src));
 
-    for (i = 0; i < src.square.length; i++) dst.square[i] = src.square[i];
-    for (i = 0; i < src.pos.length; i++) dst.pos[i] = src.pos[i];
+    for (i = 0; i < src.square.length; i++) {
+      dst.square[i] = src.square[i];
+    }
+    for (i = 0; i < src.pos.length; i++) {
+      dst.pos[i] = src.pos[i];
+    }
 
-    for (i = 0; i < src.piece[0].length; i++) dst.piece[0][i] = src.piece[0][i];
-    for (i = 0; i < src.piece[1].length; i++) dst.piece[1][i] = src.piece[1][i];
+    for (i = 0; i < src.piece[0].length; i++) {
+      dst.piece[0][i] = src.piece[0][i];
+    }
+    for (i = 0; i < src.piece[1].length; i++) {
+      dst.piece[1][i] = src.piece[1][i];
+    }
 
-    for (i = 0; i < src.piece_size.length; i++)
+    for (i = 0; i < src.piece_size.length; i++) {
       dst.piece_size[i] = src.piece_size[i];
+    }
 
     //dst.piece_size = src.piece_size;
 
-    for (i = 0; i < src.pawn[0].length; i++) dst.pawn[0][i] = src.pawn[0][i];
+    for (i = 0; i < src.pawn[0].length; i++) {
+      dst.pawn[0][i] = src.pawn[0][i];
+    }
 
-    for (i = 0; i < src.pawn[1].length; i++) dst.pawn[1][i] = src.pawn[1][i];
+    for (i = 0; i < src.pawn[1].length; i++) {
+      dst.pawn[1][i] = src.pawn[1][i];
+    }
 
-    for (i = 0; i < src.pawn_size.length; i++)
+    for (i = 0; i < src.pawn_size.length; i++) {
       dst.pawn_size[i] = src.pawn_size[i];
+    }
 
     dst.piece_nb = src.piece_nb;
-    for (i = 0; i < src.number.length; i++) dst.number[i] = src.number[i];
+    for (i = 0; i < src.number.length; i++) {
+      dst.number[i] = src.number[i];
+    }
 
-    for (i = 0; i < src.pawn_file[0].length; i++)
+    for (i = 0; i < src.pawn_file[0].length; i++) {
       dst.pawn_file[0][i] = src.pawn_file[0][i];
+    }
 
-    for (i = 0; i < src.pawn_file[1].length; i++)
+    for (i = 0; i < src.pawn_file[1].length; i++) {
       dst.pawn_file[1][i] = src.pawn_file[1][i];
+    }
 
     dst.turn = src.turn;
     dst.flags = src.flags;
@@ -2189,7 +2218,9 @@ class FruitChess {
     dst.pawn_key = src.pawn_key;
     dst.material_key = src.material_key;
 
-    for (i = 0; i < src.stack.length; i++) dst.stack[i] = src.stack[i];
+    for (i = 0; i < src.stack.length; i++) {
+      dst.stack[i] = src.stack[i];
+    }
   }
 
   board_init_list(board_t board) {
@@ -2203,7 +2234,7 @@ class FruitChess {
     int square; // int
     int order; // int
 
-    bool illegal_pos = false;
+    bool illegalPos = false;
 
 // init
     board.pos = List.filled(SquareNb, -1);
@@ -2220,10 +2251,10 @@ class FruitChess {
       for (sq_64 = 0; sq_64 <= 63; sq_64++) {
         sq = SquareFrom64[sq_64];
         piece = board.square[sq];
-        if (piece != Empty && (!piece_is_ok(piece))) illegal_pos = true;
+        if (piece != Empty && (!piece_is_ok(piece))) illegalPos = true;
 
         if (COLOUR_IS(piece, colour) && (!PIECE_IS_PAWN(piece))) {
-          if (pos >= 16) illegal_pos = true;
+          if (pos >= 16) illegalPos = true;
           //ASSERT(50, pos >= 0 && pos < 16);
 
           board.pos[sq] = pos;
@@ -2236,7 +2267,7 @@ class FruitChess {
       }
 
       int kg = (COLOUR_IS_WHITE(colour) ? WhiteKing12 : BlackKing12);
-      if (board.number[kg] != 1) illegal_pos = true;
+      if (board.number[kg] != 1) illegalPos = true;
 
       //ASSERT(51, pos >= 1 && pos <= 16);
       board.piece[colour][pos] = SquareNone;
@@ -2278,7 +2309,7 @@ class FruitChess {
         piece = board.square[sq];
 
         if (COLOUR_IS(piece, colour) && PIECE_IS_PAWN(piece)) {
-          if (pos >= 8 || SquareIsPromote[sq]) illegal_pos = true;
+          if (pos >= 8 || SquareIsPromote[sq]) illegalPos = true;
           //ASSERT(60, pos >= 0 && pos < 8);
 
           board.pos[sq] = pos;
@@ -2296,8 +2327,9 @@ class FruitChess {
       board.pawn[colour][pos] = SquareNone;
       board.pawn_size[colour] = pos;
 
-      if (board.piece_size[colour] + board.pawn_size[colour] > 16)
-        illegal_pos = true;
+      if (board.piece_size[colour] + board.pawn_size[colour] > 16) {
+        illegalPos = true;
+      }
     }
 
 // last square
@@ -2309,7 +2341,9 @@ class FruitChess {
 
 // hash key
 
-    for (i = 0; i < board.ply_nb; i++) board.stack[i] = 0;
+    for (i = 0; i < board.ply_nb; i++) {
+      board.stack[i] = 0;
+    }
     board.sp = board.ply_nb;
 
     board.key = hash_key(board);
@@ -2318,9 +2352,9 @@ class FruitChess {
 
 // legality
 
-    if (!board_is_legal(board)) illegal_pos = true;
+    if (!board_is_legal(board)) illegalPos = true;
 
-    if (illegal_pos) my_fatal("board_init_list: illegal position");
+    if (illegalPos) my_fatal("board_init_list: illegal position");
 
     //ASSERT(62, board_is_ok(board));
   }
@@ -2334,20 +2368,21 @@ class FruitChess {
   }
 
   bool board_is_mate(board_t board) {
-    attack_t attack = new attack_t(); // attack_t[1]
+    attack_t attack = attack_t(); // attack_t[1]
 
     attack_set(attack, board);
 
     if (!ATTACK_IN_CHECK(attack)) return false; // not in check => not mate
 
-    if (legal_evasion_exist(board, attack))
+    if (legal_evasion_exist(board, attack)) {
       return false; // legal move => not mate
+    }
 
     return true; // in check && no legal move => mate
   }
 
   bool board_is_stalemate(board_t board) {
-    list_t list = new list_t(); // list_t[1];
+    list_t list = list_t(); // list_t[1];
     int i; // int
     int move; // int
 
@@ -2462,8 +2497,9 @@ class FruitChess {
 
 // mobility table
 
-    for (colour = 0; colour <= 1; colour++)
+    for (colour = 0; colour <= 1; colour++) {
       MobUnit[colour] = List.filled(PieceNb, 0);
+    }
 
     MobUnit[White][Empty] = MobMove;
 
@@ -2509,10 +2545,10 @@ class FruitChess {
   }
 
   int evalpos(board_t board) {
-    opening_t opening = new opening_t(); // int
-    endgame_t endgame = new endgame_t(); // int
-    material_info_t mat_info = new material_info_t(); // material_info_t[1]
-    pawn_info_t pawn_info = new pawn_info_t(); // pawn_info_t[1]
+    opening_t opening = opening_t(); // int
+    endgame_t endgame = endgame_t(); // int
+    material_info_t matInfo = material_info_t(); // material_info_t[1]
+    pawn_info_t pawnInfo = pawn_info_t(); // pawn_info_t[1]
     List<int> mul = [0, 0]; // int[ColourNb]
     int phase; // int
     int eval1; // int
@@ -2523,46 +2559,46 @@ class FruitChess {
     //ASSERT(86, !board_is_check(board)); // exceptions are extremely rare
 
 // material
-    material_get_info(mat_info, board);
+    material_get_info(matInfo, board);
 
-    opening.v += mat_info.opening;
-    endgame.v += mat_info.endgame;
+    opening.v += matInfo.opening;
+    endgame.v += matInfo.endgame;
 
-    mul[White] = mat_info.mul[White];
-    mul[Black] = mat_info.mul[Black];
+    mul[White] = matInfo.mul[White];
+    mul[Black] = matInfo.mul[Black];
 
 // PST
     opening.v += board.opening;
     endgame.v += board.endgame;
 
 // pawns
-    pawn_get_info(pawn_info, board);
+    pawn_get_info(pawnInfo, board);
 
-    opening.v += pawn_info.opening;
-    endgame.v += pawn_info.endgame;
+    opening.v += pawnInfo.opening;
+    endgame.v += pawnInfo.endgame;
 
 // draw
-    eval_draw(board, mat_info, pawn_info, mul);
+    eval_draw(board, matInfo, pawnInfo, mul);
 
-    if (mat_info.mul[White] < mul[White]) mul[White] = mat_info.mul[White];
+    if (matInfo.mul[White] < mul[White]) mul[White] = matInfo.mul[White];
 
-    if (mat_info.mul[Black] < mul[Black]) mul[Black] = mat_info.mul[Black];
+    if (matInfo.mul[Black] < mul[Black]) mul[Black] = matInfo.mul[Black];
 
     if (mul[White] == 0 && mul[Black] == 0) return ValueDraw;
 
 // eval
 
-    eval_piece(board, mat_info, pawn_info, opening, endgame);
-    eval_king(board, mat_info, opening, endgame);
-    eval_passer(board, pawn_info, opening, endgame);
+    eval_piece(board, matInfo, pawnInfo, opening, endgame);
+    eval_king(board, matInfo, opening, endgame);
+    eval_passer(board, pawnInfo, opening, endgame);
     eval_pattern(board, opening, endgame);
 
 // phase mix
-    phase = mat_info.phase;
+    phase = matInfo.phase;
     eval1 = ((opening.v * (256 - phase)) + (endgame.v * phase)) ~/ 256;
 
 // drawish bishop endgames
-    if ((mat_info.flags & DrawBishopFlag) != 0) {
+    if ((matInfo.flags & DrawBishopFlag) != 0) {
       wb = board.piece[White][1];
       //ASSERT(87, PIECE_IS_BISHOP(board.square[wb]));
 
@@ -2600,14 +2636,14 @@ class FruitChess {
     return eval1 + (5 - rnd.nextInt(10)); // add some randomness
   }
 
-  eval_draw(board_t board, material_info_t mat_info, pawn_info_t pawn_info,
+  eval_draw(board_t board, material_info_t matInfo, pawn_info_t pawnInfo,
       List<int> mul) {
     int colour; // int
     int me; // int
     int opp; // int
     int pawn; // int
     int king; // int
-    int pawn_file; // int
+    int pawnFile; // int
     int prom; // int
     List<int> list = List.filled(9, 0); // int list[7+1]
     bool ifelse;
@@ -2619,15 +2655,15 @@ class FruitChess {
 
 // KB*P+K* draw
 
-      if ((mat_info.cflags[me] & MatRookPawnFlag) != 0) {
-        pawn = pawn_info.single_file[me];
+      if ((matInfo.cflags[me] & MatRookPawnFlag) != 0) {
+        pawn = pawnInfo.single_file[me];
 
         if (pawn != SquareNone) {
           // all pawns on one file
 
-          pawn_file = SQUARE_FILE(pawn);
+          pawnFile = SQUARE_FILE(pawn);
 
-          if (pawn_file == FileA || pawn_file == FileH) {
+          if (pawnFile == FileA || pawnFile == FileH) {
             king = KING_POS(board, opp);
             prom = PAWN_PROMOTE(pawn, me);
 
@@ -2641,8 +2677,8 @@ class FruitChess {
 
 // K(B)P+K+ draw
 
-      if ((mat_info.cflags[me] & MatBishopFlag) != 0) {
-        pawn = pawn_info.single_file[me];
+      if ((matInfo.cflags[me] & MatBishopFlag) != 0) {
+        pawn = pawnInfo.single_file[me];
 
         if (pawn != SquareNone) {
           // all pawns on one file
@@ -2659,7 +2695,7 @@ class FruitChess {
 
 // KNPK* draw
 
-      if ((mat_info.cflags[me] & MatKnightFlag) != 0) {
+      if ((matInfo.cflags[me] & MatKnightFlag) != 0) {
         pawn = board.pawn[me][0];
         king = KING_POS(board, opp);
 
@@ -2675,7 +2711,7 @@ class FruitChess {
 
     ifelse = true;
 
-    if (ifelse && mat_info.recog == MAT_KPKQ) {
+    if (ifelse && matInfo.recog == MAT_KPKQ) {
 // KPKQ (white)
 
       draw_init_list(list, board, White);
@@ -2688,7 +2724,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KQKP) {
+    if (ifelse && matInfo.recog == MAT_KQKP) {
 // KPKQ (black)
 
       draw_init_list(list, board, Black);
@@ -2701,7 +2737,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KPKR) {
+    if (ifelse && matInfo.recog == MAT_KPKR) {
 // KPKR (white)
 
       draw_init_list(list, board, White);
@@ -2714,7 +2750,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KRKP) {
+    if (ifelse && matInfo.recog == MAT_KRKP) {
 // KPKR (black)
 
       draw_init_list(list, board, Black);
@@ -2727,7 +2763,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KPKB) {
+    if (ifelse && matInfo.recog == MAT_KPKB) {
 // KPKB (white)
 
       draw_init_list(list, board, White);
@@ -2740,7 +2776,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KBKP) {
+    if (ifelse && matInfo.recog == MAT_KBKP) {
 // KPKB (black)
 
       draw_init_list(list, board, Black);
@@ -2753,7 +2789,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KPKN) {
+    if (ifelse && matInfo.recog == MAT_KPKN) {
 // KPKN (white)
 
       draw_init_list(list, board, White);
@@ -2766,7 +2802,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KNKP) {
+    if (ifelse && matInfo.recog == MAT_KNKP) {
 // KPKN (black)
 
       draw_init_list(list, board, Black);
@@ -2779,7 +2815,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KNPK) {
+    if (ifelse && matInfo.recog == MAT_KNPK) {
 // KNPK (white)
 
       draw_init_list(list, board, White);
@@ -2792,7 +2828,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KKNP) {
+    if (ifelse && matInfo.recog == MAT_KKNP) {
 // KNPK (black)
 
       draw_init_list(list, board, Black);
@@ -2805,7 +2841,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KRPKR) {
+    if (ifelse && matInfo.recog == MAT_KRPKR) {
 // KRPKR (white)
 
       draw_init_list(list, board, White);
@@ -2818,7 +2854,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KRKRP) {
+    if (ifelse && matInfo.recog == MAT_KRKRP) {
 // KRPKR (black)
 
       draw_init_list(list, board, Black);
@@ -2831,7 +2867,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KBPKB) {
+    if (ifelse && matInfo.recog == MAT_KBPKB) {
 // KBPKB (white)
 
       draw_init_list(list, board, White);
@@ -2844,7 +2880,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KBKBP) {
+    if (ifelse && matInfo.recog == MAT_KBKBP) {
 // KBPKB (black)
 
       draw_init_list(list, board, Black);
@@ -2876,7 +2912,7 @@ class FruitChess {
     return mob;
   }
 
-  eval_piece(board_t board, material_info_t mat_info, pawn_info_t pawn_info,
+  eval_piece(board_t board, material_info_t matInfo, pawn_info_t pawnInfo,
       opening_t opening, endgame_t endgame) {
     int colour; // int
     List<int> op = [0, 0]; // int[ColourNb]
@@ -2888,8 +2924,8 @@ class FruitChess {
     int piece; // int
     int mob; // int
     List<int> unit = []; // int
-    int rook_file; // int
-    int king_file; // int
+    int rookFile; // int
+    int kingFile; // int
     int king; // int
     int delta; // int
     int ptype;
@@ -2959,26 +2995,26 @@ class FruitChess {
             op[me] -= (RookOpenFileOpening ~/ 2);
             eg[me] -= (RookOpenFileEndgame ~/ 2);
 
-            rook_file = SQUARE_FILE(from);
+            rookFile = SQUARE_FILE(from);
 
-            if (board.pawn_file[me][rook_file] == 0) {
+            if (board.pawn_file[me][rookFile] == 0) {
               // no friendly pawn
 
               op[me] += RookSemiOpenFileOpening;
               eg[me] += RookSemiOpenFileEndgame;
 
-              if (board.pawn_file[opp][rook_file] == 0) {
+              if (board.pawn_file[opp][rookFile] == 0) {
                 // no enemy pawn
 
                 op[me] += RookOpenFileOpening - RookSemiOpenFileOpening;
                 eg[me] += RookOpenFileEndgame - RookSemiOpenFileEndgame;
               }
 
-              if ((mat_info.cflags[opp] & MatKingFlag) != 0) {
+              if ((matInfo.cflags[opp] & MatKingFlag) != 0) {
                 king = KING_POS(board, opp);
-                king_file = SQUARE_FILE(king);
+                kingFile = SQUARE_FILE(king);
 
-                delta = (rook_file - king_file).abs(); // file distance
+                delta = (rookFile - kingFile).abs(); // file distance
 
                 if (delta <= 1) {
                   op[me] += RookSemiKingFileOpening;
@@ -2994,7 +3030,7 @@ class FruitChess {
 
           if (PAWN_RANK(from, me) == Rank7) {
 // if opponent pawn on 7th rank+.
-            if ((pawn_info.flags[opp] & BackRankFlag) != 0 ||
+            if ((pawnInfo.flags[opp] & BackRankFlag) != 0 ||
                 PAWN_RANK(KING_POS(board, opp), me) == Rank8) {
               op[me] += Rook7thOpening;
               eg[me] += Rook7thEndgame;
@@ -3022,7 +3058,7 @@ class FruitChess {
 
           if (PAWN_RANK(from, me) == Rank7) {
 // if opponent pawn on 7th rank+.
-            if ((pawn_info.flags[opp] & BackRankFlag) != 0 ||
+            if ((pawnInfo.flags[opp] & BackRankFlag) != 0 ||
                 PAWN_RANK(KING_POS(board, opp), me) == Rank8) {
               op[me] += Queen7thOpening;
               eg[me] += Queen7Endgame;
@@ -3039,7 +3075,7 @@ class FruitChess {
     endgame.v += ((eg[White] - eg[Black]) * PieceActivityWeight) ~/ 256;
   }
 
-  eval_king(board_t board, material_info_t mat_info, opening_t opening,
+  eval_king(board_t board, material_info_t matInfo, opening_t opening,
       endgame_t endgame) {
     int colour; // int
     List<int> op = [0, 0]; // int[ColourNb]
@@ -3057,21 +3093,21 @@ class FruitChess {
     int king; // int
     int ptr; // int
     int piece; // int
-    int attack_tot; // int
-    int piece_nb; // int
+    int attackTot; // int
+    int pieceNb; // int
 
 // king attacks
     if (UseKingAttack) {
       for (colour = 0; colour <= 1; colour++) {
-        if ((mat_info.cflags[colour] & MatKingFlag) != 0) {
+        if ((matInfo.cflags[colour] & MatKingFlag) != 0) {
           me = colour;
           opp = COLOUR_OPP(me);
 
           king = KING_POS(board, me);
 
 // piece attacks
-          attack_tot = 0;
-          piece_nb = 0;
+          attackTot = 0;
+          pieceNb = 0;
 
           ptr = 1; // no king
           for (;;) {
@@ -3081,8 +3117,8 @@ class FruitChess {
             piece = board.square[from];
 
             if (piece_attack_king(board, piece, from, king)) {
-              piece_nb++;
-              attack_tot += KingAttackUnit[piece];
+              pieceNb++;
+              attackTot += KingAttackUnit[piece];
             }
 
             ptr++;
@@ -3091,14 +3127,14 @@ class FruitChess {
 // scoring
           //ASSERT(104, piece_nb >= 0 && piece_nb < 16);
           op[colour] -=
-              (attack_tot * KingAttackOpening * KingAttackWeight[piece_nb]) ~/
+              (attackTot * KingAttackOpening * KingAttackWeight[pieceNb]) ~/
                   256;
         }
       }
     }
 
 // white pawn shelter
-    if (UseShelter && (mat_info.cflags[White] & MatKingFlag) != 0) {
+    if (UseShelter && (matInfo.cflags[White] & MatKingFlag) != 0) {
       me = White;
 
 // king
@@ -3128,7 +3164,7 @@ class FruitChess {
 
 // black pawn shelter
 
-    if (UseShelter && (mat_info.cflags[Black] & MatKingFlag) != 0) {
+    if (UseShelter && (matInfo.cflags[Black] & MatKingFlag) != 0) {
       me = Black;
 
 // king
@@ -3161,7 +3197,7 @@ class FruitChess {
     endgame.v += ((eg[White] - eg[Black]) * KingSafetyWeight) ~/ 256;
   }
 
-  eval_passer(board_t board, pawn_info_t pawn_info, opening_t opening,
+  eval_passer(board_t board, pawn_info_t pawnInfo, opening_t opening,
       endgame_t endgame) {
     int colour; // int
     List<int> op = [0, 0]; // int[ColourNb]
@@ -3181,7 +3217,7 @@ class FruitChess {
     for (colour = 0; colour <= 1; colour++) {
       att = colour;
       def = COLOUR_OPP(att);
-      bits = pawn_info.passed_bits[att];
+      bits = pawnInfo.passed_bits[att];
       for (;;) {
         if (bits == 0) break;
 
@@ -3456,7 +3492,7 @@ class FruitChess {
     return DISTANCE(king, target);
   }
 
-  draw_init_list(List<int> list, board_t board, int pawn_colour) {
+  draw_init_list(List<int> list, board_t board, int pawnColour) {
     int pos; // int
     int att; // int
     int def; // int
@@ -3469,7 +3505,7 @@ class FruitChess {
 
 // init
     pos = 0;
-    att = pawn_colour;
+    att = pawnColour;
     def = COLOUR_OPP(att);
 
     //ASSERT(143, board.pawn_size[att] == 1);
@@ -3527,7 +3563,7 @@ class FruitChess {
     }
 
 // rank flip?
-    if (COLOUR_IS_BLACK(pawn_colour)) {
+    if (COLOUR_IS_BLACK(pawnColour)) {
       for (i = 0; i < pos; i++) {
         list[i] = SQUARE_RANK_MIRROR(list[i]);
       }
@@ -3646,12 +3682,12 @@ class FruitChess {
     int inc; // int
     int prom; // int
     int dist; // int
-    int wk_file; // int
-    int wk_rank; // int
-    int wp_file; // int
-    int wp_rank; // int
-    int br_file; // int
-    int br_rank; // int
+    int wkFile; // int
+    int wkRank; // int
+    int wpFile; // int
+    int wpRank; // int
+    int brFile; // int
+    int brRank; // int
 
     //ASSERT(157, COLOUR_IS_OK(turn));
 
@@ -3668,14 +3704,14 @@ class FruitChess {
     //ASSERT(163, list[4] == SquareNone);
 
 // init
-    wk_file = SQUARE_FILE(wk);
-    wk_rank = SQUARE_RANK(wk);
+    wkFile = SQUARE_FILE(wk);
+    wkRank = SQUARE_RANK(wk);
 
-    wp_file = SQUARE_FILE(wp);
-    wp_rank = SQUARE_RANK(wp);
+    wpFile = SQUARE_FILE(wp);
+    wpRank = SQUARE_RANK(wp);
 
-    br_file = SQUARE_FILE(br);
-    br_rank = SQUARE_RANK(br);
+    brFile = SQUARE_FILE(br);
+    brRank = SQUARE_RANK(br);
 
     inc = PawnMoveInc[White];
     prom = PAWN_PROMOTE(wp, White);
@@ -3688,12 +3724,13 @@ class FruitChess {
 
 // no-op
     } else {
-      if (DISTANCE(wk, wp) == 2 && (wk_rank - wp_rank).abs() <= 1) {
+      if (DISTANCE(wk, wp) == 2 && (wkRank - wpRank).abs() <= 1) {
         //ASSERT(166, (wk_file - wp_file).abs() == 2);
         //ASSERT(167, (wk_rank - wp_rank).abs() <= 1);
 
-        if (COLOUR_IS_BLACK(turn) && (br_file * 2) != (wk_file + wp_file))
+        if (COLOUR_IS_BLACK(turn) && (brFile * 2) != (wkFile + wpFile)) {
           return false;
+        }
       } else {
         return false;
       }
@@ -3705,13 +3742,13 @@ class FruitChess {
 
     if (wk == wp + inc) {
       // king on pawn's "front square"
-      if (wp_file == FileA) return false;
+      if (wpFile == FileA) return false;
 
       dist++; // self-blocking penalty
     }
 
 // black features
-    if (br_file != wp_file && br_rank != Rank8) dist--; // misplaced-rook bonus
+    if (brFile != wpFile && brRank != Rank8) dist--; // misplaced-rook bonus
 
 // test
     if (COLOUR_IS_WHITE(turn)) dist--; // right-to-move bonus
@@ -3854,12 +3891,12 @@ class FruitChess {
     int bk; // int
     int br; // int
 
-    int wp_file; // int
-    int wp_rank; // int
-    int bk_file; // int
-    int bk_rank; // int
-    int br_file; // int
-    int br_rank; // int
+    int wpFile; // int
+    int wpRank; // int
+    int bkFile; // int
+    int bkRank; // int
+    int brFile; // int
+    int brRank; // int
 
     int prom; // int
 
@@ -3880,28 +3917,28 @@ class FruitChess {
     //ASSERT(208, list[5] == SquareNone);
 
 // test
-    wp_file = SQUARE_FILE(wp);
-    wp_rank = SQUARE_RANK(wp);
+    wpFile = SQUARE_FILE(wp);
+    wpRank = SQUARE_RANK(wp);
 
-    bk_file = SQUARE_FILE(bk);
-    bk_rank = SQUARE_RANK(bk);
+    bkFile = SQUARE_FILE(bk);
+    bkRank = SQUARE_RANK(bk);
 
-    br_file = SQUARE_FILE(br);
-    br_rank = SQUARE_RANK(br);
+    brFile = SQUARE_FILE(br);
+    brRank = SQUARE_RANK(br);
 
     prom = PAWN_PROMOTE(wp, White);
 
     if (bk == prom) {
-      if (br_file > wp_file) return true;
+      if (brFile > wpFile) return true;
     } else {
-      if (bk_file == wp_file && bk_rank > wp_rank)
+      if (bkFile == wpFile && bkRank > wpRank) {
         return true;
-      else {
+      } else {
         if (wr == prom &&
-            wp_rank == Rank7 &&
+            wpRank == Rank7 &&
             (bk == G7 || bk == H7) &&
-            br_file == wp_file) {
-          if (br_rank <= Rank3) {
+            brFile == wpFile) {
+          if (brRank <= Rank3) {
             if (DISTANCE(wk, wp) > 1) return true;
           } else {
             // br_rank >= Rank4
@@ -4044,12 +4081,12 @@ class FruitChess {
 
     penalty = 0;
 
-    if (dist == Rank4)
+    if (dist == Rank4) {
       penalty = StormOpening;
-    else {
-      if (dist == Rank5)
+    } else {
+      if (dist == Rank5) {
         penalty = StormOpening * 3;
-      else {
+      } else {
         if (dist == Rank6) penalty = StormOpening * 6;
       }
     }
@@ -4072,8 +4109,9 @@ class FruitChess {
 
       piece = board.square[from];
 
-      if (PIECE_IS_BISHOP(piece) && SQUARE_COLOUR(from) == SQUARE_COLOUR(to))
+      if (PIECE_IS_BISHOP(piece) && SQUARE_COLOUR(from) == SQUARE_COLOUR(to)) {
         return true;
+      }
 
       ptr++;
     }
@@ -4234,7 +4272,9 @@ class FruitChess {
 
 // counter
     index = piece_12 << 4;
-    for (i = 0; i < count; i++) key ^= Random64[index + i];
+    for (i = 0; i < count; i++) {
+      key ^= Random64[index + i];
+    }
 
     return key;
   }
@@ -4371,8 +4411,9 @@ class FruitChess {
 
   material_clear() {
     Material.table = [];
-    for (int i = 0; i < Material.size; i++)
-      Material.table.add(new material_info_t());
+    for (int i = 0; i < Material.size; i++) {
+      Material.table.add(material_info_t());
+    }
 
     Material.used = 0;
     Material.read_nb = 0;
@@ -4455,13 +4496,13 @@ class FruitChess {
     int wm = wb + wn;
     int bm = bb + bn;
 
-    int w_maj = wq * 2 + wr; // int
-    int w_min = wb + wn; // int
-    int w_tot = w_maj * 2 + w_min; // int
+    int wMaj = wq * 2 + wr; // int
+    int wMin = wb + wn; // int
+    int wTot = wMaj * 2 + wMin; // int
 
-    int b_maj = bq * 2 + br; // int
-    int b_min = bb + bn; // int
-    int b_tot = b_maj * 2 + b_min; // int
+    int bMaj = bq * 2 + br; // int
+    int bMin = bb + bn; // int
+    int bTot = bMaj * 2 + bMin; // int
 
 // recogniser
     recog = MAT_NONE;
@@ -4565,7 +4606,7 @@ class FruitChess {
       // white has no pawns
 
       ifelse = true;
-      if (ifelse && (w_tot == 1)) {
+      if (ifelse && (wTot == 1)) {
         //ASSERT(283, w_maj == 0);
         //ASSERT(284, w_min == 1);
 
@@ -4575,14 +4616,14 @@ class FruitChess {
         ifelse = false;
       }
 
-      if (ifelse && (w_tot == 2 && wn == 2)) {
+      if (ifelse && (wTot == 2 && wn == 2)) {
         //ASSERT(285, w_maj == 0);
         //ASSERT(286, w_min == 2);
 
 // KNNK*, usually insufficient
-        if (b_tot != 0 || bp == 0)
+        if (bTot != 0 || bp == 0) {
           mul[White] = 0;
-        else {
+        } else {
           // KNNKP+, might not be draw
           mul[White] = 1; // 1/16
         }
@@ -4590,7 +4631,7 @@ class FruitChess {
         ifelse = false;
       }
 
-      if (ifelse && (w_tot == 2 && wb == 2 && b_tot == 1 && bn == 1)) {
+      if (ifelse && (wTot == 2 && wb == 2 && bTot == 1 && bn == 1)) {
         //ASSERT(287, w_maj == 0);
         //ASSERT(288, w_min == 2);
         //ASSERT(289, b_maj == 0);
@@ -4602,7 +4643,7 @@ class FruitChess {
         ifelse = false;
       }
 
-      if (ifelse && (w_tot - b_tot <= 1 && w_maj <= 2)) {
+      if (ifelse && (wTot - bTot <= 1 && wMaj <= 2)) {
 // no more than 1 minor up, drawish
 
         mul[White] = 2; // 1/8
@@ -4612,14 +4653,14 @@ class FruitChess {
       if (wp == 1) {
         // white has one pawn
 
-        if (b_min != 0) {
+        if (bMin != 0) {
 // assume black sacrifices a minor against the lone pawn
 
-          b_min--;
-          b_tot++;
+          bMin--;
+          bTot++;
 
           ifelse = true;
-          if (ifelse && (w_tot == 1)) {
+          if (ifelse && (wTot == 1)) {
             //ASSERT(291, w_maj == 0);
             //ASSERT(292, w_min == 1);
 
@@ -4629,7 +4670,7 @@ class FruitChess {
             ifelse = false;
           }
 
-          if (ifelse && (w_tot == 2 && wn == 2)) {
+          if (ifelse && (wTot == 2 && wn == 2)) {
             //ASSERT(293, w_maj == 0);
             //ASSERT(294, w_min == 2);
 
@@ -4639,7 +4680,7 @@ class FruitChess {
             ifelse = false;
           }
 
-          if (ifelse && (w_tot - b_tot <= 1 && w_maj <= 2)) {
+          if (ifelse && (wTot - bTot <= 1 && wMaj <= 2)) {
 // no more than 1 minor up, drawish
 
             mul[White] = 8; // 1/2
@@ -4650,11 +4691,11 @@ class FruitChess {
           if (br != 0) {
 // assume black sacrifices a rook against the lone pawn
 
-            b_maj--;
-            b_tot -= 2;
+            bMaj--;
+            bTot -= 2;
 
             ifelse = true;
-            if (ifelse && (w_tot == 1)) {
+            if (ifelse && (wTot == 1)) {
               //ASSERT(295, w_maj == 0);
               //ASSERT(296, w_min == 1);
 
@@ -4664,7 +4705,7 @@ class FruitChess {
               ifelse = false;
             }
 
-            if (ifelse && (w_tot == 2 && wn == 2)) {
+            if (ifelse && (wTot == 2 && wn == 2)) {
               //ASSERT(297, w_maj == 0);
               //ASSERT(298, w_min == 2);
 
@@ -4674,7 +4715,7 @@ class FruitChess {
               ifelse = false;
             }
 
-            if (ifelse && (w_tot - b_tot <= 1 && w_maj <= 2)) {
+            if (ifelse && (wTot - bTot <= 1 && wMaj <= 2)) {
 // no more than 1 minor up, drawish
               mul[White] = 8; // 1/2
 
@@ -4690,7 +4731,7 @@ class FruitChess {
       // black has no pawns
 
       ifelse = true;
-      if (ifelse && (b_tot == 1)) {
+      if (ifelse && (bTot == 1)) {
         //ASSERT(299, b_maj == 0);
         //ASSERT(300, b_min == 1);
 
@@ -4700,14 +4741,14 @@ class FruitChess {
         ifelse = false;
       }
 
-      if (ifelse && (b_tot == 2 && bn == 2)) {
+      if (ifelse && (bTot == 2 && bn == 2)) {
         //ASSERT(301, b_maj == 0);
         //ASSERT(302, b_min == 2);
 
 // KNNK*, usually insufficient
-        if (w_tot != 0 || wp == 0)
+        if (wTot != 0 || wp == 0) {
           mul[Black] = 0;
-        else {
+        } else {
           // KNNKP+, might not be draw
           mul[Black] = 1; // 1/16
         }
@@ -4715,7 +4756,7 @@ class FruitChess {
         ifelse = false;
       }
 
-      if (ifelse && (b_tot == 2 && bb == 2 && w_tot == 1 && wn == 1)) {
+      if (ifelse && (bTot == 2 && bb == 2 && wTot == 1 && wn == 1)) {
         //ASSERT(303, b_maj == 0);
         //ASSERT(304, b_min == 2);
         //ASSERT(305, w_maj == 0);
@@ -4727,7 +4768,7 @@ class FruitChess {
         ifelse = false;
       }
 
-      if (ifelse && (b_tot - w_tot <= 1 && b_maj <= 2)) {
+      if (ifelse && (bTot - wTot <= 1 && bMaj <= 2)) {
 // no more than 1 minor up, drawish
         mul[Black] = 2; // 1/8
 
@@ -4737,14 +4778,14 @@ class FruitChess {
       if (bp == 1) {
         // black has one pawn
 
-        if (w_min != 0) {
+        if (wMin != 0) {
 // assume white sacrifices a minor against the lone pawn
 
-          w_min--;
-          w_tot--;
+          wMin--;
+          wTot--;
 
           ifelse = true;
-          if (ifelse && (b_tot == 1)) {
+          if (ifelse && (bTot == 1)) {
             //ASSERT(307, b_maj == 0);
             //ASSERT(308, b_min == 1);
 
@@ -4754,7 +4795,7 @@ class FruitChess {
             ifelse = false;
           }
 
-          if (ifelse && (b_tot == 2 && bn == 2)) {
+          if (ifelse && (bTot == 2 && bn == 2)) {
             //ASSERT(309, b_maj == 0);
             //ASSERT(310, b_min == 2);
 
@@ -4764,7 +4805,7 @@ class FruitChess {
             ifelse = false;
           }
 
-          if (ifelse && (b_tot - w_tot <= 1 && b_maj <= 2)) {
+          if (ifelse && (bTot - wTot <= 1 && bMaj <= 2)) {
 // no more than 1 minor up, drawish
             mul[Black] = 8; // 1/2
 
@@ -4774,11 +4815,11 @@ class FruitChess {
           if (wr != 0) {
 // assume white sacrifices a rook against the lone pawn
 
-            w_maj--;
-            w_tot -= 2;
+            wMaj--;
+            wTot -= 2;
 
             ifelse = true;
-            if (ifelse && (b_tot == 1)) {
+            if (ifelse && (bTot == 1)) {
               //ASSERT(311, b_maj == 0);
               //ASSERT(312, b_min == 1);
 
@@ -4788,7 +4829,7 @@ class FruitChess {
               ifelse = false;
             }
 
-            if (ifelse && (b_tot == 2 && bn == 2)) {
+            if (ifelse && (bTot == 2 && bn == 2)) {
               //ASSERT(313, b_maj == 0);
               //ASSERT(314, b_min == 2);
 
@@ -4798,7 +4839,7 @@ class FruitChess {
               ifelse = false;
             }
 
-            if (ifelse && (b_tot - w_tot <= 1 && b_maj <= 2)) {
+            if (ifelse && (bTot - wTot <= 1 && bMaj <= 2)) {
 // no more than 1 minor up, drawish
               mul[Black] = 8; // 1/2
 
@@ -4812,20 +4853,24 @@ class FruitChess {
 // potential draw for white
     if (wt == wb + wp && wp >= 1) cflags[White] |= MatRookPawnFlag;
 
-    if (wt == wb + wp && wb <= 1 && wp >= 1 && bt > bp)
+    if (wt == wb + wp && wb <= 1 && wp >= 1 && bt > bp) {
       cflags[White] |= MatBishopFlag;
+    }
 
-    if (wt == 2 && wn == 1 && wp == 1 && bt > bp)
+    if (wt == 2 && wn == 1 && wp == 1 && bt > bp) {
       cflags[White] |= MatKnightFlag;
+    }
 
 // potential draw for black
     if (bt == bb + bp && bp >= 1) cflags[Black] |= MatRookPawnFlag;
 
-    if (bt == bb + bp && bb <= 1 && bp >= 1 && wt > wp)
+    if (bt == bb + bp && bb <= 1 && bp >= 1 && wt > wp) {
       cflags[Black] |= MatBishopFlag;
+    }
 
-    if (bt == 2 && bn == 1 && bp == 1 && wt > wp)
+    if (bt == 2 && bn == 1 && bp == 1 && wt > wp) {
       cflags[Black] |= MatKnightFlag;
+    }
 
 // draw leaf (likely draw)
     if (recog == MAT_KQKQ || recog == MAT_KRKR) {
@@ -4915,8 +4960,9 @@ class FruitChess {
   }
 
   bool move_is_ok(int move) {
-    if (move < 0 || move >= 65536 || move == MoveNone || move == Movenull)
+    if (move < 0 || move >= 65536 || move == MoveNone || move == Movenull) {
       return false;
+    }
 
     return true;
   }
@@ -4931,9 +4977,9 @@ class FruitChess {
     code = ((move >>> 12) & 3);
     piece = PromotePiece[code];
 
-    if (SQUARE_RANK(MOVE_TO(move)) == Rank8)
+    if (SQUARE_RANK(MOVE_TO(move)) == Rank8) {
       piece |= WhiteFlag;
-    else {
+    } else {
       //ASSERT(319, SQUARE_RANK(MOVE_TO(move)) == Rank1);
       piece |= BlackFlag;
     }
@@ -4970,14 +5016,15 @@ class FruitChess {
   int move_capture(int move, board_t board) {
     //ASSERT(327, move_is_ok(move));
 
-    if (MOVE_IS_EN_PASSANT(move))
+    if (MOVE_IS_EN_PASSANT(move)) {
       return PAWN_OPP(board.square[MOVE_FROM(move)]);
+    }
 
     return board.square[MOVE_TO(move)];
   }
 
   move_to_string(int move, string_t str1) {
-    string_t str2 = new string_t();
+    string_t str2 = string_t();
 
     //ASSERT(329, move == Movenull || move_is_ok(move));
 
@@ -4993,13 +5040,14 @@ class FruitChess {
       //ASSERT(332, (str1.v.length == 4));
 
 // promotes
-      if (MOVE_IS_PROMOTE(move))
+      if (MOVE_IS_PROMOTE(move)) {
         str1.v += piece_to_char(move_promote(move)).toLowerCase();
+      }
     }
   }
 
   int move_from_string(string_t str1, board_t board) {
-    string_t str2 = new string_t();
+    string_t str2 = string_t();
     String c = " "; // char;
 
     int from; // int
@@ -5069,7 +5117,7 @@ class FruitChess {
     int sq; // int
 
     int piece; // int
-    int inc_ptr; // int
+    int incPtr; // int
     int inc; // int
     int pawn; // int
     int rank; // int
@@ -5118,9 +5166,9 @@ class FruitChess {
         }
       } else {
         if (PIECE_IS_SLIDER(piece)) {
-          inc_ptr = 0;
+          incPtr = 0;
           for (;;) {
-            inc = PieceInc[piece][inc_ptr];
+            inc = PieceInc[piece][incPtr];
             if (inc == IncNone) break;
 
             to = from + inc;
@@ -5132,12 +5180,12 @@ class FruitChess {
 
               to += inc;
             }
-            inc_ptr++;
+            incPtr++;
           }
         } else {
-          inc_ptr = 0;
+          incPtr = 0;
           for (;;) {
-            inc = PieceInc[piece][inc_ptr];
+            inc = PieceInc[piece][incPtr];
             if (inc == IncNone) break;
 
             to = from + inc;
@@ -5147,7 +5195,7 @@ class FruitChess {
               }
             }
 
-            inc_ptr++;
+            incPtr++;
           }
         }
       }
@@ -5173,43 +5221,45 @@ class FruitChess {
         ptr_2++;
       }
 
-      if (gotonextpiece)
+      if (gotonextpiece) {
         gotonextpiece = false;
-      else {
+      } else {
         //ASSERT(346, !is_pinned(board, from, opp));
 
         piece = board.square[from];
 
         if (PIECE_IS_SLIDER(piece)) {
-          inc_ptr = 0;
+          incPtr = 0;
           for (;;) {
-            inc = PieceInc[piece][inc_ptr];
+            inc = PieceInc[piece][incPtr];
             if (inc == IncNone) break;
 
             to = from + inc;
             for (;;) {
               if (board.square[to] != Empty) break;
 
-              if (PIECE_ATTACK(board, piece, to, king))
+              if (PIECE_ATTACK(board, piece, to, king)) {
                 LIST_ADD(list, MOVE_MAKE(from, to));
+              }
 
               to += inc;
             }
-            inc_ptr++;
+            incPtr++;
           }
         } else {
-          inc_ptr = 0;
+          incPtr = 0;
           for (;;) {
-            inc = PieceInc[piece][inc_ptr];
+            inc = PieceInc[piece][incPtr];
             if (inc == IncNone) break;
 
             to = from + inc;
             if (board.square[to] == Empty) {
-              if (PSEUDO_ATTACK(piece, king - to))
+              if (PSEUDO_ATTACK(piece, king - to)) {
                 LIST_ADD(list, MOVE_MAKE(from, to));
+              }
             }
 
-            inc_ptr++;
+            incPtr++;
           }
         }
       }
@@ -5304,7 +5354,7 @@ class FruitChess {
   }
 
   add_check(list_t list, int move, board_t board) {
-    undo_t undo = new undo_t(); // undo_t[1];
+    undo_t undo = undo_t(); // undo_t[1];
 
     //ASSERT(357, move_is_ok(move));
 
@@ -5315,7 +5365,7 @@ class FruitChess {
   }
 
   bool move_is_check(int move, board_t board) {
-    undo_t undo = new undo_t(); // undo_t[1];
+    undo_t undo = undo_t(); // undo_t[1];
 
     bool check; // bool
     int me; // int
@@ -5446,8 +5496,8 @@ class FruitChess {
     int piece; // int
     int pos; // int
     int capture; // int
-    int old_flags; // int
-    int new_flags; // int
+    int oldFlags; // int
+    int newFlags; // int
 
     int delta; // int
     int sq; // int
@@ -5496,10 +5546,10 @@ class FruitChess {
     board.turn = opp;
 
 // update castling rights
-    old_flags = board.flags;
-    new_flags = ((old_flags & CastleMask[from]) & CastleMask[to]);
+    oldFlags = board.flags;
+    newFlags = ((oldFlags & CastleMask[from]) & CastleMask[to]);
 
-    board.flags = new_flags;
+    board.flags = newFlags;
 
 // update en-passant square
     sq = board.ep_square;
@@ -5554,7 +5604,9 @@ class FruitChess {
 
 // insert the promote piece in MV order
       pos = board.piece_size[me];
-      while (pos > 0 && piece > board.square[board.piece[me][pos - 1]]) pos--;
+      while (pos > 0 && piece > board.square[board.piece[me][pos - 1]]) {
+        pos--;
+      }
 
       square_set(board, to, piece, pos, true);
 
@@ -5738,7 +5790,7 @@ class FruitChess {
     int size; // int
     int sq_64; // int
     int t; // int
-    int hash_xor; // uint64
+    int hashXor; // uint64
 
     //ASSERT(401, SQUARE_IS_OK(square));
     //ASSERT(402, piece_is_ok(piece));
@@ -5827,10 +5879,10 @@ class FruitChess {
       board.endgame -= Pget(piece_12, sq_64, Endgame);
 
 // hash key
-      hash_xor = Random64[RandomPiece + ((piece_12 ^ 1) << 6) + sq_64];
+      hashXor = Random64[RandomPiece + ((piece_12 ^ 1) << 6) + sq_64];
 // xor 1 for PolyGlot book (not AS3)
-      board.key ^= hash_xor;
-      if (PIECE_IS_PAWN(piece)) board.pawn_key ^= hash_xor;
+      board.key ^= hashXor;
+      if (PIECE_IS_PAWN(piece)) board.pawn_key ^= hashXor;
 
 // material key
       board.material_key ^= Random64[(piece_12 << 4) + board.number[piece_12]];
@@ -5845,7 +5897,7 @@ class FruitChess {
     int size; // int
     int sq_64; // int
     int t; // int
-    int hash_xor; // uint64
+    int hashXor; // uint64
 
     //ASSERT(417, SQUARE_IS_OK(square));
     //ASSERT(418, piece_is_ok(piece));
@@ -5928,10 +5980,10 @@ class FruitChess {
       board.opening += Pget(piece_12, sq_64, Opening);
       board.endgame += Pget(piece_12, sq_64, Endgame);
 // hash key
-      hash_xor = Random64[RandomPiece + ((piece_12 ^ 1) << 6) + sq_64];
+      hashXor = Random64[RandomPiece + ((piece_12 ^ 1) << 6) + sq_64];
 // xor 1 for PolyGlot book (not AS3)
-      board.key ^= hash_xor;
-      if (PIECE_IS_PAWN(piece)) board.pawn_key ^= hash_xor;
+      board.key ^= hashXor;
+      if (PIECE_IS_PAWN(piece)) board.pawn_key ^= hashXor;
 
 // material key
       board.material_key ^= Random64[(piece_12 << 4) + board.number[piece_12]];
@@ -5944,9 +5996,9 @@ class FruitChess {
     int pos; // int
     int from_64; // int
     int to_64; // int
-    int piece_index; // int
+    int pieceIndex; // int
     int t; // int
-    int hash_xor; // uint64
+    int hashXor; // uint64
 
     //ASSERT(433, SQUARE_IS_OK(from));
     //ASSERT(434, SQUARE_IS_OK(to));
@@ -6006,14 +6058,14 @@ class FruitChess {
           Pget(piece_12, to_64, Endgame) - Pget(piece_12, from_64, Endgame);
 
 // hash key
-      piece_index = RandomPiece + ((piece_12 ^ 1) << 6);
+      pieceIndex = RandomPiece + ((piece_12 ^ 1) << 6);
 // xor 1 for PolyGlot book (not AS3)
 
-      hash_xor =
-          (Random64[piece_index + to_64] ^ Random64[piece_index + from_64]);
+      hashXor =
+          (Random64[pieceIndex + to_64] ^ Random64[pieceIndex + from_64]);
 
-      board.key ^= hash_xor;
-      if (PIECE_IS_PAWN(piece)) board.pawn_key ^= hash_xor;
+      board.key ^= hashXor;
+      if (PIECE_IS_PAWN(piece)) board.pawn_key ^= hashXor;
     }
   }
 
@@ -6028,7 +6080,7 @@ class FruitChess {
   }
 
   bool legal_evasion_exist(board_t board, attack_t attack) {
-    list_t list = new list_t(); // list[1] dummy
+    list_t list = list_t(); // list[1] dummy
     return gen_evasions(list, board, attack, true, true);
   }
 
@@ -6036,9 +6088,9 @@ class FruitChess {
       list_t list, board_t board, attack_t attack, bool legal, bool stop) {
     int me; // int
     int opp; // int
-    int opp_flag; // int
+    int oppFlag; // int
     int king; // int
-    int inc_ptr; // int
+    int incPtr; // int
     int inc; // int
     int to; // int
     int piece; // int
@@ -6052,20 +6104,20 @@ class FruitChess {
     me = board.turn;
     opp = COLOUR_OPP(me);
 
-    opp_flag = COLOUR_FLAG(opp);
+    oppFlag = COLOUR_FLAG(opp);
 
     king = KING_POS(board, me);
 
-    inc_ptr = 0;
+    incPtr = 0;
     for (;;) {
-      inc = KingInc[inc_ptr];
+      inc = KingInc[incPtr];
       if (inc == IncNone) break;
 
 // avoid escaping along a check line
       if (inc != -attack.di[0] && inc != -attack.di[1]) {
         to = king + inc;
         piece = board.square[to];
-        if (piece == Empty || FLAG_IS(piece, opp_flag)) {
+        if (piece == Empty || FLAG_IS(piece, oppFlag)) {
           if ((!legal) || (!is_attacked(board, to, opp))) {
             if (stop) return true;
 
@@ -6074,7 +6126,7 @@ class FruitChess {
         }
       }
 
-      inc_ptr++;
+      incPtr++;
     }
 
     if (attack.dn >= 2) return false; // double check, we are
@@ -6083,11 +6135,13 @@ class FruitChess {
     //ASSERT(461, attack.dn == 1);
 
 // capture the checking piece
-    if (add_pawn_captures(list, board, attack.ds[0], legal, stop) && stop)
+    if (add_pawn_captures(list, board, attack.ds[0], legal, stop) && stop) {
       return true;
+    }
 
-    if (add_piece_moves(list, board, attack.ds[0], legal, stop) && stop)
+    if (add_piece_moves(list, board, attack.ds[0], legal, stop) && stop) {
       return true;
+    }
 
 // interpose a piece
     inc = attack.di[0];
@@ -6252,7 +6306,7 @@ class FruitChess {
   }
 
   gen_legal_moves(list_t list, board_t board) {
-    attack_t attack = new attack_t(); // attack_t[1]
+    attack_t attack = attack_t(); // attack_t[1]
 
     attack_set(attack, board);
 
@@ -6293,19 +6347,19 @@ class FruitChess {
   add_moves(list_t list, board_t board) {
     int me; // int
     int opp; // int
-    int opp_flag; // int
+    int oppFlag; // int
     int ptr; // int
     int from; // int
     int to; // int
     int piece; // int
     int capture; // int
-    int inc_ptr; // int
+    int incPtr; // int
     int inc; // int
 
     me = board.turn;
     opp = COLOUR_OPP(me);
 
-    opp_flag = COLOUR_FLAG(opp);
+    oppFlag = COLOUR_FLAG(opp);
 
 // piece moves
     ptr = 0;
@@ -6316,9 +6370,9 @@ class FruitChess {
       piece = board.square[from];
 
       if (PIECE_IS_SLIDER(piece)) {
-        inc_ptr = 0;
+        incPtr = 0;
         for (;;) {
-          inc = PieceInc[piece][inc_ptr];
+          inc = PieceInc[piece][incPtr];
           if (inc == IncNone) break;
 
           to = from + inc;
@@ -6331,22 +6385,23 @@ class FruitChess {
             to += inc;
           }
 
-          if (FLAG_IS(capture, opp_flag)) LIST_ADD(list, MOVE_MAKE(from, to));
+          if (FLAG_IS(capture, oppFlag)) LIST_ADD(list, MOVE_MAKE(from, to));
 
-          inc_ptr++;
+          incPtr++;
         }
       } else {
-        inc_ptr = 0;
+        incPtr = 0;
         for (;;) {
-          inc = PieceInc[piece][inc_ptr];
+          inc = PieceInc[piece][incPtr];
           if (inc == IncNone) break;
 
           to = from + inc;
           capture = board.square[to];
-          if (capture == Empty || FLAG_IS(capture, opp_flag))
+          if (capture == Empty || FLAG_IS(capture, oppFlag)) {
             LIST_ADD(list, MOVE_MAKE(from, to));
+          }
 
-          inc_ptr++;
+          incPtr++;
         }
       }
 
@@ -6362,10 +6417,10 @@ class FruitChess {
       if (from == SquareNone) break;
 
       to = from + (inc - 1);
-      if (FLAG_IS(board.square[to], opp_flag)) add_pawn_move(list, from, to);
+      if (FLAG_IS(board.square[to], oppFlag)) add_pawn_move(list, from, to);
 
       to = from + (inc + 1);
-      if (FLAG_IS(board.square[to], opp_flag)) add_pawn_move(list, from, to);
+      if (FLAG_IS(board.square[to], oppFlag)) add_pawn_move(list, from, to);
 
       to = from + inc;
       if (board.square[to] == Empty) {
@@ -6383,13 +6438,14 @@ class FruitChess {
     }
   }
 
-  add_capt1(int from, int dt, list_t list, board_t board, int opp_flag) {
+  add_capt1(int from, int dt, list_t list, board_t board, int oppFlag) {
     int to = from + dt;
-    if (FLAG_IS(board.square[to], opp_flag))
+    if (FLAG_IS(board.square[to], oppFlag)) {
       LIST_ADD(list, MOVE_MAKE(from, to));
+    }
   }
 
-  add_capt2(int from, int dt, list_t list, board_t board, int opp_flag) {
+  add_capt2(int from, int dt, list_t list, board_t board, int oppFlag) {
     int to = from + dt;
     int capture;
     for (;;) {
@@ -6397,12 +6453,12 @@ class FruitChess {
       if (capture != Empty) break;
       to += dt;
     }
-    if (FLAG_IS(capture, opp_flag)) LIST_ADD(list, MOVE_MAKE(from, to));
+    if (FLAG_IS(capture, oppFlag)) LIST_ADD(list, MOVE_MAKE(from, to));
   }
 
-  add_capt3(int from, int dt, list_t list, board_t board, int opp_flag) {
+  add_capt3(int from, int dt, list_t list, board_t board, int oppFlag) {
     int to = from + dt;
-    if (FLAG_IS(board.square[to], opp_flag)) add_pawn_move(list, from, to);
+    if (FLAG_IS(board.square[to], oppFlag)) add_pawn_move(list, from, to);
   }
 
   add_capt4(int from, int dt, list_t list, board_t board) {
@@ -6413,7 +6469,7 @@ class FruitChess {
   add_captures(list_t list, board_t board) {
     int me; // int
     int opp; // int
-    int opp_flag; // int
+    int oppFlag; // int
     int ptr; // int
     int from; // int
     int piece; // int
@@ -6421,7 +6477,7 @@ class FruitChess {
 
     me = board.turn;
     opp = COLOUR_OPP(me);
-    opp_flag = COLOUR_FLAG(opp);
+    oppFlag = COLOUR_FLAG(opp);
 
 // piece captures
     ptr = 0;
@@ -6434,46 +6490,46 @@ class FruitChess {
       p = PIECE_TYPE(piece);
 
       if (p == Knight64) {
-        add_capt1(from, -33, list, board, opp_flag);
-        add_capt1(from, -31, list, board, opp_flag);
-        add_capt1(from, -18, list, board, opp_flag);
-        add_capt1(from, -14, list, board, opp_flag);
-        add_capt1(from, 14, list, board, opp_flag);
-        add_capt1(from, 18, list, board, opp_flag);
-        add_capt1(from, 31, list, board, opp_flag);
-        add_capt1(from, 33, list, board, opp_flag);
+        add_capt1(from, -33, list, board, oppFlag);
+        add_capt1(from, -31, list, board, oppFlag);
+        add_capt1(from, -18, list, board, oppFlag);
+        add_capt1(from, -14, list, board, oppFlag);
+        add_capt1(from, 14, list, board, oppFlag);
+        add_capt1(from, 18, list, board, oppFlag);
+        add_capt1(from, 31, list, board, oppFlag);
+        add_capt1(from, 33, list, board, oppFlag);
       } else {
         if (p == Bishop64) {
-          add_capt2(from, -17, list, board, opp_flag);
-          add_capt2(from, -15, list, board, opp_flag);
-          add_capt2(from, 15, list, board, opp_flag);
-          add_capt2(from, 17, list, board, opp_flag);
+          add_capt2(from, -17, list, board, oppFlag);
+          add_capt2(from, -15, list, board, oppFlag);
+          add_capt2(from, 15, list, board, oppFlag);
+          add_capt2(from, 17, list, board, oppFlag);
         } else {
           if (p == Rook64) {
-            add_capt2(from, -16, list, board, opp_flag);
-            add_capt2(from, -1, list, board, opp_flag);
-            add_capt2(from, 1, list, board, opp_flag);
-            add_capt2(from, 16, list, board, opp_flag);
+            add_capt2(from, -16, list, board, oppFlag);
+            add_capt2(from, -1, list, board, oppFlag);
+            add_capt2(from, 1, list, board, oppFlag);
+            add_capt2(from, 16, list, board, oppFlag);
           } else {
             if (p == Queen64) {
-              add_capt2(from, -17, list, board, opp_flag);
-              add_capt2(from, -16, list, board, opp_flag);
-              add_capt2(from, -15, list, board, opp_flag);
-              add_capt2(from, -1, list, board, opp_flag);
-              add_capt2(from, 1, list, board, opp_flag);
-              add_capt2(from, 15, list, board, opp_flag);
-              add_capt2(from, 16, list, board, opp_flag);
-              add_capt2(from, 17, list, board, opp_flag);
+              add_capt2(from, -17, list, board, oppFlag);
+              add_capt2(from, -16, list, board, oppFlag);
+              add_capt2(from, -15, list, board, oppFlag);
+              add_capt2(from, -1, list, board, oppFlag);
+              add_capt2(from, 1, list, board, oppFlag);
+              add_capt2(from, 15, list, board, oppFlag);
+              add_capt2(from, 16, list, board, oppFlag);
+              add_capt2(from, 17, list, board, oppFlag);
             } else {
               if (p == King64) {
-                add_capt1(from, -17, list, board, opp_flag);
-                add_capt1(from, -16, list, board, opp_flag);
-                add_capt1(from, -15, list, board, opp_flag);
-                add_capt1(from, -1, list, board, opp_flag);
-                add_capt1(from, 1, list, board, opp_flag);
-                add_capt1(from, 15, list, board, opp_flag);
-                add_capt1(from, 16, list, board, opp_flag);
-                add_capt1(from, 17, list, board, opp_flag);
+                add_capt1(from, -17, list, board, oppFlag);
+                add_capt1(from, -16, list, board, oppFlag);
+                add_capt1(from, -15, list, board, oppFlag);
+                add_capt1(from, -1, list, board, oppFlag);
+                add_capt1(from, 1, list, board, oppFlag);
+                add_capt1(from, 15, list, board, oppFlag);
+                add_capt1(from, 16, list, board, oppFlag);
+                add_capt1(from, 17, list, board, oppFlag);
               } else {
                 //ASSERT(507, false);
               }
@@ -6492,8 +6548,8 @@ class FruitChess {
         from = board.pawn[me][ptr];
         if (from == SquareNone) break;
 
-        add_capt3(from, 15, list, board, opp_flag);
-        add_capt3(from, 17, list, board, opp_flag);
+        add_capt3(from, 15, list, board, oppFlag);
+        add_capt3(from, 17, list, board, oppFlag);
 
 // promote
         if (SQUARE_RANK(from) == Rank7) add_capt4(from, 16, list, board);
@@ -6508,8 +6564,8 @@ class FruitChess {
         from = board.pawn[me][ptr];
         if (from == SquareNone) break;
 
-        add_capt3(from, -17, list, board, opp_flag);
-        add_capt3(from, -15, list, board, opp_flag);
+        add_capt3(from, -17, list, board, oppFlag);
+        add_capt3(from, -15, list, board, oppFlag);
 
 // promote
         if (SQUARE_RANK(from) == Rank2) add_capt4(from, -16, list, board);
@@ -6757,8 +6813,9 @@ class FruitChess {
       LIST_ADD(list, (move | MovePromoteKnight));
       LIST_ADD(list, (move | MovePromoteRook));
       LIST_ADD(list, (move | MovePromoteBishop));
-    } else
+    } else {
       LIST_ADD(list, move);
+    }
   }
 
   add_promote(list_t list, int move) {
@@ -6846,9 +6903,9 @@ class FruitChess {
     //ASSERT(541, !board_is_check(board));
 
 // special cases
-    if (MOVE_IS_CASTLE(move))
+    if (MOVE_IS_CASTLE(move)) {
       return move_is_pseudo_debug(move, board);
-    else {
+    } else {
       if (MOVE_IS_SPECIAL(move)) return false;
     }
 
@@ -6896,7 +6953,7 @@ class FruitChess {
     int piece; // int
     bool legal; // bool
     int king; // int
-    undo_t undo = new undo_t(); //undo_t[1]
+    undo_t undo = undo_t(); //undo_t[1]
 
     //ASSERT(547, move_is_ok(move));
 
@@ -6934,7 +6991,7 @@ class FruitChess {
   }
 
   bool move_is_pseudo_debug(int move, board_t board) {
-    list_t list = new list_t(); //list_t[1]
+    list_t list = list_t(); //list_t[1]
 
     //ASSERT(552, move_is_ok(move));
 
@@ -6946,7 +7003,9 @@ class FruitChess {
   }
 
   option_init() {
-    for (int i = 0; i <= 20; i++) Option.add(new opt_t_def());
+    for (int i = 0; i <= 20; i++) {
+      Option.add(opt_t_def());
+    }
 
 // options are as they are for the execuatable version
     set_opt_t_def(0, "Hash", false, "16", "spin", "min 4 max 1024");
@@ -6981,16 +7040,10 @@ class FruitChess {
 
     for (int i = 0;; i++) {
       opt = Option[i];
-      if (opt.vary.length == 0) break;
+      if (opt.vary.isEmpty) break;
 
       if (opt.decl) {
-        send("option name " +
-            opt.vary +
-            " type " +
-            opt.type +
-            " default " +
-            opt.val +
-            opt.extra);
+        send("option name ${opt.vary} type ${opt.type} default ${opt.val}${opt.extra}");
       }
     }
   }
@@ -7007,7 +7060,7 @@ class FruitChess {
   String option_get(String vary) {
     int i = option_find(vary);
     if (i < 0) {
-      my_fatal("option_get(): unknown option : " + vary + "\n");
+      my_fatal("option_get(): unknown option : $vary\n");
       return "";
     }
 
@@ -7046,7 +7099,7 @@ class FruitChess {
 
     for (int i = 0;; i++) {
       opt = Option[i];
-      if (opt.vary.length == 0) break;
+      if (opt.vary.isEmpty) break;
 
       if (string_equal(opt.vary, vary)) return i;
     }
@@ -7128,7 +7181,9 @@ class FruitChess {
 
   pawn_clear() {
     Pawn.table = [];
-    for (int i = 0; i < Pawn.size; i++) Pawn.table.add(pawn_info_t());
+    for (int i = 0; i < Pawn.size; i++) {
+      Pawn.table.add(pawn_info_t());
+    }
 
     Pawn.used = 0;
     Pawn.read_nb = 0;
@@ -7139,7 +7194,7 @@ class FruitChess {
 
   pawn_get_info(pawn_info_t info, board_t board) {
     int key = 0; // uint64
-    pawn_info_t entry = new pawn_info_t();
+    pawn_info_t entry = pawn_info_t();
     int index;
 
 // probe
@@ -7166,10 +7221,11 @@ class FruitChess {
     if (UseTable) {
       Pawn.write_nb++;
 
-      if (entry.lock == 0)
+      if (entry.lock == 0) {
         Pawn.used++; // assume free entry
-      else
+      } else {
         Pawn.write_collision++;
+      }
 
       pawn_info_copy(entry, info);
       entry.lock = KEY_LOCK(key);
@@ -7196,9 +7252,9 @@ class FruitChess {
     List<int> opening = [0, 0]; // int[ColourNb]
     List<int> endgame = [0, 0]; // int[ColourNb]
     List<int> flags = [0, 0]; // int[ColourNb]
-    List<int> file_bits = [0, 0]; // int[ColourNb]
-    List<int> passed_bits = [0, 0]; // int[ColourNb]
-    List<int> single_file = [0, 0]; // int[ColourNb]
+    List<int> fileBits = [0, 0]; // int[ColourNb]
+    List<int> passedBits = [0, 0]; // int[ColourNb]
+    List<int> singleFile = [0, 0]; // int[ColourNb]
     int q;
     int om;
     int em;
@@ -7206,10 +7262,12 @@ class FruitChess {
 // pawn_file[]
 
     for (colour = 0; colour <= 1; colour++) {
-      List<int> pawn_file = List.filled(FileNb, 0); // int[FileNb]
+      List<int> pawnFile = List.filled(FileNb, 0); // int[FileNb]
 
       me = colour;
-      for (file = 0; file < FileNb; file++) pawn_file[file] = 0;
+      for (file = 0; file < FileNb; file++) {
+        pawnFile[file] = 0;
+      }
 
       ptr = 0;
       for (;;) {
@@ -7220,14 +7278,15 @@ class FruitChess {
         rank = PAWN_RANK(sq, me);
         //ASSERT(565, file >= FileA && file <= FileH);
         //ASSERT(566, rank >= Rank2 && rank <= Rank7);
-        pawn_file[file] = (pawn_file[file] | BitEQ[rank]);
+        pawnFile[file] = (pawnFile[file] | BitEQ[rank]);
 
         ptr++;
       }
 
       for (file = 0; file < FileNb; file++) {
-        if (board.pawn_file[colour][file] != pawn_file[file])
+        if (board.pawn_file[colour][file] != pawnFile[file]) {
           my_fatal("board.pawn_file[][]");
+        }
       }
     }
 
@@ -7248,7 +7307,7 @@ class FruitChess {
         //ASSERT(568, rank >= Rank2 && rank <= Rank7);
 
 // flags
-        file_bits[me] |= BitEQ[file];
+        fileBits[me] |= BitEQ[file];
         if (rank == Rank2) flags[me] |= BackRankFlag;
 
 // features
@@ -7265,9 +7324,9 @@ class FruitChess {
         if ((board.pawn_file[me][file] & BitLT[rank]) != 0) doubled = true;
 
 // isolated && backward
-        if (t1 == 0)
+        if (t1 == 0) {
           isolated = true;
-        else {
+        } else {
           if ((t1 & BitLE[rank]) == 0) {
             backward = true;
 
@@ -7299,9 +7358,9 @@ class FruitChess {
           q = (BitRev[board.pawn_file[opp][file - 1]] |
               BitRev[board.pawn_file[opp][file + 1]]);
 
-          if ((q & BitGT[rank]) == 0)
-            passed_bits[me] |= BitEQ[file];
-          else {
+          if ((q & BitGT[rank]) == 0) {
+            passedBits[me] |= BitEQ[file];
+          } else {
 // candidate?
             n = 0;
             n += BitCount[(board.pawn_file[me][file - 1] & BitLE[rank])];
@@ -7377,7 +7436,7 @@ class FruitChess {
       opp = COLOUR_OPP(me);
 
 // draw flags
-      bits = file_bits[me];
+      bits = fileBits[me];
 
       if (bits != 0 && ((bits & bits - 1) == 0)) {
         // one set bit
@@ -7391,20 +7450,20 @@ class FruitChess {
 
         if ((q & BitGT[rank]) == 0) {
           rank = BitLast[board.pawn_file[me][file]];
-          single_file[me] = SQUARE_MAKE(file, rank);
+          singleFile[me] = SQUARE_MAKE(file, rank);
         }
       }
 
       info.flags[colour] = flags[colour];
-      info.passed_bits[colour] = passed_bits[colour];
-      info.single_file[colour] = single_file[colour];
+      info.passed_bits[colour] = passedBits[colour];
+      info.single_file[colour] = singleFile[colour];
     }
   }
 
-  int quad(int y_min, int y_max, int x) {
+  int quad(int yMin, int yMax, int x) {
     //ASSERT(572, y_min >= 0 && y_min <= y_max && y_max <= 32767);
     //ASSERT(573, x >= Rank2 && x <= Rank7);
-    int y = (y_min + ((y_max - y_min) * Bonus[x] + 128) ~/ 256).floor();
+    int y = (yMin + ((yMax - yMin) * Bonus[x] + 128) ~/ 256).floor();
     //ASSERT(574, y >= y_min && y <= y_max);
     return y;
   }
@@ -7513,14 +7572,18 @@ class FruitChess {
     if (entry.date >= DateSize) return false;
     if (entry.move == MoveNone && entry.move_depth != DepthNone) return false;
     if (entry.move != MoveNone && entry.move_depth == DepthNone) return false;
-    if (entry.min_value == -ValueInf && entry.min_depth != DepthNone)
+    if (entry.min_value == -ValueInf && entry.min_depth != DepthNone) {
       return false;
-    if (entry.min_value > -ValueInf && entry.min_depth == DepthNone)
+    }
+    if (entry.min_value > -ValueInf && entry.min_depth == DepthNone) {
       return false;
-    if (entry.max_value == ValueInf && entry.max_depth != DepthNone)
+    }
+    if (entry.max_value == ValueInf && entry.max_depth != DepthNone) {
       return false;
-    if (entry.max_value < ValueInf && entry.max_depth == DepthNone)
+    }
+    if (entry.max_value < ValueInf && entry.max_depth == DepthNone) {
       return false;
+    }
 
     return true;
   }
@@ -7540,18 +7603,18 @@ class FruitChess {
   }
 
   trans_cl_I(trans_t trans, int index) {
-    entry_t clear_entry = trans.table[index];
+    entry_t clearEntry = trans.table[index];
 
-    clear_entry.lock = 0;
-    clear_entry.move = MoveNone;
-    clear_entry.depth = DepthNone;
-    clear_entry.date = trans.date;
-    clear_entry.move_depth = DepthNone;
-    clear_entry.flags = 0;
-    clear_entry.min_depth = DepthNone;
-    clear_entry.max_depth = DepthNone;
-    clear_entry.min_value = -ValueInf;
-    clear_entry.max_value = ValueInf;
+    clearEntry.lock = 0;
+    clearEntry.move = MoveNone;
+    clearEntry.depth = DepthNone;
+    clearEntry.date = trans.date;
+    clearEntry.move_depth = DepthNone;
+    clearEntry.flags = 0;
+    clearEntry.min_depth = DepthNone;
+    clearEntry.max_depth = DepthNone;
+    clearEntry.min_value = -ValueInf;
+    clearEntry.max_value = ValueInf;
 
     //ASSERT(903, entry_is_ok(clear_entry));
   }
@@ -7562,8 +7625,9 @@ class FruitChess {
     trans.date = date;
 
     trans.age = [];
-    for (date1 = 0; date1 < DateSize; date1++)
+    for (date1 = 0; date1 < DateSize; date1++) {
       trans.age.add(trans_age(trans, date1));
+    }
 
     trans.used = 0;
     trans.read_nb = 0;
@@ -7576,7 +7640,9 @@ class FruitChess {
   trans_clear(trans_t trans) {
     trans_set_date(trans, 0);
     trans.table = []; // will define objects while searching
-    for (int i = 0; i < trans.size; i++) trans.table.add(new entry_t());
+    for (int i = 0; i < trans.size; i++) {
+      trans.table.add(entry_t());
+    }
   }
 
   trans_alloc(trans_t trans) {
@@ -7682,12 +7748,12 @@ class FruitChess {
 
   trans_store(trans_t trans, key, move, depth, trans_rtrv Tset) {
     late entry_t entry; // entry_t *
-    late entry_t best_entry; // entry_t *
+    late entry_t bestEntry; // entry_t *
     int ei; // int
     int i; // int
     int score; // int
-    int best_score; // int
-    bool nw_rc = false;
+    int bestScore; // int
+    bool nwRc = false;
 
     //ASSERT(910, trans_is_ok(trans));
     //ASSERT(911, move >= 0 && move < 65536);
@@ -7700,7 +7766,7 @@ class FruitChess {
     trans.write_nb++;
 
 // probe
-    best_score = -32767;
+    bestScore = -32767;
 
     ei = trans_entry(trans, key);
 
@@ -7716,8 +7782,9 @@ class FruitChess {
 
           entry.date = trans.date;
 
-          if (depth > entry.depth)
+          if (depth > entry.depth) {
             entry.depth = depth; // for replacement scheme
+          }
 
           if (move != MoveNone && depth >= entry.move_depth) {
             entry.move_depth = depth;
@@ -7739,7 +7806,7 @@ class FruitChess {
         }
       } else {
         trans_cl_I(trans, ei + i); // create a new entry record
-        nw_rc = true;
+        nwRc = true;
 
         entry = trans.table[ei + i];
       }
@@ -7749,16 +7816,16 @@ class FruitChess {
       score = (trans.age[entry.date] * 256) - entry.depth;
       //ASSERT(917, score > -32767);
 
-      if (score > best_score) {
-        best_entry = entry;
-        best_score = score;
+      if (score > bestScore) {
+        bestEntry = entry;
+        bestScore = score;
       }
 
-      if (nw_rc) break;
+      if (nwRc) break;
     }
 
 // "best" entry found
-    entry = best_entry;
+    entry = bestEntry;
 
     //ASSERT(919, entry.lock != KEY_LOCK(key));
 
@@ -7837,10 +7904,10 @@ class FruitChess {
         ? (100 * trans.write_collision) ~/ trans.write_nb
         : 0);
 
-    s += "\n" + "hash trans info";
-    s += " hashfull " + full.toString() + "%";
-    s += " hits " + hit.toString() + "%";
-    s += " collisions " + collision.toString() + "%";
+    s += "\n" "hash trans info";
+    s += " hashfull $full%";
+    s += " hits $hit%";
+    s += " collisions $collision%";
 
     full = (Material.size > 0 ? (100 * Material.used) ~/ Material.size : 0);
     hit = (Material.read_nb > 0
@@ -7850,20 +7917,20 @@ class FruitChess {
         ? (100 * Material.write_collision) ~/ Material.write_nb
         : 0);
 
-    s += "\n" + "hash material info";
-    s += " hashfull " + full.toString() + "%";
-    s += " hits " + hit.toString() + "%";
-    s += " collisions " + collision.toString() + "%";
+    s += "\n" "hash material info";
+    s += " hashfull $full%";
+    s += " hits $hit%";
+    s += " collisions $collision%";
 
     full = (Pawn.size > 0 ? (100 * Pawn.used) ~/ Pawn.size : 0);
     hit = (Pawn.read_nb > 0 ? (100 * Pawn.read_hit) ~/ Pawn.read_nb : 0);
     collision =
         (Pawn.write_nb > 0 ? (100 * Pawn.write_collision) ~/ Pawn.write_nb : 0);
 
-    s += "\n" + "hash pawn info";
-    s += " hashfull " + full.toString() + "%";
-    s += " hits " + hit.toString() + "%";
-    s += " collisions " + collision.toString() + "%";
+    s += "\n" "hash pawn info";
+    s += " hashfull $full%";
+    s += " hits $hit%";
+    s += " collisions $collision%";
     s += "\n";
 
     send(s);
@@ -7876,12 +7943,12 @@ class FruitChess {
     int depth = -1; // int
     double movetime = -1.0; // int
     bool ifelse;
-    string_t save_board = new string_t();
+    string_t saveBoard = string_t();
 
 // parse
     cmd1 = str_after_ok(cmd, " "); // skip "go"
     cmd2 = str_after_ok(cmd1, " "); // value
-    cmd1 = str_before_ok(cmd1 + " ", " ");
+    cmd1 = str_before_ok("$cmd1 ", " ");
 
     ifelse = true;
     if (ifelse && string_equal(cmd1, "depth")) {
@@ -7934,12 +8001,12 @@ class FruitChess {
       send("Thinking (ShowInfo=false)...");
     }
 
-    board_to_fen(SearchInput.board, save_board); // save board for sure
+    board_to_fen(SearchInput.board, saveBoard); // save board for sure
 
     search();
     search_update_current();
 
-    board_from_fen(SearchInput.board, save_board.v); // && restore after search
+    board_from_fen(SearchInput.board, saveBoard.v); // && restore after search
 
     send_best_move();
   }
@@ -7949,10 +8016,10 @@ class FruitChess {
     String cmd2 = ""; // string
     int mc;
 
-    string_t move_string = new string_t(); // string
+    string_t moveString = string_t(); // string
 
     int move; // int
-    undo_t undo = new undo_t(); // undo_t[1]
+    undo_t undo = undo_t(); // undo_t[1]
     String mnext = "";
 
     cmd1 = str_after_ok(cmd, " "); // skip "position"
@@ -7972,12 +8039,12 @@ class FruitChess {
         mc = 0;
         mnext = cmd2;
         for (;;) {
-          if (mnext.length == 0) break;
+          if (mnext.isEmpty) break;
 
-          move_string.v =
-              (mnext.indexOf(" ") < 0 ? mnext : str_before_ok(mnext, " "));
+          moveString.v =
+              (!mnext.contains(" ") ? mnext : str_before_ok(mnext, " "));
 
-          move = move_from_string(move_string, SearchInput.board);
+          move = move_from_string(moveString, SearchInput.board);
 
           move_do(SearchInput.board, move, undo);
 
@@ -8004,12 +8071,12 @@ class FruitChess {
     cmd1 = str_after_ok(cmd, " "); // skip "setoption"
 
     name = str_after_ok(cmd1, "name ");
-    name = str_before_ok(name + " ", " ");
+    name = str_before_ok("$name ", " ");
 
     value = str_after_ok(cmd1, "value ");
-    value = str_before_ok(value + " ", " ");
+    value = str_before_ok("$value ", " ");
 
-    if (name.length > 0 && value.length > 0) {
+    if (name.isNotEmpty && value.isNotEmpty) {
 // update
       option_set(name, value);
     }
@@ -8029,12 +8096,12 @@ class FruitChess {
     String s2 = "";
 
     if (ch > 5) {
-      s += " depth " + SearchCurrent.depth.toString();
-      s += " seldepth " + SearchCurrent.max_depth.toString() + " ";
+      s += " depth ${SearchCurrent.depth}";
+      s += " seldepth ${SearchCurrent.max_depth} ";
     }
 
     if (ch >= 20 && ch <= 22) {
-      s2 += " score mate " + SearchCurrent.mate.toString() + " ";
+      s2 += " score mate ${SearchCurrent.mate} ";
     }
     if (ch == 11 || ch == 21) {
       s2 += "lowerbound ";
@@ -8043,15 +8110,15 @@ class FruitChess {
       s2 += "upperbound ";
     }
 
-    s += " " + s2 + "time " + SearchCurrent.time.toInt().toString() + "s";
-    s += " nodes " + SearchCurrent.node_nb.toInt().toString();
-    s += " nps " + SearchCurrent.speed.toInt().toString();
+    s += " ${s2}time ${SearchCurrent.time.toInt()}s";
+    s += " nodes ${SearchCurrent.node_nb.toInt()}";
+    s += " nps ${SearchCurrent.speed.toInt()}";
 
     send(s);
   }
 
   send_best_move() {
-    string_t move_string = new string_t(); // string
+    string_t moveString = string_t(); // string
 
     int move; // int
 
@@ -8062,9 +8129,9 @@ class FruitChess {
 
     move = SearchBest.move; // best move
 
-    move_to_string(move, move_string);
+    move_to_string(move, moveString);
 
-    bestmv = move_string.v;
+    bestmv = moveString.v;
 
     format_best_mv2(move);
   }
@@ -8343,7 +8410,7 @@ class FruitChess {
   pv_to_string(List<int> pv, string_t str1) {
     int i = 0; // int
     int move; // int
-    string_t str2 = new string_t(); // string_t[1]
+    string_t str2 = string_t(); // string_t[1]
 
     //ASSERT(619, pv_is_ok(pv));
 
@@ -8372,17 +8439,17 @@ class FruitChess {
 
     //ASSERT(628, SQUARE_FILE(wp) <= FileD);
 
-    int wp_file = SQUARE_FILE(wp);
-    int wp_rank = SQUARE_RANK(wp);
+    int wpFile = SQUARE_FILE(wp);
+    int wpRank = SQUARE_RANK(wp);
 
-    int wk_file = SQUARE_FILE(wk);
+    int wkFile = SQUARE_FILE(wk);
 
-    int bk_file = SQUARE_FILE(bk);
-    int bk_rank = SQUARE_RANK(bk);
+    int bkFile = SQUARE_FILE(bk);
+    int bkRank = SQUARE_RANK(bk);
 
     bool ifelse = true;
     if (ifelse && (bk == wp + 16)) {
-      if (wp_rank <= Rank6) {
+      if (wpRank <= Rank6) {
         return true;
       } else {
         //ASSERT(629, wp_rank == Rank7);
@@ -8397,15 +8464,16 @@ class FruitChess {
     }
 
     if (ifelse && (bk == wp + 32)) {
-      if (wp_rank <= Rank5) {
+      if (wpRank <= Rank5) {
         return true;
       } else {
         //ASSERT(630, wp_rank == Rank6);
 
         if (COLOUR_IS_WHITE(turn)) {
           if (wk != wp - 1 && wk != wp + 1) return true;
-        } else
+        } else {
           return true;
+        }
       }
 
       ifelse = false;
@@ -8421,7 +8489,7 @@ class FruitChess {
     }
 
     if (ifelse && (wk == wp + 15 || wk == wp + 16 || wk == wp + 17)) {
-      if (wp_rank <= Rank4) {
+      if (wpRank <= Rank4) {
         if (bk == wk + 32 && COLOUR_IS_WHITE(turn)) {
           // opposition
           return true;
@@ -8431,13 +8499,13 @@ class FruitChess {
     }
 
 // rook pawn
-    if (wp_file == FileA) {
+    if (wpFile == FileA) {
       if (DISTANCE(bk, A8) <= 1) return true;
 
-      if (wk_file == FileA) {
-        if (wp_rank == Rank2) wp_rank++;
+      if (wkFile == FileA) {
+        if (wpRank == Rank2) wpRank++;
 
-        if (bk_file == FileC && bk_rank > wp_rank) return true;
+        if (bkFile == FileC && bkRank > wpRank) return true;
       }
     }
 
@@ -8459,7 +8527,7 @@ class FruitChess {
   }
 
   bool recog_draw(board_t board) {
-    material_info_t mat_info = new material_info_t(); // material_info_t[1]
+    material_info_t matInfo = material_info_t(); // material_info_t[1]
     bool ifelse;
 
     int me; // int
@@ -8474,24 +8542,24 @@ class FruitChess {
 
     if (board.piece_nb > 4) return false;
 
-    material_get_info(mat_info, board);
+    material_get_info(matInfo, board);
 
-    if ((mat_info.flags & DrawNodeFlag) == 0) return false;
+    if ((matInfo.flags & DrawNodeFlag) == 0) return false;
 
 // recognisers
 
     ifelse = true;
-    if (mat_info.recog == MAT_KK) return true; // KK
+    if (matInfo.recog == MAT_KK) return true; // KK
 
-    if (mat_info.recog == MAT_KBK) return true; // KBK (white)
+    if (matInfo.recog == MAT_KBK) return true; // KBK (white)
 
-    if (mat_info.recog == MAT_KKB) return true; // KBK (black)
+    if (matInfo.recog == MAT_KKB) return true; // KBK (black)
 
-    if (mat_info.recog == MAT_KNK) return true; // KNK (white)
+    if (matInfo.recog == MAT_KNK) return true; // KNK (white)
 
-    if (mat_info.recog == MAT_KKN) return true; // KNK (black)
+    if (matInfo.recog == MAT_KKN) return true; // KNK (black)
 
-    if (mat_info.recog == MAT_KPK) {
+    if (matInfo.recog == MAT_KPK) {
 // KPK (white)
       me = White;
       opp = COLOUR_OPP(me);
@@ -8511,7 +8579,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KKP) {
+    if (ifelse && matInfo.recog == MAT_KKP) {
 // KPK (black)
       me = Black;
       opp = COLOUR_OPP(me);
@@ -8531,7 +8599,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KBKB) {
+    if (ifelse && matInfo.recog == MAT_KBKB) {
 // KBKB
       wb = board.piece[White][1];
       bb = board.piece[Black][1];
@@ -8543,7 +8611,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KBPK) {
+    if (ifelse && matInfo.recog == MAT_KBPK) {
 // KBPK (white)
       me = White;
       opp = COLOUR_OPP(me);
@@ -8563,7 +8631,7 @@ class FruitChess {
       ifelse = false;
     }
 
-    if (ifelse && mat_info.recog == MAT_KKBP) {
+    if (ifelse && matInfo.recog == MAT_KKBP) {
 // KBPK (black)
       me = Black;
       opp = COLOUR_OPP(me);
@@ -8597,8 +8665,9 @@ class FruitChess {
 // killer
 
     Killer = [];
-    for (height = 0; height < HeightMax; height++)
+    for (height = 0; height < HeightMax; height++) {
       Killer.add(List.filled(KillerNb, MoveNone));
+    }
 
 // history
     History = List.filled(HistorySize, 0);
@@ -8640,7 +8709,7 @@ class FruitChess {
     //ASSERT(795, pos < CODE_SIZE);
   }
 
-  note_moves(list_t list, board_t board, int height, int trans_killer) {
+  note_moves(list_t list, board_t board, int height, int transKiller) {
     int size; // int
     int i; // int
     int move; // int
@@ -8654,7 +8723,7 @@ class FruitChess {
     if (size >= 2) {
       for (i = 0; i < size; i++) {
         move = list.move[i];
-        list.value[i] = move_value(move, board, height, trans_killer);
+        list.value[i] = move_value(move, board, height, transKiller);
       }
     }
   }
@@ -8814,7 +8883,7 @@ class FruitChess {
 // iterative deepening
       for (depth = 1; depth < DepthMax; depth++) {
         if (DispDepthStart) {
-          send("info depth " + depth.toString());
+          send("info depth $depth");
         }
 
         SearchRoot.bad_1 = false;
@@ -8855,8 +8924,9 @@ class FruitChess {
         SearchRoot.last_value = SearchBest.value;
 
 // stop search?
-        if (SearchInput.depth_is_limited && depth >= SearchInput.depth_limit)
+        if (SearchInput.depth_is_limited && depth >= SearchInput.depth_limit) {
           SearchRoot.flag = true;
+        }
 
         if (SearchInput.time_is_limited &&
             SearchCurrent.time >= SearchInput.time_limit_1 &&
@@ -8878,8 +8948,9 @@ class FruitChess {
             (!SearchRoot.change)) SearchRoot.flag = true;
 
         if (SearchInfo.can_stop &&
-            (SearchInfo.stop || (SearchRoot.flag && (!SearchInput.infinite))))
+            (SearchInfo.stop || (SearchRoot.flag && (!SearchInput.infinite)))) {
           return;
+        }
       }
     } // setjmp loop
   }
@@ -8890,8 +8961,8 @@ class FruitChess {
     int flags; // int
     late List<int> pv;
     int mate; // int
-    string_t move_string = new string_t(); // string
-    string_t pv_string = new string_t(); // string
+    string_t moveString = string_t(); // string
+    string_t pvString = string_t(); // string
 
     search_update_current();
 
@@ -8901,8 +8972,8 @@ class FruitChess {
       flags = SearchBest.flags;
       pv = SearchBest.pv;
 
-      move_to_string(move, move_string);
-      pv_to_string(pv, pv_string);
+      move_to_string(move, moveString);
+      pv_to_string(pv, pvString);
 
       mate = value_to_mate(value);
       SearchCurrent.mate = mate;
@@ -8950,39 +9021,36 @@ class FruitChess {
 
   search_update_root() {
     int move; // int
-    int move_pos; // int
+    int movePos; // int
 
-    string_t move_string = new string_t(); // string
+    string_t moveString = string_t(); // string
 
     if (DispRoot) {
       search_update_current();
 
       if (SearchCurrent.time >= 1.0) {
         move = SearchRoot.move;
-        move_pos = SearchRoot.move_pos;
+        movePos = SearchRoot.move_pos;
 
-        move_to_string(move, move_string);
+        move_to_string(move, moveString);
 
-        send("info currmove " +
-            move_string.v +
-            " currmovenumber " +
-            (move_pos + 1).toString());
+        send("info currmove ${moveString.v} currmovenumber ${movePos + 1}");
       }
     }
   }
 
   search_update_current() {
     late my_timer_t timer;
-    late int node_nb;
+    late int nodeNb;
 
     double etime;
     double speed;
 
     timer = SearchCurrent.timer;
-    node_nb = SearchCurrent.node_nb;
+    nodeNb = SearchCurrent.node_nb;
 
     etime = my_timer_elapsed_real(timer);
-    speed = (etime >= 1.0 ? node_nb / etime : 0.0);
+    speed = (etime >= 1.0 ? nodeNb / etime : 0.0);
 
     SearchCurrent.time = etime;
     SearchCurrent.speed = speed;
@@ -9027,7 +9095,7 @@ class FruitChess {
     }
   }
 
-  int search_full_root(list_t list, board_t board, int depth, int search_type) {
+  int search_full_root(list_t list, board_t board, int depth, int searchType) {
     //ASSERT(644, list_is_ok(list));
     //ASSERT(645, board_is_ok(board));
     //ASSERT(646, depth_is_ok(depth));
@@ -9040,7 +9108,7 @@ class FruitChess {
     //ASSERT(652, depth >= 1);
 
     int value =
-        full_root(list, board, -ValueInf, ValueInf, depth, 0, search_type);
+        full_root(list, board, -ValueInf, ValueInf, depth, 0, searchType);
     if (setjmp) return 0;
 
     //ASSERT(653, value_is_ok(value));
@@ -9050,15 +9118,15 @@ class FruitChess {
   }
 
   int full_root(list_t list, board_t board, int alpha, int beta, int depth,
-      int height, int search_type) {
-    int old_alpha; // int
+      int height, int searchType) {
+    int oldAlpha; // int
     int value; // int
-    int best_value; // int
+    int bestValue; // int
     int i; // int
     int move; // int
-    int new_depth; // int
-    undo_t undo = new undo_t(); // undo_t[1]
-    List<int> new_pv = List.filled(HeightMax, 0); // int[HeightMax];
+    int newDepth; // int
+    undo_t undo = undo_t(); // undo_t[1]
+    List<int> newPv = List.filled(HeightMax, 0); // int[HeightMax];
 
     //ASSERT(655, list_is_ok(list));
     //ASSERT(656, board_is_ok(board));
@@ -9077,10 +9145,12 @@ class FruitChess {
     SearchCurrent.node_nb++;
     SearchInfo.check_nb--;
 
-    for (i = 0; i < list.size; i++) list.value[i] = ValueNone;
+    for (i = 0; i < list.size; i++) {
+      list.value[i] = ValueNone;
+    }
 
-    old_alpha = alpha;
-    best_value = ValueNone;
+    oldAlpha = alpha;
+    bestValue = ValueNone;
 
 // move loop
     for (i = 0; i < list.size; i++) {
@@ -9093,20 +9163,20 @@ class FruitChess {
 
       search_update_root();
 
-      new_depth = full_new_depth(
+      newDepth = full_new_depth(
           depth, move, board, board_is_check(board) && list.size == 1, true);
 
       move_do(board, move, undo);
 
-      if (search_type == SearchShort || best_value == ValueNone) {
+      if (searchType == SearchShort || bestValue == ValueNone) {
         // first move
         value = -full_search(
-            board, -beta, -alpha, new_depth, height + 1, new_pv, NodePV);
+            board, -beta, -alpha, newDepth, height + 1, newPv, NodePV);
         if (setjmp) return 0;
       } else {
         // other moves
         value = -full_search(
-            board, -alpha - 1, -alpha, new_depth, height + 1, new_pv, NodeCut);
+            board, -alpha - 1, -alpha, newDepth, height + 1, newPv, NodeCut);
         if (setjmp) return 0;
 
         if (value > alpha) {
@@ -9116,7 +9186,7 @@ class FruitChess {
           SearchRoot.flag = false;
           search_update_root();
           value = -full_search(
-              board, -beta, -alpha, new_depth, height + 1, new_pv, NodePV);
+              board, -beta, -alpha, newDepth, height + 1, newPv, NodePV);
           if (setjmp) return 0;
         }
       }
@@ -9125,7 +9195,7 @@ class FruitChess {
 
       if (value <= alpha) {
         // upper bound
-        list.value[i] = old_alpha;
+        list.value[i] = oldAlpha;
       } else {
         if (value >= beta) {
           // lower bound
@@ -9136,7 +9206,7 @@ class FruitChess {
         }
       }
 
-      if (value > best_value && (best_value == ValueNone || value > alpha)) {
+      if (value > bestValue && (bestValue == ValueNone || value > alpha)) {
         SearchBest.move = move;
         SearchBest.value = value;
         if (value <= alpha) {
@@ -9154,15 +9224,15 @@ class FruitChess {
         SearchBest.depth = depth;
 
 //unshift is faster, but not used here
-        pv_cat(SearchBest.pv, new_pv, move);
+        pv_cat(SearchBest.pv, newPv, move);
 
         search_update_best();
       }
 
-      if (value > best_value) {
-        best_value = value;
+      if (value > bestValue) {
+        bestValue = value;
         if (value > alpha) {
-          if (search_type == SearchNormal) alpha = value;
+          if (searchType == SearchNormal) alpha = value;
 
           if (value >= beta) break;
         }
@@ -9176,38 +9246,39 @@ class FruitChess {
     //ASSERT(667, SearchBest.move == list.move[0]);
     //ASSERT(668, SearchBest.value == best_value);
 
-    if (UseTrans && best_value > old_alpha && best_value < beta)
+    if (UseTrans && bestValue > oldAlpha && bestValue < beta) {
       pv_fill(SearchBest.pv, 0, board);
+    }
 
-    return best_value;
+    return bestValue;
   }
 
   int full_search(board_t board, int alpha, int beta, int depth, int height,
-      List<int> pv, int node_type) {
-    bool in_check; // bool
-    bool single_reply; // bool
+      List<int> pv, int nodeType) {
+    bool inCheck; // bool
+    bool singleReply; // bool
     int tmove; // int
     int tdepth; // int
 
-    int min_value; // int
-    int max_value; // int
-    int old_alpha; // int
+    int minValue; // int
+    int maxValue; // int
+    int oldAlpha; // int
     int value; // int
-    int best_value; // int
+    int bestValue; // int
 
-    int_t bmove = new int_t(); // int
+    int_t bmove = int_t(); // int
     int move; // int
 
-    int best_move; // int
-    int new_depth; // int
-    int played_nb; // int
+    int bestMove; // int
+    int newDepth; // int
+    int playedNb; // int
     int i; // int
-    int opt_value; // int
+    int optValue; // int
     bool reduced; // bool
-    attack_t attack = new attack_t(); // attack_t[1]
-    sort_t sort = new sort_t(); // sort_t[1]
-    undo_t undo = new undo_t(); // undo_t[1]
-    List<int> new_pv = List.filled(HeightMax, 0); // int[HeightMax]
+    attack_t attack = attack_t(); // attack_t[1]
+    sort_t sort = sort_t(); // sort_t[1]
+    undo_t undo = undo_t(); // undo_t[1]
+    List<int> newPv = List.filled(HeightMax, 0); // int[HeightMax]
     List<int> played = List.filled(256, 0); // int[256]
     bool gotocut = false;
     bool cont = false;
@@ -9269,7 +9340,7 @@ class FruitChess {
         tmove = TransRv.trans_move;
 
 // trans_move is now updated
-        if (node_type != NodePV) {
+        if (nodeType != NodePV) {
           if (UseMateValues) {
             if (TransRv.trans_min_value > ValueEvalInf &&
                 TransRv.trans_min_depth < depth) {
@@ -9282,21 +9353,21 @@ class FruitChess {
             }
           }
 
-          min_value = -ValueInf;
+          minValue = -ValueInf;
 
           if (TransRv.trans_min_depth >= depth) {
-            min_value = value_from_trans(TransRv.trans_min_value, height);
-            if (min_value >= beta) return min_value;
+            minValue = value_from_trans(TransRv.trans_min_value, height);
+            if (minValue >= beta) return minValue;
           }
 
-          max_value = ValueInf;
+          maxValue = ValueInf;
 
           if (TransRv.trans_max_depth >= depth) {
-            max_value = value_from_trans(TransRv.trans_max_value, height);
-            if (max_value <= alpha) return max_value;
+            maxValue = value_from_trans(TransRv.trans_max_value, height);
+            if (maxValue <= alpha) return maxValue;
           }
 
-          if (min_value == max_value) return min_value; // exact match
+          if (minValue == maxValue) return minValue; // exact match
         }
       }
     }
@@ -9305,28 +9376,28 @@ class FruitChess {
     if (height >= HeightMax - 1) return evalpos(board);
 
 // more init
-    old_alpha = alpha;
-    best_value = ValueNone;
-    best_move = MoveNone;
-    played_nb = 0;
+    oldAlpha = alpha;
+    bestValue = ValueNone;
+    bestMove = MoveNone;
+    playedNb = 0;
 
     attack_set(attack, board);
-    in_check = ATTACK_IN_CHECK(attack);
+    inCheck = ATTACK_IN_CHECK(attack);
 
 // null-move pruning
-    if (Usenull && depth >= nullDepth && node_type != NodePV) {
-      if ((!in_check) &&
+    if (Usenull && depth >= nullDepth && nodeType != NodePV) {
+      if ((!inCheck) &&
           (!value_is_mate(beta)) &&
           do_null(board) &&
           ((!UsenullEval) ||
               depth <= nullReduction + 1 ||
               evalpos(board) >= beta)) {
 // null-move search
-        new_depth = depth - nullReduction - 1;
+        newDepth = depth - nullReduction - 1;
 
         move_do_null(board, undo);
         value = -full_search(
-            board, -beta, -beta + 1, new_depth, height + 1, new_pv, -node_type);
+            board, -beta, -beta + 1, newDepth, height + 1, newPv, -nodeType);
         if (setjmp) return 0;
 
         move_undo_null(board, undo);
@@ -9335,10 +9406,10 @@ class FruitChess {
 
         if (UseVer && depth > VerReduction) {
           if (value >= beta && ((!UseVerEndgame) || do_ver(board))) {
-            new_depth = depth - VerReduction;
+            newDepth = depth - VerReduction;
             //ASSERT(676, new_depth > 0);
 
-            value = full_no_null(board, alpha, beta, new_depth, height, new_pv,
+            value = full_no_null(board, alpha, beta, newDepth, height, newPv,
                 NodeCut, tmove, bmove);
             move = bmove.v;
 
@@ -9346,14 +9417,16 @@ class FruitChess {
 
             if (value >= beta) {
               //ASSERT(677, move == new_pv[0]);
-              played[played_nb] = move;
-              played_nb++;
-              best_move = move;
-              best_value = value;
+              played[playedNb] = move;
+              playedNb++;
+              bestMove = move;
+              bestValue = value;
 
 // pv_copy(pv,new_pv);
-              new_pv = []; // slow copy
-              for (int w = 0; w < pv.length; w++) new_pv.add(pv[w]);
+              newPv = []; // slow copy
+              for (int w = 0; w < pv.length; w++) {
+                newPv.add(pv[w]);
+              }
 
               gotocut = true;
             }
@@ -9369,8 +9442,8 @@ class FruitChess {
 
 // pv_cat(pv,new_pv,Movenull);
 
-          best_move = MoveNone;
-          best_value = value;
+          bestMove = MoveNone;
+          bestValue = value;
           gotocut = true;
         }
       }
@@ -9383,46 +9456,46 @@ class FruitChess {
 
       if (UseIID &&
           depth >= IIDDepth &&
-          node_type == NodePV &&
+          nodeType == NodePV &&
           tmove == MoveNone) {
-        new_depth = depth - IIDReduction;
+        newDepth = depth - IIDReduction;
         //ASSERT(679, new_depth > 0);
 
         value = full_search(
-            board, alpha, beta, new_depth, height, new_pv, node_type);
+            board, alpha, beta, newDepth, height, newPv, nodeType);
         if (setjmp) return 0;
 
         if (value <= alpha) {
           value = full_search(
-              board, -ValueInf, beta, new_depth, height, new_pv, node_type);
+              board, -ValueInf, beta, newDepth, height, newPv, nodeType);
           if (setjmp) return 0;
         }
 
-        tmove = new_pv[0];
+        tmove = newPv[0];
       }
 
 // move generation
       sort_init2(sort, board, attack, depth, height, tmove);
 
-      single_reply = false;
-      if (in_check && sort.list.size == 1) single_reply = true;
+      singleReply = false;
+      if (inCheck && sort.list.size == 1) singleReply = true;
 
 // move loop
-      opt_value = ValueInf;
+      optValue = ValueInf;
 
       for (;;) {
         move = sort_next(sort);
         if (move == MoveNone) break;
 
 // extensions
-        new_depth = full_new_depth(
-            depth, move, board, single_reply, node_type == NodePV);
+        newDepth = full_new_depth(
+            depth, move, board, singleReply, nodeType == NodePV);
 
 // history pruning
         reduced = false;
 
-        if (UseHistory && depth >= HistoryDepth && node_type != NodePV) {
-          if ((!in_check) && played_nb >= HistoryMoveNb && new_depth < depth) {
+        if (UseHistory && depth >= HistoryDepth && nodeType != NodePV) {
+          if ((!inCheck) && playedNb >= HistoryMoveNb && newDepth < depth) {
             //ASSERT(680, best_value != ValueNone);
             //ASSERT(681, played_nb > 0);
             //ASSERT(682, sort.pos > 0 && move == sort.list.move[sort.pos - 1]);
@@ -9432,33 +9505,33 @@ class FruitChess {
               //ASSERT(684, move != tmove);
               //ASSERT(685, !move_is_tactical(move, board));
               //ASSERT(686, !move_is_check(move, board));
-              new_depth--;
+              newDepth--;
               reduced = true;
             }
           }
         }
 
 // futility pruning
-        if (UseFutility && depth == 1 && node_type != NodePV) {
-          if ((!in_check) &&
-              new_depth == 0 &&
+        if (UseFutility && depth == 1 && nodeType != NodePV) {
+          if ((!inCheck) &&
+              newDepth == 0 &&
               (!move_is_tactical(move, board)) &&
               (!move_is_dangerous(move, board))) {
             //ASSERT(687, !move_is_check(move, board));
 
 // optimistic evaluation
 
-            if (opt_value == ValueInf) {
-              opt_value = evalpos(board) + FutilityMargin;
+            if (optValue == ValueInf) {
+              optValue = evalpos(board) + FutilityMargin;
               //ASSERT(688, opt_value < ValueInf);
             }
 
-            value = opt_value;
+            value = optValue;
 
 // pruning
             if (value <= alpha) {
-              if (value > best_value) {
-                best_value = value;
+              if (value > bestValue) {
+                bestValue = value;
                 pv[0] = MoveNone;
               }
 
@@ -9474,21 +9547,21 @@ class FruitChess {
 // recursive search
           move_do(board, move, undo);
 
-          if (node_type != NodePV || best_value == ValueNone) {
+          if (nodeType != NodePV || bestValue == ValueNone) {
             // first move
-            value = -full_search(board, -beta, -alpha, new_depth, height + 1,
-                new_pv, -node_type);
+            value = -full_search(board, -beta, -alpha, newDepth, height + 1,
+                newPv, -nodeType);
             if (setjmp) return 0;
           } else {
             // other moves
-            value = -full_search(board, -alpha - 1, -alpha, new_depth,
-                height + 1, new_pv, NodeCut);
+            value = -full_search(board, -alpha - 1, -alpha, newDepth,
+                height + 1, newPv, NodeCut);
             if (setjmp) return 0;
 
             if (value > alpha) {
               //  &&  value < beta
               value = -full_search(
-                  board, -beta, -alpha, new_depth, height + 1, new_pv, NodePV);
+                  board, -beta, -alpha, newDepth, height + 1, newPv, NodePV);
               if (setjmp) return 0;
             }
           }
@@ -9496,24 +9569,24 @@ class FruitChess {
 // history-pruning re-search
           if (HistoryReSearch && reduced && value >= beta) {
             //ASSERT(689, node_type != NodePV);
-            new_depth++;
+            newDepth++;
             //ASSERT(690, new_depth == depth - 1);
-            value = -full_search(board, -beta, -alpha, new_depth, height + 1,
-                new_pv, -node_type);
+            value = -full_search(board, -beta, -alpha, newDepth, height + 1,
+                newPv, -nodeType);
             if (setjmp) return 0;
           }
 
           move_undo(board, move, undo);
 
-          played[played_nb] = move;
-          played_nb++;
+          played[playedNb] = move;
+          playedNb++;
 
-          if (value > best_value) {
-            best_value = value;
-            pv_cat(pv, new_pv, move);
+          if (value > bestValue) {
+            bestValue = value;
+            pv_cat(pv, newPv, move);
             if (value > alpha) {
               alpha = value;
-              best_move = move;
+              bestMove = move;
               if (value >= beta) {
                 gotocut = true;
                 break;
@@ -9521,7 +9594,7 @@ class FruitChess {
             }
           }
 
-          if (node_type == NodeCut) node_type = NodeAll;
+          if (nodeType == NodeCut) nodeType = NodeAll;
         } // continue [1]
       }
 
@@ -9529,9 +9602,9 @@ class FruitChess {
         // [2]
 
 // ALL node
-        if (best_value == ValueNone) {
+        if (bestValue == ValueNone) {
           // no legal move
-          if (in_check) {
+          if (inCheck) {
             //ASSERT(691, board_is_mate(board));
             return (height - ValueMate);
           } else {
@@ -9547,41 +9620,41 @@ class FruitChess {
     //ASSERT(693, value_is_ok(best_value));
 
 // move ordering
-    if (best_move != MoveNone) {
-      good_move(best_move, board, depth, height);
+    if (bestMove != MoveNone) {
+      good_move(bestMove, board, depth, height);
 
-      if (best_value >= beta && (!move_is_tactical(best_move, board))) {
+      if (bestValue >= beta && (!move_is_tactical(bestMove, board))) {
         //ASSERT(694, played_nb > 0 && played[played_nb - 1] == best_move);
 
-        for (i = 0; i <= played_nb - 2; i++) {
+        for (i = 0; i <= playedNb - 2; i++) {
           move = played[i];
           //ASSERT(695, move != best_move);
           history_bad(move, board);
         }
 
-        history_good(best_move, board);
+        history_good(bestMove, board);
       }
     }
 
 // transposition table
     if (UseTrans && depth >= TransDepth) {
-      tmove = best_move;
+      tmove = bestMove;
       tdepth = depth;
-      TransRv.trans_min_value = (best_value > old_alpha
-          ? value_to_trans(best_value, height)
+      TransRv.trans_min_value = (bestValue > oldAlpha
+          ? value_to_trans(bestValue, height)
           : -ValueInf);
 
       TransRv.trans_max_value =
-          (best_value < beta ? value_to_trans(best_value, height) : ValueInf);
+          (bestValue < beta ? value_to_trans(bestValue, height) : ValueInf);
 
       trans_store(Trans, board.key, tmove, tdepth, TransRv);
     }
 
-    return best_value;
+    return bestValue;
   }
 
   sort_init2(sort_t sort, board_t board, attack_t attack, int depth, int height,
-      int trans_killer) {
+      int transKiller) {
     //ASSERT(799, depth_is_ok(depth));
     //ASSERT(800, height_is_ok(height));
     //ASSERT(801, trans_killer == MoveNone || move_is_ok(trans_killer));
@@ -9592,7 +9665,7 @@ class FruitChess {
     sort.depth = depth;
     sort.height = height;
 
-    sort.trans_killer = trans_killer;
+    sort.trans_killer = transKiller;
     sort.killer_1 = Killer[sort.height][0];
     sort.killer_2 = Killer[sort.height][1];
 
@@ -9613,16 +9686,16 @@ class FruitChess {
   }
 
   int full_no_null(board_t board, int alpha, int beta, int depth, int height,
-      List<int> pv, int node_type, int tmove, int_t b_move) {
+      List<int> pv, int nodeType, int tmove, int_t bMove) {
     int value; // int
-    int best_value; // int
+    int bestValue; // int
     int move; // int
-    int new_depth; // int
+    int newDepth; // int
 
-    attack_t attack = new attack_t(); // attack_t[1]
-    sort_t sort = new sort_t(); // sort_t[1]
-    undo_t undo = new undo_t(); // undo_t[1]
-    List<int> new_pv = List.filled(HeightMax, 0); // int[HeightMax]
+    attack_t attack = attack_t(); // attack_t[1]
+    sort_t sort = sort_t(); // sort_t[1]
+    undo_t undo = undo_t(); // undo_t[1]
+    List<int> newPv = List.filled(HeightMax, 0); // int[HeightMax]
     bool gotocut = false;
 
     //ASSERT(697, range_is_ok(alpha, beta));
@@ -9651,8 +9724,8 @@ class FruitChess {
     attack_set(attack, board);
     //ASSERT(707, !ATTACK_IN_CHECK(attack));
 
-    b_move.v = MoveNone;
-    best_value = ValueNone;
+    bMove.v = MoveNone;
+    bestValue = ValueNone;
 
 // move loop
 
@@ -9662,21 +9735,21 @@ class FruitChess {
       move = sort_next(sort);
       if (move == MoveNone) break;
 
-      new_depth = full_new_depth(depth, move, board, false, false);
+      newDepth = full_new_depth(depth, move, board, false, false);
 
       move_do(board, move, undo);
       value = -full_search(
-          board, -beta, -alpha, new_depth, height + 1, new_pv, -node_type);
+          board, -beta, -alpha, newDepth, height + 1, newPv, -nodeType);
       if (setjmp) return 0;
 
       move_undo(board, move, undo);
 
-      if (value > best_value) {
-        best_value = value;
-        pv_cat(pv, new_pv, move);
+      if (value > bestValue) {
+        bestValue = value;
+        pv_cat(pv, newPv, move);
         if (value > alpha) {
           alpha = value;
-          b_move.v = move;
+          bMove.v = move;
           if (value >= beta) {
             gotocut = true;
             break;
@@ -9690,10 +9763,10 @@ class FruitChess {
 
 // ALL node
 
-      if (best_value == ValueNone) {
+      if (bestValue == ValueNone) {
         // no legal move => stalemate
         //ASSERT(708, board_is_stalemate(board));
-        best_value = ValueDraw;
+        bestValue = ValueDraw;
       }
     } // goto cut [1]
 
@@ -9701,7 +9774,7 @@ class FruitChess {
 
     //ASSERT(709, value_is_ok(best_value));
 
-    return best_value;
+    return bestValue;
   }
 
   bool capture_is_dangerous(int move, board_t board) {
@@ -9714,15 +9787,17 @@ class FruitChess {
 
     piece = MOVE_PIECE(move, board);
 
-    if (PIECE_IS_PAWN(piece) && PAWN_RANK(MOVE_TO(move), board.turn) >= Rank7)
+    if (PIECE_IS_PAWN(piece) && PAWN_RANK(MOVE_TO(move), board.turn) >= Rank7) {
       return true;
+    }
 
     capture = move_capture(move, board);
 
     if (PIECE_IS_QUEEN(capture)) return true;
 
-    if (PIECE_IS_PAWN(capture) && PAWN_RANK(MOVE_TO(move), board.turn) <= Rank2)
+    if (PIECE_IS_PAWN(capture) && PAWN_RANK(MOVE_TO(move), board.turn) <= Rank2) {
       return true;
+    }
 
     return false;
   }
@@ -9731,11 +9806,11 @@ class FruitChess {
     int me; // int
     int opp; // int
     int king; // int
-    int opp_flag; // int
+    int oppFlag; // int
     int from; // int
     int to; // int
     int capture; // int
-    int inc_ptr; // int
+    int incPtr; // int
     int inc; // int
 
     //ASSERT(742, board_is_legal(board));
@@ -9743,33 +9818,35 @@ class FruitChess {
 
 // lone king?
     me = board.turn;
-    if (board.piece_size[me] != 1 || board.pawn_size[me] != 0)
+    if (board.piece_size[me] != 1 || board.pawn_size[me] != 0) {
       return false; // no
+    }
 
 // king in a corner?
     king = KING_POS(board, me);
-    if (king != A1 && king != H1 && king != A8 && king != H8)
+    if (king != A1 && king != H1 && king != A8 && king != H8) {
       return false; // no
+    }
 
 // init
     opp = COLOUR_OPP(me);
-    opp_flag = COLOUR_FLAG(opp);
+    oppFlag = COLOUR_FLAG(opp);
 
 // king can move?
     from = king;
 
-    inc_ptr = 0;
+    incPtr = 0;
     for (;;) {
-      inc = KingInc[inc_ptr];
+      inc = KingInc[incPtr];
       if (inc == IncNone) break;
 
       to = from + inc;
       capture = board.square[to];
-      if (capture == Empty || FLAG_IS(capture, opp_flag)) {
+      if (capture == Empty || FLAG_IS(capture, oppFlag)) {
         if (!is_attacked(board, to, opp)) return false; // legal king move
       }
 
-      inc_ptr++;
+      incPtr++;
     }
 
 // no legal move
@@ -10011,21 +10088,21 @@ class FruitChess {
 
   int full_quiescence(
       board_t board, int alpha, int beta, int depth, int height, List<int> pv) {
-    bool in_check; // bool
-    int old_alpha; // int
+    bool inCheck; // bool
+    int oldAlpha; // int
 
     int value; // int
-    int best_value; // int
-    int opt_value; // int
+    int bestValue; // int
+    int optValue; // int
     int move; // int
 
     int to; // int
     int capture; // int
 
-    attack_t attack = new attack_t(); // attack_t[1]
-    sort_t sort = new sort_t(); // sort_t[1]
-    undo_t undo = new undo_t(); // undo_t[1]
-    List<int> new_pv = List.filled(HeightMax, 0); // int[HeightMax]
+    attack_t attack = attack_t(); // attack_t[1]
+    sort_t sort = sort_t(); // sort_t[1]
+    undo_t undo = undo_t(); // undo_t[1]
+    List<int> newPv = List.filled(HeightMax, 0); // int[HeightMax]
 
     bool gotocut = false;
     bool cont = false;
@@ -10079,9 +10156,9 @@ class FruitChess {
 
 // more init
     attack_set(attack, board);
-    in_check = ATTACK_IN_CHECK(attack);
+    inCheck = ATTACK_IN_CHECK(attack);
 
-    if (in_check) {
+    if (inCheck) {
       //ASSERT(717, depth < 0);
       depth++; // in-check extension
     }
@@ -10090,13 +10167,13 @@ class FruitChess {
     if (height >= HeightMax - 1) return evalpos(board);
 
 // more init
-    old_alpha = alpha;
-    best_value = ValueNone;
+    oldAlpha = alpha;
+    bestValue = ValueNone;
 
 // if (UseDelta)
-    opt_value = ValueInf;
+    optValue = ValueInf;
 
-    if (!in_check) {
+    if (!inCheck) {
 // lone-king stalemate?
       if (simple_stalemate(board)) return ValueDraw;
 
@@ -10104,14 +10181,14 @@ class FruitChess {
       value = evalpos(board);
 
       //ASSERT(718, value > best_value);
-      best_value = value;
+      bestValue = value;
       if (value > alpha) {
         alpha = value;
         if (value >= beta) gotocut = true;
       }
 
       if ((!gotocut) && UseDelta) {
-        opt_value = value + DeltaMargin;
+        optValue = value + DeltaMargin;
         //ASSERT(719, opt_value < ValueInf);
       }
     }
@@ -10128,21 +10205,21 @@ class FruitChess {
 
 // delta pruning
 
-        if (UseDelta && beta == old_alpha + 1) {
-          if ((!in_check) &&
+        if (UseDelta && beta == oldAlpha + 1) {
+          if ((!inCheck) &&
               (!move_is_check(move, board)) &&
               (!capture_is_dangerous(move, board))) {
             //ASSERT(720, move_is_tactical(move, board));
 
 // optimistic evaluation
-            value = opt_value;
+            value = optValue;
 
             to = MOVE_TO(move);
             capture = board.square[to];
 
-            if (capture != Empty)
+            if (capture != Empty) {
               value += ValuePiece[capture];
-            else {
+            } else {
               if (MOVE_IS_EN_PASSANT(move)) value += ValuePawn;
             }
 
@@ -10150,8 +10227,8 @@ class FruitChess {
 
 // pruning
             if (value <= alpha) {
-              if (value > best_value) {
-                best_value = value;
+              if (value > bestValue) {
+                bestValue = value;
                 pv[0] = MoveNone;
               }
 
@@ -10167,14 +10244,14 @@ class FruitChess {
           move_do(board, move, undo);
 
           value = -full_quiescence(
-              board, -beta, -alpha, depth - 1, height + 1, new_pv);
+              board, -beta, -alpha, depth - 1, height + 1, newPv);
           if (setjmp) return 0;
 
           move_undo(board, move, undo);
 
-          if (value > best_value) {
-            best_value = value;
-            pv_cat(pv, new_pv, move);
+          if (value > bestValue) {
+            bestValue = value;
+            pv_cat(pv, newPv, move);
             if (value > alpha) {
               alpha = value;
               //best_move = move;
@@ -10192,7 +10269,7 @@ class FruitChess {
 
 // ALL node
 
-        if (best_value == ValueNone) {
+        if (bestValue == ValueNone) {
           // no legal move
           //ASSERT(721, board_is_mate(board));
           return (height - ValueMate);
@@ -10204,38 +10281,38 @@ class FruitChess {
 
     //ASSERT(722, value_is_ok(best_value));
 
-    return best_value;
+    return bestValue;
   }
 
   int full_new_depth(
-      int depth, int move, board_t board, bool single_reply, bool in_pv) {
-    int new_depth; // int
+      int depth, int move, board_t board, bool singleReply, bool inPv) {
+    int newDepth; // int
     bool b = false; // bool
 
     //ASSERT(723, depth_is_ok(depth));
     //ASSERT(724, move_is_ok(move));
 
     //ASSERT(728, depth > 0);
-    new_depth = depth - 1;
+    newDepth = depth - 1;
 
-    b = b || (single_reply && ExtendSingleReply);
+    b = b || (singleReply && ExtendSingleReply);
     b = b ||
-        (in_pv &&
+        (inPv &&
             MOVE_TO(move) == board.cap_sq &&
             see_move(move, board) > 0); // recapture
     b = b ||
-        (in_pv &&
+        (inPv &&
             PIECE_IS_PAWN(MOVE_PIECE(move, board)) &&
             PAWN_RANK(MOVE_TO(move), board.turn) == Rank7 &&
             see_move(move, board) >= 0);
     b = b || move_is_check(move, board);
     if (b) {
-      new_depth++;
+      newDepth++;
     }
 
     //ASSERT(729, new_depth >= 0 && new_depth <= depth);
 
-    return new_depth;
+    return newDepth;
   }
 
   bool do_null(board_t board) {
@@ -10253,7 +10330,7 @@ class FruitChess {
     int tmove; // int
     int tdepth; // int
 
-    undo_t undo = new undo_t(); // undo_t[1]
+    undo_t undo = undo_t(); // undo_t[1]
 
     //ASSERT(734, UseTrans);
     move = pv[at];
@@ -10279,8 +10356,9 @@ class FruitChess {
     //ASSERT(737, !move_is_tactical(move, board));
     piece = MOVE_PIECE(move, board);
 
-    if (PIECE_IS_PAWN(piece) && PAWN_RANK(MOVE_TO(move), board.turn) >= Rank7)
+    if (PIECE_IS_PAWN(piece) && PAWN_RANK(MOVE_TO(move), board.turn) >= Rank7) {
       return true;
+    }
 
     return false;
   }
@@ -10615,14 +10693,14 @@ class FruitChess {
     }
   }
 
-  int move_value(move, board_t board, height, trans_killer) {
+  int move_value(move, board_t board, height, transKiller) {
     int value; // int
 
     //ASSERT(851, move_is_ok(move));
     //ASSERT(853, height_is_ok(height));
     //ASSERT(854, trans_killer == MoveNone || move_is_ok(trans_killer));
 
-    if (move == trans_killer) {
+    if (move == transKiller) {
       // transposition table killer
       value = TransScore;
     } else {
@@ -10677,8 +10755,9 @@ class FruitChess {
   }
 
   bool range_is_ok(int min, int max) {
-    if ((!value_is_ok(min)) || (!value_is_ok(max)) || (min >= max))
+    if ((!value_is_ok(min)) || (!value_is_ok(max)) || (min >= max)) {
       return false; // alpha-beta-like ranges cannot be null
+    }
 
     return true;
   }
@@ -10786,24 +10865,24 @@ class FruitChess {
       if (!randomopening(mlist)) {
         do_input("go movetime 4");
         //to see performance
-        print_out("nodes: " + SearchCurrent.node_nb.toString());
+        print_out("nodes: ${SearchCurrent.node_nb}");
       }
 
       if (mc % 2 == 0) {
-        pgn += ((mc >>> 1) + 1).toString() + ".";
+        pgn += "${(mc >>> 1) + 1}.";
       }
-      pgn += bestmv2 + " ";
+      pgn += "$bestmv2 ";
 
-      mlist += " " + bestmv;
+      mlist += " $bestmv";
 
-      do_input("position moves" + mlist);
+      do_input("position moves$mlist");
       printboard();
 
       print_out(pgn);
 
       if (board_is_mate(SearchInput.board)) {
         print_out(
-            "Checkmate! " + (SearchInput.board.turn == White ? "0-1" : "1-0"));
+            "Checkmate! ${SearchInput.board.turn == White ? "0-1" : "1-0"}");
         break;
       }
       if (board_is_stalemate(SearchInput.board)) {

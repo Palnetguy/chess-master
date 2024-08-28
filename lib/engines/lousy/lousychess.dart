@@ -123,7 +123,7 @@ class EPD {
   }
 
   static bool IsPieceChar(int c) {
-    return ([75, 81, 82, 66, 78].indexOf(c) >= 0);
+    return ([75, 81, 82, 66, 78].contains(c));
   }
 
   static String PositionToFileString(int position) {
@@ -153,25 +153,27 @@ class EPD {
       case Const.PawnID:
         return "";
       default:
-        logPrint("invalid PieceType : " + pieceType.toString());
+        logPrint("invalid PieceType : $pieceType");
     }
     return "";
   }
 
   static int StringToPosition(String s) {
-    if (s.length != 2) logPrint("invalid PositionString : " + s);
+    if (s.length != 2) logPrint("invalid PositionString : $s");
     return CharToFile(s.codeUnits[0]) + (CharToRank(s.codeUnits[1]) << 3);
   }
 
   static int CharToFile(int fileChar) {
-    if (fileChar < 97 || fileChar > 104)
-      logPrint("invalid fileChar : " + String.fromCharCode(fileChar));
+    if (fileChar < 97 || fileChar > 104) {
+      logPrint("invalid fileChar : ${String.fromCharCode(fileChar)}");
+    }
     return (fileChar - 97);
   }
 
   static int CharToRank(int rankChar) {
-    if (rankChar < 49 || rankChar > 56)
-      logPrint("invalid rankChar : " + String.fromCharCode(rankChar));
+    if (rankChar < 49 || rankChar > 56) {
+      logPrint("invalid rankChar : ${String.fromCharCode(rankChar)}");
+    }
     return (rankChar - 49);
   }
 
@@ -188,7 +190,7 @@ class EPD {
       case 78:
         return Const.KnightID;
       default:
-        logPrint("invalid PieceChar : " + String.fromCharCode(pieceChar));
+        logPrint("invalid PieceChar : ${String.fromCharCode(pieceChar)}");
     }
     return -1;
   }
@@ -204,7 +206,7 @@ class EPD {
       case Const.PawnPromoteKnightID:
         return "N";
       default:
-        logPrint("invalid moveType : " + String.fromCharCode(moveType));
+        logPrint("invalid moveType : ${String.fromCharCode(moveType)}");
     }
     return "";
   }
@@ -224,7 +226,7 @@ class EPD {
       case 110:
         return Const.PawnPromoteKnightID;
       default:
-        logPrint("invalid PieceChar : " + String.fromCharCode(pieceChar));
+        logPrint("invalid PieceChar : ${String.fromCharCode(pieceChar)}");
     }
     return -1;
   }
@@ -271,7 +273,7 @@ class EPD {
     // e.g. e2e4  e1g1 (KS castle), e7e8q (promotion)
     String s = EPD.PositionToString(move.fromPosition) +
         EPD.PositionToString(move.toPosition);
-    if (move.moveType >= Const.SpecialMoveID)
+    if (move.moveType >= Const.SpecialMoveID) {
       switch (move.moveType) {
         case Const.PawnPromoteQueenID:
         case Const.PawnPromoteRookID:
@@ -280,6 +282,7 @@ class EPD {
           s += EPD.PromotionPieceToString(move.moveType).toLowerCase();
           break;
       }
+    }
     return s;
   }
 
@@ -392,7 +395,7 @@ class BitBoard {
       for (int h = 0; h < 7; h++) {
         int sq = (v << 3) | h;
         int bit = 1 << sq;
-        s += " " + ((N & bit) != 0 ? "1" : ".");
+        s += " ${(N & bit) != 0 ? "1" : "."}";
       }
       logPrint(s);
     }
@@ -490,11 +493,12 @@ class BitBoard {
       for (int toSquare = 0; toSquare < Const.NrSquares; toSquare++) {
         Direction[fromSquare][toSquare] = -1;
         int toBB = Identity[toSquare]; //U64
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++) {
           if ((Ray[fromSquare][i] & toBB) != 0) {
             Direction[fromSquare][toSquare] = i;
             break;
           }
+        }
       }
     }
   }
@@ -509,12 +513,13 @@ class BitBoard {
 
   Initialize_msb_lsb() {
     for (int i = 1; i < 65536; i++) {
-      for (int j = 0; j < 16; j++)
+      for (int j = 0; j < 16; j++) {
         if ((i & (1 << j)) != 0) {
           msb[i] = j;
           if (lsb[i] == 16) lsb[i] = j;
           pop[i]++;
         }
+      }
     }
   }
 
@@ -583,7 +588,9 @@ class BitBoard {
   CreateBoxes() {
     CalculateRectangularMasks(Box1, 1);
     CalculateRectangularMasks(Box2, 2);
-    for (int i = 0; i < 64; i++) Box2[i] &= ~Box1[i]; // set inside to 0;
+    for (int i = 0; i < 64; i++) {
+      Box2[i] &= ~Box1[i]; // set inside to 0;
+    }
   }
 
   //====
@@ -616,11 +623,13 @@ class BitBoard {
       AllRanksInFrontBB1[0][y] = 0;
       AllRanksInFrontBB1[1][y] = 0;
       // for white :
-      for (int yy = y + 1; yy < 8; yy++)
+      for (int yy = y + 1; yy < 8; yy++) {
         AllRanksInFrontBB1[0][y] |= RankBB1[yy];
+      }
       // for black :
-      for (int yy = y - 1; yy >= 0; yy--)
+      for (int yy = y - 1; yy >= 0; yy--) {
         AllRanksInFrontBB1[1][y] |= RankBB1[yy];
+      }
     }
     // FileInFrontBB1
     for (int color = 0; color < 2; color++)
@@ -635,12 +644,14 @@ class BitBoard {
         int x = i & 7;
         int y = i >> 3;
         FileInFrontBB1[color][i] = 0;
-        if (x > 0)
+        if (x > 0) {
           FileInFrontBB1[color][i] |=
               FileBB1[x - 1] & AllRanksInFrontBB1[color][y];
-        if (x < 7)
+        }
+        if (x < 7) {
           FileInFrontBB1[color][i] |=
               FileBB1[x + 1] & AllRanksInFrontBB1[color][y];
+        }
       }
   }
 
@@ -773,7 +784,9 @@ class Board {
       for (int j = 0; j < Const.NrPieceTypes; j++) {
         PiecePos[i].add(List.filled(Const.MaxNrPiecesPerType, 0));
       }
-    for (int k = 0; k < 64; k++) SquareContents.add(SquareContentInfo());
+    for (int k = 0; k < 64; k++) {
+      SquareContents.add(SquareContentInfo());
+    }
   }
 
   //==== logPrintOut Board
@@ -785,11 +798,11 @@ class Board {
         int sq = i + j;
         var Q = SquareContents[sq];
         int t = Q.pieceType, p = Q.pieceColor;
-        s += ((t == Const.EmptyID) ? '.' : Const.piece_C[p][t]) + ' ';
+        s += '${(t == Const.EmptyID) ? '.' : Const.piece_C[p][t]} ';
       }
       logPrint(s);
     }
-    logPrint((colorToMove == Const.White ? "White" : "Black") + " to move");
+    logPrint("${colorToMove == Const.White ? "White" : "Black"} to move");
   }
   //====
 
@@ -803,22 +816,28 @@ class Board {
     moveGenerator = clone.moveGenerator;
     //
     pieces = []; //new U64[clone.pieces.length]
-    for (int i = 0; i < clone.pieces.length; i++) pieces.add(clone.pieces[i]);
+    for (int i = 0; i < clone.pieces.length; i++) {
+      pieces.add(clone.pieces[i]);
+    }
     allPiecesBB = clone.allPiecesBB;
     for (int i = 0; i < Const.NrColors; i++)
-      for (int j = 0; j < Const.NrPieceTypes; j++)
+      for (int j = 0; j < Const.NrPieceTypes; j++) {
         pieceBB[i][j] = clone.pieceBB[i][j];
+      }
     // PiecePos
     for (int i = 0; i < Const.NrColors; i++)
-      for (int j = 0; j < Const.NrPieceTypes; j++)
-        for (int k = 0; k < Const.MaxNrPiecesPerType; k++)
+      for (int j = 0; j < Const.NrPieceTypes; j++) {
+        for (int k = 0; k < Const.MaxNrPiecesPerType; k++) {
           PiecePos[i][j][k] = clone.PiecePos[i][j][k];
+      }
+        }
     //..
     // nrPieces
     for (int i = 0; i < Const.NrColors; i++) {
       TotalNrPieces[i] = clone.TotalNrPieces[i];
-      for (int j = 0; j < Const.NrPieceTypes; j++)
+      for (int j = 0; j < Const.NrPieceTypes; j++) {
         NrPieces[i][j] = clone.NrPieces[i][j];
+      }
     }
     // SquareContents
     for (int i = 0; i < Const.NrSquares; i++) {
@@ -847,8 +866,9 @@ class Board {
     //
 
     storedBoardStates = []; //new BoardState[clone.storedBoardStates.length]
-    for (int i = 0; i < clone.storedBoardStates.length; i++)
+    for (int i = 0; i < clone.storedBoardStates.length; i++) {
       storedBoardStates.add(clone.storedBoardStates[i]);
+    }
     //
 
     for (int i = 0; i < Const.NrColors; i++) {
@@ -879,8 +899,9 @@ class Board {
     pieces[Const.White] = 0;
     pieces[Const.Black] = 0;
     allPiecesBB = 0;
-    for (int i = 0; i < Const.NrColors; i++)
+    for (int i = 0; i < Const.NrColors; i++) {
       pieceBB[i] = List.filled(Const.NrPieceTypes, 0);
+    }
 
     // en passant
     enPassantPosition = Const.InvalidID;
@@ -935,9 +956,10 @@ class Board {
     while (n < boardString.length) {
       int c = boardString.codeUnits[n];
 
-      if (c >= 48 && c <= 57) // isdigit
+      if (c >= 48 && c <= 57) {
+        // isdigit
         squareNr += (c - 48); // advance position
-      else if (c == 47) {
+      } else if (c == 47) {
         // simply skip '/'
       } else if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122))
       //isLetter
@@ -1021,14 +1043,15 @@ class Board {
     //
     // **** en-passant position ****
     String epString = fenStrings[3];
-    if (epString.length == 1 && epString[0] == '-')
+    if (epString.length == 1 && epString[0] == '-') {
       enPassantPosition = Const.InvalidID;
-    else {
+    } else {
       int e0 = epString.codeUnits[0];
       int e1 = epString.codeUnits[1];
 
-      if (epString.length != 2)
+      if (epString.length != 2) {
         logPrint("FEN_to_Board : wrong ep-String length");
+      }
       if (!EPD.IsFileChar(e0)) logPrint("FEN_to_Board : 'a'-'h' expected");
       if (!EPD.IsRankChar(e1)) logPrint("FEN_to_Board : '1'-'8' expected");
       enPassantPosition = (e0 - 97) + ((e1 - 49) << 3);
@@ -1040,12 +1063,16 @@ class Board {
       halfMoveNr = 0;
     } else {
       fiftyMoveNr = int.parse(fenStrings[4]);
-      if (fiftyMoveNr == false) //null
+      if (fiftyMoveNr == false) {
+        //null
         logPrint("Invalid Fifty-Move nr");
+      }
       int fullMoveNr;
       fullMoveNr = int.parse(fenStrings[5]);
-      if (fullMoveNr == false) //null
+      if (fullMoveNr == false) {
+        //null
         logPrint("Invalid Full-Move nr");
+      }
       if (fullMoveNr < 1) logPrint("Invalid Full-Move nr ( <1 ) ");
       halfMoveNr = (fullMoveNr - 1) * 2;
     }
@@ -1066,7 +1093,7 @@ class Board {
     // e.g. e2e4  e1g1 (KS castle), e7e8q (promotion)
     String s = EPD.PositionToString(move.fromPosition) +
         EPD.PositionToString(move.toPosition);
-    if (move.moveType >= Const.SpecialMoveID)
+    if (move.moveType >= Const.SpecialMoveID) {
       switch (move.moveType) {
         case Const.PawnPromoteQueenID:
         case Const.PawnPromoteRookID:
@@ -1075,6 +1102,7 @@ class Board {
           s += EPD.PromotionPieceToString(move.moveType).toLowerCase();
           break;
       }
+    }
     return s;
   }
 
@@ -1089,11 +1117,12 @@ class Board {
     int nrMoves = moves.length;
     // Check the list to see if the move is present
     int moveNr = -1;
-    for (int i = 0; i < nrMoves; i++)
+    for (int i = 0; i < nrMoves; i++) {
       if (MoveDo.Eq(move, moves[i])) {
         moveNr = i;
         break;
       }
+    }
     if (moveNr == -1) return "???";
 
     // maybe it's a special move
@@ -1106,20 +1135,18 @@ class Board {
         case Const.CastleKSID:
           return "O-O";
         case Const.EnPassantCaptureID:
-          return EPD.PositionToFileString(fromPosition) +
-              "x" +
-              EPD.PositionToString(toPosition);
+          return "${EPD.PositionToFileString(fromPosition)}x${EPD.PositionToString(toPosition)}";
         case Const.PawnPromoteQueenID:
         case Const.PawnPromoteRookID:
         case Const.PawnPromoteBishopID:
         case Const.PawnPromoteKnightID:
           String s = EPD.PositionToFileString(fromPosition);
-          if (move.captureInfo == Const.NoCaptureID)
+          if (move.captureInfo == Const.NoCaptureID) {
             s += EPD.PositionToRankString(toPosition);
-          else {
-            s += "x" + EPD.PositionToString(toPosition);
+          } else {
+            s += "x${EPD.PositionToString(toPosition)}";
           }
-          return s + "=" + EPD.PromotionPieceToString(move.moveType);
+          return "$s=${EPD.PromotionPieceToString(move.moveType)}";
         case Const.Pawn2StepID:
           return EPD.PositionToString(toPosition);
         default:
@@ -1131,12 +1158,11 @@ class Board {
 
     if (move.moveType == Const.PawnID) {
       // is never ambiguous
-      if (move.captureInfo == Const.NoCaptureID)
+      if (move.captureInfo == Const.NoCaptureID) {
         return EPD.PositionToString(toPosition);
-      else
-        return EPD.PositionToFileString(fromPosition) +
-            "x" +
-            EPD.PositionToString(toPosition);
+      } else {
+        return "${EPD.PositionToFileString(fromPosition)}x${EPD.PositionToString(toPosition)}";
+      }
     }
 
     // It's a major piece move.
@@ -1150,8 +1176,9 @@ class Board {
       if (move.moveType == moves[i].moveType &&
           toPosition == moves[i].toPosition) {
         nrAmbiguousMoves++;
-        if (nrAmbiguousMoves > 1)
+        if (nrAmbiguousMoves > 1) {
           break; // more then 1, always specify both file and rank
+        }
         // only need to store 1
         ambiguousMove = moves[i];
       }
@@ -1160,14 +1187,16 @@ class Board {
       // add either a FileChar, a RankChar or both
       if (nrAmbiguousMoves == 1) {
         // different files ?
-        if (ambiguousMove.fromPosition & 7 != move.fromPosition & 7)
+        if (ambiguousMove.fromPosition & 7 != move.fromPosition & 7) {
           ss += EPD.PositionToFileString(move.fromPosition);
-        else
+        } else {
           // no, so differnent ranks
           ss += EPD.PositionToRankString(move.fromPosition);
-      } else
+        }
+      } else {
         // more then 1 ambiguous move. Use both file and rank
         ss += EPD.PositionToString(move.fromPosition);
+      }
     }
     if (move.captureInfo != Const.NoCaptureID) ss += "x";
     return ss + EPD.PositionToString(toPosition);
@@ -1189,9 +1218,9 @@ class Board {
     int nrMoves = moves.length;
     for (int i = 0; i < nrMoves; i++) {
       if (moves[i].fromPosition == fromPos && moves[i].toPosition == toPos) {
-        if (promotionType == -1)
+        if (promotionType == -1) {
           return moves[i]; // it's not a promotion
-        else if (moves[i].moveType == promotionType) return moves[i];
+        } else if (moves[i].moveType == promotionType) return moves[i];
       }
     }
     // nothing found
@@ -1212,14 +1241,16 @@ class Board {
 
     if (s == "O-O" || s == "0-0") {
       // king side castle
-      for (int i = 0; i < nrMoves; i++)
+      for (int i = 0; i < nrMoves; i++) {
         if (moves[i].moveType == Const.CastleKSID) return moves[i];
+      }
       return MoveDo.NoMove();
     }
     if (s == "O-O-O" || s == "0-0-0") {
       // queen side castle
-      for (int i = 0; i < nrMoves; i++)
+      for (int i = 0; i < nrMoves; i++) {
         if (moves[i].moveType == Const.CastleQSID) return moves[i];
+      }
       return MoveDo.NoMove();
     }
 
@@ -1231,9 +1262,9 @@ class Board {
       int toPos = EPD.StringToPosition(s.substring(0, 2));
       // maybe it's a promotion
       int promotionChar = 32;
-      if (nrChars >= 3 && EPD.IsPieceChar(s.codeUnits[2]))
+      if (nrChars >= 3 && EPD.IsPieceChar(s.codeUnits[2])) {
         promotionChar = s.codeUnits[2];
-      else if (nrChars >= 4 && EPD.IsPieceChar(s.codeUnits[3]))
+      } else if (nrChars >= 4 && EPD.IsPieceChar(s.codeUnits[3]))
         promotionChar = s.codeUnits[3];
       if (promotionChar != 32) {
         int moveType = Const.InvalidID;
@@ -1255,19 +1286,21 @@ class Board {
             moveType = Const.PawnPromoteKnightID;
             break;
         }
-        for (int i = 0; i < nrMoves; i++)
+        for (int i = 0; i < nrMoves; i++) {
           if (moves[i].moveType == moveType &&
               moves[i].toPosition == toPos &&
               moves[i].captureInfo == Const.NoCaptureID) return moves[i];
+        }
         // nothing found :
         return MoveDo.NoMove();
       }
       // it is not a promotion, but a normal move
-      for (int i = 0; i < nrMoves; i++)
+      for (int i = 0; i < nrMoves; i++) {
         if ((moves[i].moveType == Const.PawnID ||
                 moves[i].moveType == Const.Pawn2StepID) &&
             moves[i].toPosition == toPos &&
             moves[i].captureInfo == Const.NoCaptureID) return moves[i];
+      }
       // nothing found :
       return MoveDo.NoMove();
     }
@@ -1275,33 +1308,37 @@ class Board {
     // Test for a capturing pawn moves :  axb7 , axb8Q , axb8=Q : these start with a FileChar & 'x'
 
     if (EPD.IsFileChar(s.codeUnits[0])) {
-      if (nrChars < 4 || s.codeUnits[1] != 120) // 'x'
+      if (nrChars < 4 || s.codeUnits[1] != 120) {
+        // 'x'
         return MoveDo.NoMove();
+      }
       int toPos = EPD.StringToPosition(s.substring(2, 4));
       int fromFileNr = EPD.CharToFile(s.codeUnits[0]);
       // maybe it's a capturing promotion
       int promotionChar = 32; // ' '
-      if (nrChars >= 5 && EPD.IsPieceChar(s.codeUnits[4]))
+      if (nrChars >= 5 && EPD.IsPieceChar(s.codeUnits[4])) {
         promotionChar = s.codeUnits[4];
-      else if (nrChars >= 6 && EPD.IsPieceChar(s.codeUnits[5]))
+      } else if (nrChars >= 6 && EPD.IsPieceChar(s.codeUnits[5]))
         promotionChar = s.codeUnits[5];
       if (promotionChar != 32) {
         int moveType = EPD.CharToPromotionMoveType(promotionChar);
-        for (int i = 0; i < nrMoves; i++)
+        for (int i = 0; i < nrMoves; i++) {
           if (moves[i].moveType == moveType &&
               moves[i].fromPosition & 7 == fromFileNr &&
               moves[i].toPosition == toPos &&
               moves[i].captureInfo != Const.NoCaptureID) return moves[i];
+        }
         // nothing found :
         return MoveDo.NoMove();
       }
       // it is not a promotion, but a normal capture
-      for (int i = 0; i < nrMoves; i++)
+      for (int i = 0; i < nrMoves; i++) {
         if ((moves[i].moveType == Const.PawnID ||
                 moves[i].moveType == Const.EnPassantCaptureID) &&
             moves[i].fromPosition & 7 == fromFileNr &&
             moves[i].toPosition == toPos &&
             moves[i].captureInfo != Const.NoCaptureID) return moves[i];
+      }
       // nothing found :
       return MoveDo.NoMove();
     }
@@ -1347,13 +1384,15 @@ class Board {
     // now left with Ne4
     int toPos2 = EPD.StringToPosition(s.substring(1, 2));
     // now loop over all the moves
-    for (int i = 0; i < nrMoves; i++)
+    for (int i = 0; i < nrMoves; i++) {
       if (moves[i].moveType == moveType2 &&
           moves[i].toPosition == toPos2 &&
           (fromFileNr2 < 0 || (moves[i].fromPosition & 7) == fromFileNr2) &&
           (fromRankNr2 < 0 || (moves[i].fromPosition >> 3) == fromRankNr2) &&
-          (isCapture == (moves[i].captureInfo != Const.NoCaptureID)))
+          (isCapture == (moves[i].captureInfo != Const.NoCaptureID))) {
         return moves[i];
+    }
+      }
 
     // nothing found :
     return MoveDo.NoMove();
@@ -1362,9 +1401,9 @@ class Board {
   Move FindMoveOnBoard(String s) {
     Move move;
     // moveString is either a SAN or a e2e4 type string;
-    if (EPD.StringIsLANMove(s))
+    if (EPD.StringIsLANMove(s)) {
       move = FindLANMoveOnBoard(s);
-    else if (EPD.StringIsSanMove(s))
+    } else if (EPD.StringIsSanMove(s))
       move = FindSANMoveOnBoard(s);
     else
       return MoveDo.NoMove();
@@ -1408,14 +1447,14 @@ class Board {
     if (pieceTypeNr == Const.RookID) {
       if (colorToMove == Const.White && color == Const.Black) {
         // check black rooks
-        if (index == 56)
+        if (index == 56) {
           ResetCanCastleQS(Const.Black);
-        else if (index == 63) ResetCanCastleKS(Const.Black);
+        } else if (index == 63) ResetCanCastleKS(Const.Black);
       } else if (colorToMove == Const.Black && color == Const.White) {
         // check white rooks
-        if (index == 0)
+        if (index == 0) {
           ResetCanCastleQS(Const.White);
-        else if (index == 7) ResetCanCastleKS(Const.White);
+        } else if (index == 7) ResetCanCastleKS(Const.White);
       }
     }
     //
@@ -1569,8 +1608,9 @@ class Board {
       int i = movesHist.length - 1;
       // compare moves, it is not correctly, but anyway
       Move mv = movesHist[i];
-      for (--i; i >= repeatedPosition_SearchOffset; i--)
+      for (--i; i >= repeatedPosition_SearchOffset; i--) {
         if (MoveDo.Eq(mv, movesHist[i])) nrSame++;
+      }
     }
     // nrSame : officially it is 2 : 2 times before, so this is the 3rd time
     return nrSame >= 2;
@@ -1582,8 +1622,9 @@ class Board {
     //
     // The fastest test is the TotalNrPieces :
     // nr pieces > 3 is king + 3 other pieces = never a draw
-    if (TotalNrPieces[Const.White] > 3 || TotalNrPieces[Const.Black] > 3)
+    if (TotalNrPieces[Const.White] > 3 || TotalNrPieces[Const.Black] > 3) {
       return false;
+    }
     // if either side has pawns, it is not a draw
     if (NrPieces[Const.White][Const.PawnID] > 0 ||
         NrPieces[Const.Black][Const.PawnID] > 0) return false;
@@ -1618,8 +1659,9 @@ class Board {
       int i = movesHist.length - 1;
       // compare moves, it is not correctly, but anyway
       Move mv = movesHist[i];
-      for (--i; i >= repeatedPosition_SearchOffset; i--)
+      for (--i; i >= repeatedPosition_SearchOffset; i--) {
         if (MoveDo.Eq(mv, movesHist[i])) nrSame++;
+      }
     }
 
     // nrSame : officially it is 2 : 2 times before, so this is the 3rd time
@@ -1713,8 +1755,9 @@ class Board {
         case Const.CastleQSID:
           // Maybe the castle was illegal. Do it anyway.
           // Illegal castle will immediately be undone in SearchMove.
-          if (moveIsLegal)
+          if (moveIsLegal) {
             moveIsLegal = moveGenerator.CastleIsLegal(Const.CastleQSID);
+          }
           MovePieceOnBoard(castleRankOffset + 4, castleRankOffset + 2); // King
           MovePieceOnBoard(castleRankOffset + 0, castleRankOffset + 3); // Rook
           hasCastled[colorToMove] = true;
@@ -1724,8 +1767,9 @@ class Board {
         case Const.CastleKSID:
           // Maybe the castle was illegal. Do it anyway.
           // Illegal castle will immediately be undone in SearchMove.
-          if (moveIsLegal)
+          if (moveIsLegal) {
             moveIsLegal = moveGenerator.CastleIsLegal(Const.CastleKSID);
+          }
           MovePieceOnBoard(castleRankOffset + 4, castleRankOffset + 6); // King
           MovePieceOnBoard(castleRankOffset + 7, castleRankOffset + 5); // Rook
           hasCastled[colorToMove] = true;
@@ -1734,12 +1778,13 @@ class Board {
           break;
         case Const.EnPassantCaptureID:
           capturedPieceType = Const.PawnID;
-          if (colorToMove == Const.White)
+          if (colorToMove == Const.White) {
             capturedPiecePosition =
                 enPassantPosition - 8; // captured pawn is black
-          else
+          } else {
             capturedPiecePosition =
                 enPassantPosition + 8; // captured pawn is white
+          }
           RemovePieceFromBoard(capturedPiecePosition);
           MovePieceOnBoard(move.fromPosition, move.toPosition);
           break;
@@ -1773,8 +1818,9 @@ class Board {
           logPrint("Invalid special move nr");
       }
       // always reset the enPassant pasition, unless it set by the Pawn 2Step move
-      if (move.moveType != Const.Pawn2StepID)
+      if (move.moveType != Const.Pawn2StepID) {
         enPassantPosition = Const.InvalidID;
+      }
     }
     // Finally check if this move was legal. If not, it will immediately be undone in SearchMove.
     // Do it with an IF statement, since also castling could have set moveIsLegal to false.
@@ -1833,9 +1879,10 @@ class Board {
       }
     }
     // was it a capture ? Yes : restore the captured piece
-    if (capturedPieceType != Const.InvalidID)
+    if (capturedPieceType != Const.InvalidID) {
       AddNewPieceToBoard(
           prevColorToMove, capturedPieceType, capturedPiecePosition);
+    }
     // Last restore the BoardState as it was just after the move. This also restores the HashValue.
     RestoreBoardState();
 
@@ -1928,19 +1975,19 @@ class MoveDo {
           s = "0-0";
           break;
         case Const.EnPassantCaptureID:
-          s = mo + "ep";
+          s = "${mo}ep";
           break;
         case Const.PawnPromoteQueenID:
-          s = mo + "=Q";
+          s = "$mo=Q";
           break;
         case Const.PawnPromoteRookID:
-          s = mo + "=R";
+          s = "$mo=R";
           break;
         case Const.PawnPromoteBishopID:
-          s = mo + "=B";
+          s = "$mo=B";
           break;
         case Const.PawnPromoteKnightID:
-          s = mo + "=N";
+          s = "$mo=N";
           break;
         case Const.Pawn2StepID:
           s = mo;
@@ -1957,8 +2004,9 @@ class MoveDo {
     String result = EPD.PositionToString(mv.fromPosition) +
         EPD.PositionToString(mv.toPosition);
     if (mv.moveType >= Const.PawnPromoteQueenID &&
-        mv.moveType <= Const.PawnPromoteKnightID)
+        mv.moveType <= Const.PawnPromoteKnightID) {
       result += EPD.PromotionPieceToString(mv.moveType);
+    }
     return result;
   }
 
@@ -2108,34 +2156,38 @@ class MoveGenerator {
   GenerateEmptyBoardPawn1StepMoves() {
     // white
     for (int i = 0; i < Const.NrSquares; i++) {
-      if (i >= 8 && i <= 55)
+      if (i >= 8 && i <= 55) {
         EmptyBoardPawn1StepMoves[Const.White][i] = BitBoard.Identity[i + 8];
-      else
+      } else {
         EmptyBoardPawn1StepMoves[Const.White][i] = 0;
+      }
     }
     // black
     for (int i = 0; i < Const.NrSquares; i++) {
-      if (i >= 8 && i <= 55)
+      if (i >= 8 && i <= 55) {
         EmptyBoardPawn1StepMoves[Const.Black][i] = BitBoard.Identity[i - 8];
-      else
+      } else {
         EmptyBoardPawn1StepMoves[Const.Black][i] = 0;
+      }
     }
   }
 
   GenerateEmptyBoardPawn2StepMoves() {
     // white
     for (int i = 0; i < Const.NrSquares; i++) {
-      if (i >= 8 && i <= 15)
+      if (i >= 8 && i <= 15) {
         EmptyBoardPawn2StepMoves[Const.White][i] = BitBoard.Identity[i + 16];
-      else
+      } else {
         EmptyBoardPawn2StepMoves[Const.White][i] = 0;
+      }
     }
     // black
     for (int i = 0; i < Const.NrSquares; i++) {
-      if (i >= 48 && i <= 55)
+      if (i >= 48 && i <= 55) {
         EmptyBoardPawn2StepMoves[Const.Black][i] = BitBoard.Identity[i - 16];
-      else
+      } else {
         EmptyBoardPawn2StepMoves[Const.Black][i] = 0;
+      }
     }
   }
 
@@ -2181,9 +2233,9 @@ class MoveGenerator {
           // this can be EmptyID or some PieceType
           int capturedPieceType = board.SquareContents[toPos].pieceType;
           //
-          if (capturedPieceType == Const.EmptyID)
+          if (capturedPieceType == Const.EmptyID) {
             Obj.captureInfo = Const.NoCaptureID;
-          else {
+          } else {
             // yes, it is a capture.
             // Store the captured piece type in bits 0..2,  and the capturing piece type in bits 3..5
             Obj.captureInfo = capturedPieceType +
@@ -2248,17 +2300,19 @@ class MoveGenerator {
       if (board.canCastleQueenSide[colorToMove] &&
           (CastleEmptySquaresQS[colorToMove] & board.allPiecesBB) == 0 &&
           board.SquareContents[rookSquare].pieceType == Const.RookID &&
-          board.SquareContents[rookSquare].pieceColor == colorToMove)
+          board.SquareContents[rookSquare].pieceColor == colorToMove) {
         AddMove(Const.CastleQSID, castleRankOffset + 4,
             castleRankOffset + 2); // King moves
+      }
       // KingSide
       rookSquare = CastleRookPositionKS[colorToMove];
       if (board.canCastleKingSide[colorToMove] &&
           (CastleEmptySquaresKS[colorToMove] & board.allPiecesBB) == 0 &&
           board.SquareContents[rookSquare].pieceType == Const.RookID &&
-          board.SquareContents[rookSquare].pieceColor == colorToMove)
+          board.SquareContents[rookSquare].pieceColor == colorToMove) {
         AddMove(Const.CastleKSID, castleRankOffset + 4,
             castleRankOffset + 6); // King moves
+      }
     }
   }
 
@@ -2383,8 +2437,9 @@ class MoveGenerator {
       // enpassant capture ?
       if (board.enPassantPosition == ToPos) {
         AddMove(Const.EnPassantCaptureID, fromPos, board.enPassantPosition);
-      } else
+      } else {
         AddMove(Const.PawnID, fromPos, ToPos);
+      }
     }
   }
 
@@ -2419,9 +2474,9 @@ class MoveGenerator {
       // this can be EmptyID or some PieceType
       int capturedPieceType = board.SquareContents[toPos].pieceType;
       //
-      if (capturedPieceType == Const.EmptyID)
+      if (capturedPieceType == Const.EmptyID) {
         Obj.captureInfo = Const.NoCaptureID;
-      else {
+      } else {
         // yes, it is a capture.
         // Store the captured piece type in bits 0..2, and the capturing piece type in bits 3..5
         Obj.captureInfo = capturedPieceType +
@@ -2444,9 +2499,9 @@ class MoveGenerator {
           // this can be EmptyID or some PieceType
           int capturedPieceType = board.SquareContents[toPos].pieceType;
           //
-          if (capturedPieceType == Const.EmptyID)
+          if (capturedPieceType == Const.EmptyID) {
             Obj.captureInfo = Const.NoCaptureID;
-          else {
+          } else {
             // yes, it is a capture.
             // Store the captured piece type in bits 0..2,  and the capturing piece type in bits 3..5
             Obj.captureInfo = capturedPieceType +
@@ -2579,27 +2634,32 @@ class MoveGenerator {
         int x = position & 7;
         if (colorToMove == 0) {
           // white , capture left
-          if (x > 0 && (BitBoard.Identity[position + 7] & enemyPieces) != 0)
+          if (x > 0 && (BitBoard.Identity[position + 7] & enemyPieces) != 0) {
             AddQuiescenceMove(Const.PawnID, position, position + 7);
+          }
           // capture right
-          if (x < 7 && (BitBoard.Identity[position + 9] & enemyPieces) != 0)
+          if (x < 7 && (BitBoard.Identity[position + 9] & enemyPieces) != 0) {
             AddQuiescenceMove(Const.PawnID, position, position + 9);
+          }
         } else {
           // black , capture left
-          if (x > 0 && (BitBoard.Identity[position - 9] & enemyPieces) != 0)
+          if (x > 0 && (BitBoard.Identity[position - 9] & enemyPieces) != 0) {
             AddQuiescenceMove(Const.PawnID, position, position - 9);
+          }
           // capture right
-          if (x < 7 && (BitBoard.Identity[position - 7] & enemyPieces) != 0)
+          if (x < 7 && (BitBoard.Identity[position - 7] & enemyPieces) != 0) {
             AddQuiescenceMove(Const.PawnID, position, position - 7);
+          }
         }
       }
       // enpassant capture ?
       if (board.enPassantPosition >= 0) {
         if ((bitboard.PawnAttackBB1[colorToMove][position] &
                 BitBoard.Identity[board.enPassantPosition]) !=
-            0)
+            0) {
           AddQuiescenceMove(
               Const.EnPassantCaptureID, position, board.enPassantPosition);
+        }
       }
     }
   }
@@ -2754,10 +2814,11 @@ class MagicMoves {
   gen_pawnmoves() {
     int V = (SqI >> 3), H = (SqI & 7);
     if (V > 0 && V < 7) {
-      if (b_w != 0)
+      if (b_w != 0) {
         V--;
-      else
+      } else {
         V++;
+      }
 
       int sq = (V << 3) | H;
       bool f = BoSet(sq, false);
@@ -2775,10 +2836,11 @@ class MagicMoves {
 
   gen_pawn_atck() {
     int V = (SqI >> 3), H = (SqI & 7);
-    if (b_w != 0)
+    if (b_w != 0) {
       V++;
-    else
+    } else {
       V--;
+    }
     if (V > 0 && V < 7) {
       int sq = (V << 3) | H;
       if (H > 0) BoSet(sq - 1, true);
@@ -2843,10 +2905,11 @@ class MagicMoves {
         Bo1 = 0;
         gen2dir();
         if (((1 << SqI) & B2G7) != 0) Bo1 &= B2G7;
-        if (b_r != 0)
+        if (b_r != 0) {
           BishopMask[SqI] = Bo1;
-        else
+        } else {
           RookMask[SqI] = Bo1;
+        }
         legalck = true;
         Permutate(false);
       }
@@ -2855,20 +2918,22 @@ class MagicMoves {
         legalck = false;
         Bo1 = 0;
         gen_pawnmoves();
-        if (b_w != 0)
+        if (b_w != 0) {
           PawnMaskBlack[SqI] = Bo1;
-        else
+        } else {
           PawnMaskWhite[SqI] = Bo1;
+        }
         legalck = true;
         Permutate(true);
 
         legalck = false;
         Bo1 = 0;
         gen_pawn_atck();
-        if (b_w != 0)
+        if (b_w != 0) {
           PawnBlackAtck[SqI] = Bo1;
-        else
+        } else {
           PawnWhiteAtck[SqI] = Bo1;
+        }
       }
     }
   }
@@ -2911,7 +2976,7 @@ class Attack {
   late Evaluator evaluator;
   late MoveGenerator moveGenerator;
 
-  Attack() {}
+  Attack();
 
   // Returns a bitboard with all squares which are attacked by the specified color.
   // These squares include empty squares, own pieces and enemy pieces.
@@ -2922,7 +2987,7 @@ class Attack {
     // Returns a bitboard with all squares which can be attacked by the movingColor
     int result = 0; //U64
     // local copies
-    int _allPieces = board.allPiecesBB; //U64
+    int allPieces = board.allPiecesBB; //U64
     // by king
     result |= moveGenerator
         .EmptyBoardKingMoves[board.PiecePos[movingColor][Const.KingID][0]];
@@ -2931,34 +2996,36 @@ class Attack {
         queenNr < board.NrPieces[movingColor][Const.QueenID];
         queenNr++) {
       int position = board.PiecePos[movingColor][Const.QueenID][queenNr];
-      result |= magicMoves.Qmagic(position, _allPieces);
+      result |= magicMoves.Qmagic(position, allPieces);
     }
     // by rooks
     for (int rookNr = 0;
         rookNr < board.NrPieces[movingColor][Const.RookID];
         rookNr++) {
       int position = board.PiecePos[movingColor][Const.RookID][rookNr];
-      result |= magicMoves.Rmagic(position, _allPieces);
+      result |= magicMoves.Rmagic(position, allPieces);
     }
     // by bishops
     for (int bishopNr = 0;
         bishopNr < board.NrPieces[movingColor][Const.BishopID];
         bishopNr++) {
       int position = board.PiecePos[movingColor][Const.BishopID][bishopNr];
-      result |= magicMoves.Bmagic(position, _allPieces);
+      result |= magicMoves.Bmagic(position, allPieces);
     }
     // by knights
     for (int knightNr = 0;
         knightNr < board.NrPieces[movingColor][Const.KnightID];
-        knightNr++)
+        knightNr++) {
       result |= moveGenerator.EmptyBoardKnightMoves[board.PiecePos[movingColor]
           [Const.KnightID][knightNr]];
+    }
     // by pawns : excluding en-passant
     for (int pawnNr = 0;
         pawnNr < board.NrPieces[movingColor][Const.PawnID];
-        pawnNr++)
+        pawnNr++) {
       result |= bitBoard.PawnAttackBB1[movingColor]
           [board.PiecePos[movingColor][Const.PawnID][pawnNr]];
+    }
     //
     return result;
   }
@@ -3057,17 +3124,18 @@ class Attack {
     // to the edge of the board in the direction of attackedSquare to the attacker.
     int ray = bitBoard.Ray[attackerSquare][direction]; //U64
     int pieceType; // the PieceType, next to the Queen, which can make this move.
-    if (direction < 4)
+    if (direction < 4) {
       pieceType = Const.RookID; // 0,1,2,3 : the rank and file directions
-    else
+    } else {
       pieceType = Const.BishopID; // 4,5,6,7 : the diagonal directions
+    }
     // Find the bitboard with possible attackers of the correct type on the ray.
     int sliderBB = ray &
         (board.pieceBB[color][Const.QueenID] |
             board.pieceBB[color][pieceType]); //U64
-    if (sliderBB == 0)
+    if (sliderBB == 0) {
       return -1; // no slider behind attackerSquare
-    else if (attackerSquare < attackedSquare)
+    } else if (attackerSquare < attackedSquare)
       return bitBoard.MSB(
           sliderBB); // ray is below the attacked square. The first is at the MSB.
     else
@@ -3078,17 +3146,18 @@ class Attack {
   int SEE(int moveType, int fromSquare, int toSquare) {
     // Based on (=copied from) Crafty, swap.c
     //int[] swap_list = new int[32];
-    var swap_list = List.filled(32, 0);
+    var swapList = List.filled(32, 0);
 
     // The attackers bitboard contains the pieces of both white and black which can capture
     // on the attacked square
     int attackersBB = GetAttackingDefendingPiecesBitBoard2(toSquare); //U64
     // Add the value of the piece on the attacked square
-    if (moveType == Const.EnPassantCaptureID)
-      swap_list[0] = evaluator.PieceValues[Const.PawnID];
-    else
-      swap_list[0] =
+    if (moveType == Const.EnPassantCaptureID) {
+      swapList[0] = evaluator.PieceValues[Const.PawnID];
+    } else {
+      swapList[0] =
           evaluator.PieceValues[board.SquareContents[toSquare].pieceType];
+    }
     // the type & value of the primary attacker
     int attackerPieceType = board.SquareContents[fromSquare].pieceType;
     int lastAttackerValue = evaluator.PieceValues[attackerPieceType];
@@ -3122,13 +3191,14 @@ class Attack {
           // if a sliding piece is hiding behind the original attacker, add it to the attackers bitboard
           if (pieceType != Const.KingID && pieceType != Const.KnightID) {
             int sq = XRay(square, toSquare);
-            if (sq >= 0)
+            if (sq >= 0) {
               attackersBB |= BitBoard.Identity[sq]; // add the hiding piece
+            }
           }
           // remove this attacker from the attackersBB
           attackersBB &= ~BitBoard.Identity[square];
           // append the differential score to the swap_list
-          swap_list[n] = -swap_list[n - 1] + lastAttackerValue;
+          swapList[n] = -swapList[n - 1] + lastAttackerValue;
           lastAttackerValue = evaluator
               .PieceValues[pieceType]; // the value of the last attacker
           n++;
@@ -3143,12 +3213,12 @@ class Attack {
     n--;
     while (n > 0) {
       //Math.Max(-swap_list[n - 1], swap_list[n])
-      var m = -swap_list[n - 1];
-      var m1 = swap_list[n];
-      swap_list[n - 1] = -((m1 > m) ? m1 : m);
+      var m = -swapList[n - 1];
+      var m1 = swapList[n];
+      swapList[n - 1] = -((m1 > m) ? m1 : m);
       n--;
     }
-    return swap_list[0];
+    return swapList[0];
   }
 }
 
@@ -3206,8 +3276,8 @@ class Evaluator {
   }
 
   // parms int[]
-  SetStaticPositionalScore(var king_pcsq, var queen_pcsq, var rook_pcsq,
-      var bishop_pcsq, var knight_pcsq, var pawn_pcsq) {
+  SetStaticPositionalScore(var kingPcsq, var queenPcsq, var rookPcsq,
+      var bishopPcsq, var knightPcsq, var pawnPcsq) {
     // Setup the positional scores, which hold for every stage of the game.
     // This MUST be called (once) by the descending class.
     //[Const.NrColors]
@@ -3218,17 +3288,18 @@ class Evaluator {
     }
     // the original tables are for black
     var Q = PieceSquareValues[Const.Black];
-    Q[Const.KingID] = king_pcsq;
-    Q[Const.QueenID] = queen_pcsq;
-    Q[Const.RookID] = rook_pcsq;
-    Q[Const.BishopID] = bishop_pcsq;
-    Q[Const.KnightID] = knight_pcsq;
-    Q[Const.PawnID] = pawn_pcsq;
+    Q[Const.KingID] = kingPcsq;
+    Q[Const.QueenID] = queenPcsq;
+    Q[Const.RookID] = rookPcsq;
+    Q[Const.BishopID] = bishopPcsq;
+    Q[Const.KnightID] = knightPcsq;
+    Q[Const.PawnID] = pawnPcsq;
     // now generate the flipped tables for white;
     for (int i = 0; i < Const.NrPieceTypes; i++) {
-      for (int j = 0; j < Const.NrSquares; j++)
+      for (int j = 0; j < Const.NrSquares; j++) {
         PieceSquareValues[Const.White][i][j] =
             PieceSquareValues[Const.Black][i][BitBoard.flip[j]];
+      }
     }
   }
 
@@ -3473,20 +3544,15 @@ class Evaluator {
 
   CreateArrays() {
     pawn_pcsq = decode_Evs(
-        "0*8 -6 -4 1*4 -4 -6*2 -4 1 2*2 1 -4 -6*2 -4 2 8*2 2 -4 -6*2 " +
-            "-4 5 10*2 5 -4 -6 -4*2 1 5*2 1 -4*2 -6 -4 1 -24*2 1 -4 -6 0*8");
+        "0*8 -6 -4 1*4 -4 -6*2 -4 1 2*2 1 -4 -6*2 -4 2 8*2 2 -4 -6*2 " "-4 5 10*2 5 -4 -6 -4*2 1 5*2 1 -4*2 -6 -4 1 -24*2 1 -4 -6 0*8");
     knight_pcsq = decode_Evs(
-        "-15*2 -8*4 -15*3 -10 0*4 -10 -15 -8 0 4*4 0 -8*2 0 4 8*2 4 0 -8*2 " +
-            "0 4 8*2 4 0 -8*2 0 4*4 0 -8 -15 -10 1 2*2 1 -10 -15*3 -8*4 -15*2");
+        "-15*2 -8*4 -15*3 -10 0*4 -10 -15 -8 0 4*4 0 -8*2 0 4 8*2 4 0 -8*2 " "0 4 8*2 4 0 -8*2 0 4*4 0 -8 -15 -10 1 2*2 1 -10 -15*3 -8*4 -15*2");
 
     bishop_pcsq = decode_Evs(
-        "-15 -10 -4*4 -10 -15 -10 0*6 -10 -4 0 2 4*2 2 0 -4*2 " +
-            "0 4 6*2 4 0 -4*2 0 4 6*2 4 0 -4*2 1 2 4*2 2 1 -4 -10 " +
-            "2 1*4 2 -10 -15 -10 -12 -4*2 -12 -10 -15");
+        "-15 -10 -4*4 -10 -15 -10 0*6 -10 -4 0 2 4*2 2 0 -4*2 0 4 6*2 4 0 -4*2 0 4 6*2 4 0 -4*2 1 2 4*2 2 1 -4 -10 2 1*4 2 -10 -15 -10 -12 -4*2 -12 -10 -15");
 
     rook_pcsq = decode_Evs("0*2 2 4*2 2 0*2 x^8");
-    queen_pcsq = decode_Evs("0*10 1*4 0*4 1 2*2 1 0*4 2 3*2 2 0*4 " +
-        "2 3*2 2 0*4 1 2*2 1 0*4 1*4 0*2 -5*8");
+    queen_pcsq = decode_Evs("0*10 1*4 0*4 1 2*2 1 0*4 2 3*2 2 0*4 " "2 3*2 2 0*4 1 2*2 1 0*4 1*4 0*2 -5*8");
 
     king_pcsq = decode_Evs("0");
 
@@ -3494,8 +3560,7 @@ class Evaluator {
         decode_Evs("-40*48 -15*2 -20*4 -15*2 0 20 30 -30 0 -20 30 20");
 
     king_endgame_pcsq = decode_Evs(
-        "0 10 20 30*2 20 10 0 10 20 30 40*2 30 20 10 " +
-            "20 30 40 50*2 40 30 20 30 40 50 60*2 50 40 30 y^2");
+        "0 10 20 30*2 20 10 0 10 20 30 40*2 30 20 10 " "20 30 40 50*2 40 30 20 30 40 50 60*2 50 40 30 y^2");
 
     KnightOutpostBonus = decode_Evs("0*17 1 4*4 1 0*2 2 6 8 y^2");
     BishopOutpostBonus =
@@ -3527,12 +3592,13 @@ class Evaluator {
         board.StaticMaterialScore[Const.Black] -
         2 * PieceValues[Const.KingID];
     double materialScoresWithoutKings = m.toDouble();
-    if (materialScoresWithoutKings >= endGameMaterialScores)
+    if (materialScoresWithoutKings >= endGameMaterialScores) {
       gameStage = 1.0 -
           (materialScoresWithoutKings - endGameMaterialScores) /
               (initialMaterialScores - endGameMaterialScores);
-    else
+    } else {
       gameStage = 1.0;
+    }
   }
 
   int CalcStagedScore(int scoreStart, int scoreEnd) {
@@ -3543,8 +3609,9 @@ class Evaluator {
     EvScope Ew = EvScope(0, 0);
     EvScope Eb = EvScope(0, 0);
 
-    if (board.IsPracticallyDrawn())
+    if (board.IsPracticallyDrawn()) {
       return 0; // check for 50-move rule ,3x repetition & not enough material
+    }
 
     // initialize the scores
     globalScoreStart = 0;
@@ -3622,10 +3689,11 @@ class Evaluator {
     if (score == 0) score = 1; // reserve 0 for true fraws
 
     // Return always : higher is better.
-    if (board.colorToMove == Const.White)
+    if (board.colorToMove == Const.White) {
       return score;
-    else
+    } else {
       return -score;
+    }
   }
 
   int GetEvaluation(int alpha, int beta) {
@@ -3645,15 +3713,17 @@ class Evaluator {
       // the returned score is not accurate, but is far outside the alpa-beta window,
       // so it is either ignored (<alpha) or produces a cutoff anyway (>beta)
 
-      if (board.colorToMove == Const.Black)
+      if (board.colorToMove == Const.Black) {
         score = -score; // undo the fast eval side switch
+      }
       if (score < alpha - LazyEvalDelta || score > beta + LazyEvalDelta) {
         if (UseScoreNoise) score += GetScoreNoise(ScoreNoise);
 
-        if (board.colorToMove == Const.White)
+        if (board.colorToMove == Const.White) {
           return score;
-        else
+        } else {
           return -score;
+        }
       }
     }
 
@@ -3688,10 +3758,11 @@ class Evaluator {
     if (score == 0) score = 1; // return 0 for a true draw
 
     // Return always : higher is better.
-    if (board.colorToMove == Const.White)
+    if (board.colorToMove == Const.White) {
       return score;
-    else
+    } else {
       return -score;
+    }
   }
 
   //==== pawns
@@ -3700,18 +3771,21 @@ class Evaluator {
     // Generate an array for each color with the rank of the least advanced pawn on each file.
     // This number starts from the original colors side (white 0, black 7).
     for (int color = 0; color < Const.NrColors; color++) {
-      for (int i = 0; i < 8; i++)
+      for (int i = 0; i < 8; i++) {
         absRankNrOfLeastAdvancedPawnOnFile[color][i] = absRankOfNoPawnOnFile;
+      }
       for (int i = 0; i < board.NrPieces[color][Const.PawnID]; i++) {
         int position = board.PiecePos[color][Const.PawnID][i];
         int file = position & 7;
         int rankNrFromStart;
-        if (color == Const.White)
+        if (color == Const.White) {
           rankNrFromStart = position >> 3;
-        else
+        } else {
           rankNrFromStart = 7 - (position >> 3);
-        if (rankNrFromStart < absRankNrOfLeastAdvancedPawnOnFile[color][file])
+        }
+        if (rankNrFromStart < absRankNrOfLeastAdvancedPawnOnFile[color][file]) {
           absRankNrOfLeastAdvancedPawnOnFile[color][file] = rankNrFromStart;
+        }
       }
     }
     // calculate the pawn attack BB's
@@ -3728,10 +3802,11 @@ class Evaluator {
     E.resultStart = 0;
     E.resultEnd = 0;
     int otherColor;
-    if (thisColor == Const.White)
+    if (thisColor == Const.White) {
       otherColor = Const.Black;
-    else
+    } else {
       otherColor = Const.White;
+    }
 
     for (int i = 0; i < board.NrPieces[thisColor][Const.PawnID]; i++) {
       int position = board.PiecePos[thisColor][Const.PawnID][i];
@@ -3920,10 +3995,11 @@ class Evaluator {
     E.resultStart = 0;
     E.resultEnd = 0;
     int otherColor;
-    if (color == Const.White)
+    if (color == Const.White) {
       otherColor = Const.Black;
-    else
+    } else {
       otherColor = Const.White;
+    }
     int nrRooks = board.NrPieces[color][Const.RookID];
     for (int i = 0; i < nrRooks; i++) {
       int position = board.PiecePos[color][Const.RookID][i];
@@ -3977,10 +4053,11 @@ class Evaluator {
       for (int i = 0; i < nrBishops; i++) {
         int position = board.PiecePos[color][Const.BishopID][i];
         int outpostScore;
-        if (color == Const.White)
+        if (color == Const.White) {
           outpostScore = BishopOutpostBonus[BitBoard.flip[position]];
-        else
+        } else {
           outpostScore = BishopOutpostBonus[position];
+        }
         if (outpostScore > 0) {
           int outpostResult = 0;
           int otherColor = color ^ 1;
@@ -3999,9 +4076,9 @@ class Evaluator {
               // can it be driven away by a minor enemy piece ?
               if (board.NrPieces[otherColor][Const.KnightID] == 0) {
                 int nrEnemyBishops = board.NrPieces[otherColor][Const.BishopID];
-                if (nrEnemyBishops == 0)
+                if (nrEnemyBishops == 0) {
                   outpostResult += outpostScore;
-                else if (nrEnemyBishops == 1) {
+                } else if (nrEnemyBishops == 1) {
                   if (BitBoard.ColorOfSquare[position] !=
                       BitBoard.ColorOfSquare[board.PiecePos[otherColor]
                           [Const.BishopID][0]]) outpostResult += outpostScore;
@@ -4024,10 +4101,11 @@ class Evaluator {
       for (int i = 0; i < nrKnights; i++) {
         int position = board.PiecePos[color][Const.KnightID][i];
         int outpostScore;
-        if (color == Const.White)
+        if (color == Const.White) {
           outpostScore = KnightOutpostBonus[BitBoard.flip[position]];
-        else
+        } else {
           outpostScore = KnightOutpostBonus[position];
+        }
         if (outpostScore > 0) {
           int outpostResult = 0;
           int otherColor = color ^ 1;
@@ -4046,9 +4124,9 @@ class Evaluator {
               // can it be driven away by a minor enemy piece ?
               if (board.NrPieces[otherColor][Const.KnightID] == 0) {
                 int nrEnemyBishops = board.NrPieces[otherColor][Const.BishopID];
-                if (nrEnemyBishops == 0)
+                if (nrEnemyBishops == 0) {
                   outpostResult += outpostScore;
-                else if (nrEnemyBishops == 1) {
+                } else if (nrEnemyBishops == 1) {
                   if (BitBoard.ColorOfSquare[position] !=
                       BitBoard.ColorOfSquare[board.PiecePos[otherColor]
                           [Const.BishopID][0]]) outpostResult += outpostScore;
@@ -4121,56 +4199,70 @@ class Evaluator {
     int result = 0;
     if (color == Const.White) {
       // the queen should not yet have moved
-      if (board.SquareContents[3].pieceType != Const.QueenID)
+      if (board.SquareContents[3].pieceType != Const.QueenID) {
         result -= QueenEarlyMovePenalty; // ignore the color of the queen
+      }
       // count the number of developed knights
       int nrDevelopedKnights = 0;
-      if (board.SquareContents[1].pieceType != Const.KnightID)
+      if (board.SquareContents[1].pieceType != Const.KnightID) {
         nrDevelopedKnights++;
-      if (board.SquareContents[6].pieceType != Const.KnightID)
+      }
+      if (board.SquareContents[6].pieceType != Const.KnightID) {
         nrDevelopedKnights++;
+      }
       result += DevelopedKnights[nrDevelopedKnights];
       // count the number of developed bishops
       int nrDevelopedBishops = 0;
-      if (board.SquareContents[2].pieceType != Const.BishopID)
+      if (board.SquareContents[2].pieceType != Const.BishopID) {
         nrDevelopedBishops++;
-      if (board.SquareContents[5].pieceType != Const.BishopID)
+      }
+      if (board.SquareContents[5].pieceType != Const.BishopID) {
         nrDevelopedBishops++;
+      }
       result += DevelopedBishops[nrDevelopedBishops];
       // check the 2 squares directly before the 2 central pawns.
       // If the pawn has not moved and something is present ont that square, penalyze.
       if (board.SquareContents[11].pieceType == Const.PawnID &&
-          board.SquareContents[19].pieceType != Const.EmptyID)
+          board.SquareContents[19].pieceType != Const.EmptyID) {
         result -= BlockedCentralPawnPenalty;
+      }
       if (board.SquareContents[12].pieceType == Const.PawnID &&
-          board.SquareContents[20].pieceType != Const.EmptyID)
+          board.SquareContents[20].pieceType != Const.EmptyID) {
         result -= BlockedCentralPawnPenalty;
+      }
     } else {
       // the queen should not yet have moved
-      if (board.SquareContents[59].pieceType != Const.QueenID)
+      if (board.SquareContents[59].pieceType != Const.QueenID) {
         result -= QueenEarlyMovePenalty; // ignore the color of the queen
+      }
       // count the number of developed knights
       int nrDevelopedKnights = 0;
-      if (board.SquareContents[57].pieceType != Const.KnightID)
+      if (board.SquareContents[57].pieceType != Const.KnightID) {
         nrDevelopedKnights++;
-      if (board.SquareContents[62].pieceType != Const.KnightID)
+      }
+      if (board.SquareContents[62].pieceType != Const.KnightID) {
         nrDevelopedKnights++;
+      }
       result += DevelopedKnights[nrDevelopedKnights];
       // count the number of developed bishops
       int nrDevelopedBishops = 0;
-      if (board.SquareContents[58].pieceType != Const.BishopID)
+      if (board.SquareContents[58].pieceType != Const.BishopID) {
         nrDevelopedBishops++;
-      if (board.SquareContents[61].pieceType != Const.BishopID)
+      }
+      if (board.SquareContents[61].pieceType != Const.BishopID) {
         nrDevelopedBishops++;
+      }
       result += DevelopedBishops[nrDevelopedBishops];
       // check the 2 squares directly before the 2 central pawns.
       // If the pawn has not moved and something is present ont that square, penalyze.
       if (board.SquareContents[51].pieceType == Const.PawnID &&
-          board.SquareContents[43].pieceType != Const.EmptyID)
+          board.SquareContents[43].pieceType != Const.EmptyID) {
         result -= BlockedCentralPawnPenalty;
+      }
       if (board.SquareContents[52].pieceType == Const.PawnID &&
-          board.SquareContents[44].pieceType != Const.EmptyID)
+          board.SquareContents[44].pieceType != Const.EmptyID) {
         result -= BlockedCentralPawnPenalty;
+      }
     }
     // scale these values gradually, to be 0 at the end of the opening
     E.resultStart = (scale * result).toInt();
@@ -4184,10 +4276,11 @@ class Evaluator {
     E.resultStart = 0;
     E.resultEnd = 0;
     int otherColor = 0;
-    if (color == Const.White)
+    if (color == Const.White) {
       otherColor = Const.Black;
-    else
+    } else {
       otherColor = Const.White;
+    }
     // local copies
     //U64
     int myPieces = board.pieces[color];
@@ -4310,15 +4403,16 @@ class Evaluator {
       kingBox1AttackSum += nn * PawnKingBox1Attack;
       // calculate the entire bonus
       int n = nrKingBox1Attacks[otherColor];
-      if (n >= NrKingBox1AttacksScale.length)
+      if (n >= NrKingBox1AttacksScale.length) {
         totalKingBox1Attack[otherColor] =
             kingBox1AttackSum * KingBox1AttackMultiplier ~/ 100;
-      else
+      } else {
         totalKingBox1Attack[otherColor] = kingBox1AttackSum *
             NrKingBox1AttacksScale[n] *
             KingBox1AttackMultiplier /
             MaxNrKingBox1AttacksScale ~/
             100;
+      }
       E.resultStart += totalKingBox1Attack[otherColor];
       E.resultEnd += totalKingBox1Attack[otherColor];
     }
@@ -4326,12 +4420,13 @@ class Evaluator {
       // calculate the entire bonus
       int n = nrKingBox1Defends[color];
 
-      if (n >= NrKingBox1AttacksScale.length)
+      if (n >= NrKingBox1AttacksScale.length) {
         totalKingBox1Defend[color] = kingBox1DefendSum;
-      else
+      } else {
         totalKingBox1Defend[color] = kingBox1DefendSum *
             NrKingBox1AttacksScale[n] ~/
             MaxNrKingBox1AttacksScale;
+      }
       if (color == Const.Black) {
         // if color = black, it means both white and blacks attack & defends have been calculated.
         // now scale the totalKingBox1Defend, depending on how much the KingBox is attacked
@@ -4542,7 +4637,7 @@ class SearchMove {
 
     // First store everything in a clone, since making captures reorders the indices of pieces in PiecePos.
     // This reorders future moves. Somehow, this gives problems
-    Board clone = new Board();
+    Board clone = Board();
     clone.LoadFrom(board);
     //
     for (int i = 0; i < nrPVMoves; i++) {
@@ -4554,7 +4649,9 @@ class SearchMove {
     }
 
     // now rewind the board by undoing the moves made
-    while (thinkMoves.length > 0) board.UnMakeMove(thinkMoves.removeLast());
+    while (thinkMoves.isNotEmpty) {
+      board.UnMakeMove(thinkMoves.removeLast());
+    }
 
     // switch back to the original board
     board.LoadFrom(clone);
@@ -4565,8 +4662,9 @@ class SearchMove {
   //==== timing
 
   StartThinkingTimer() {
-    if (isThinking)
+    if (isThinking) {
       logPrint("SetAbortThinkingTime : the engine is already thinking");
+    }
     startedThinkingTime = DateTime.now();
     abortThinkingTime =
         startedThinkingTime.add(Duration(seconds: nrSecondsForThisMove));
@@ -4584,9 +4682,9 @@ class SearchMove {
     // Maybe we can extend it a bit
     if (!UseExtendedTime ||
         isInExtendedTime ||
-        currentRootMoveNr < MinNrRootMovesFinishedForExtendedTime)
+        currentRootMoveNr < MinNrRootMovesFinishedForExtendedTime) {
       return true;
-    else {
+    } else {
       // Extend the search time : allow this ply to be finished, until maxTimeForThisMove
       isInExtendedTime = true;
       int newTime = nrSecondsForThisMove +
@@ -4596,10 +4694,11 @@ class SearchMove {
       abortThinkingTime = startedThinkingTime.add(Duration(seconds: newTime));
 
       // maybe this doesn't even help ?
-      if (NrSecondsLeft() < 0)
+      if (NrSecondsLeft() < 0) {
         return true;
-      else
+      } else {
         return false;
+      }
     }
   }
 
@@ -4633,8 +4732,9 @@ class SearchMove {
 
     if (useMoveOrdering_History) {
       ScaleDownHistory(Const.White, HistoryShiftDownBetweenMoves);
-      if (use2HistoryTables)
+      if (use2HistoryTables) {
         ScaleDownHistory(Const.Black, HistoryShiftDownBetweenMoves);
+      }
     }
     for (int depth = startDepth; depth <= MaximumAllowedSearchDepth; depth++) {
       nullMoveCounter = 0;
@@ -4643,13 +4743,15 @@ class SearchMove {
       isFollowingThePV = true;
       // don't use int.MaxValue : gives problems with lazy eval
       int score;
-      if (dontUseNullMoveAtRoot)
+      if (dontUseNullMoveAtRoot) {
         score = AlphaBeta(depth, -1000000000, 1000000000, false, true);
-      else
+      } else {
         score = AlphaBeta(depth, -1000000000, 1000000000, true, true);
+      }
 
-      if (rootColorToMove == Const.Black)
+      if (rootColorToMove == Const.Black) {
         score = -score; // since NegaMax always returns : larger is better
+      }
       // maybe the maximum time got exceeded :
       if (abortSearch) break; // yes, just use the results of the previous depth
       //
@@ -4741,8 +4843,9 @@ class SearchMove {
     //
     nrMovesInPVLine[plyNr] = 0;
     //
-    if (plyNr > 0 && board.IsPracticallyDrawn())
+    if (plyNr > 0 && board.IsPracticallyDrawn()) {
       return 0; // check for 50-move rule ,3x repetition & not enough material
+    }
 
     bool isInCheck = board.IsInCheck();
 
@@ -4776,12 +4879,13 @@ class SearchMove {
         plyNr++;
         int nullMoveScore;
         // adaptive null-move pruning
-        if (depth > 6)
+        if (depth > 6) {
           nullMoveScore = -AlphaBeta(depth - 1 - 3, -beta, -beta + 1, false,
               canDoLMR); // 3-depth reduction
-        else
+        } else {
           nullMoveScore = -AlphaBeta(depth - 1 - 2, -beta, -beta + 1, false,
               canDoLMR); // 2-depth reduction
+        }
         plyNr--;
         nullMoveCounter--;
         board.UnMakeMove(nullMove);
@@ -4853,17 +4957,18 @@ class SearchMove {
 
       legalMoveIsMade = true;
       //
-      if (plyNr == 0)
+      if (plyNr == 0) {
         currentRootMoveNr = i; // keep track of which root-move we are trying
+      }
       //
       int score;
       plyNr++;
 
       if (UsePVSearch) {
-        if (i == 0)
+        if (i == 0) {
           // assume the first move is the best (&legal). Search it with the normal window.
           score = -AlphaBeta(depth - 1, -beta, -alpha, true, canDoLMR);
-        else {
+        } else {
           // The next moves are considered to be worse.
           // Check this with a 'very' narrow window
 
@@ -4889,19 +4994,22 @@ class SearchMove {
             score = -AlphaBeta(
                 depth - 2, -alpha - 1, -alpha, true, canDoMoreRecuctions);
             // If it was not worse but better, research it with a normal & unreduced window.
-            if (score > alpha)
+            if (score > alpha) {
               score = -AlphaBeta(depth - 1, -beta, -alpha, true, canDoLMR);
+            }
           } else {
             // a normal PV search
             score = -AlphaBeta(depth - 1, -alpha - 1, -alpha, true, canDoLMR);
             // If it was not worse but better, research it with a normal window.
             // If it's >= beta, don't worry, it will be cut-off.
-            if (score > alpha && score < beta)
+            if (score > alpha && score < beta) {
               score = -AlphaBeta(depth - 1, -beta, -score, true, canDoLMR);
+            }
           }
         }
-      } else
+      } else {
         score = -AlphaBeta(depth - 1, -beta, -alpha, true, canDoLMR);
+      }
 
       plyNr--;
       board.UnMakeMove(currentMove);
@@ -4944,12 +5052,12 @@ class SearchMove {
       return bestScore; // the current best possible score.
     } else {
       // no legal move could be made : either CheckMate or StaleMate
-      if (board.IsInCheck())
+      if (board.IsInCheck()) {
         return -Evaluator.MateValue +
             plyNr; // CheckMate.    +PlyNr : promote fastest checkmates
-      // return -Evaluator.MateValue + plyNr - 1;   // CheckMate.    +PlyNr : promote fastest checkmates
-      else
+      } else {
         return 0; // StaleMate : this must be done better !!
+      }
     }
   }
 
@@ -4970,16 +5078,18 @@ class SearchMove {
     qsNodeCount++;
     //
     // a draw ?
-    if (board.IsPracticallyDrawn())
+    if (board.IsPracticallyDrawn()) {
       return 0; // check for 50-move rule ,3x repetition & not enough material
+    }
     // bestScore is the score, if it's better not to make any (more) captures
     int bestScore = evaluator.GetEvaluation(alpha, beta);
     // if the maximum Quiescence depth is reached, return it always
     if (Qdepth == 0) return beta;
     // pruning
     if (bestScore >= beta) return bestScore;
-    if (bestScore > alpha)
+    if (bestScore > alpha) {
       alpha = bestScore; // the evaluation is better then alpha, so update it.
+    }
     //
 
     // generate quiescence moves
@@ -5019,8 +5129,9 @@ class SearchMove {
       //
       if (score > bestScore) {
         bestScore = score;
-        if (bestScore >= beta)
+        if (bestScore >= beta) {
           break; // To worse for the opponent. He won't let you get into this position.
+        }
         if (bestScore > alpha) alpha = bestScore;
       }
     }
@@ -5046,16 +5157,18 @@ class SearchMove {
 
     int colorToMove = board.colorToMove;
     int historyTableNr;
-    if (use2HistoryTables)
+    if (use2HistoryTables) {
       historyTableNr = colorToMove;
-    else
+    } else {
       historyTableNr = Const.White; // use the same table for both colors
+    }
     bool haveFoundPVMove = false;
     // assign some score to each move and order them
     if (moveOrdering_SearchPV) {
-      if (plyNr >= PrincipalVariation.length)
+      if (plyNr >= PrincipalVariation.length) {
         isFollowingThePV =
             false; // Searching beyond the PrincipalVariation length.
+      }
     }
     //
 
@@ -5075,8 +5188,9 @@ class SearchMove {
       for (int i = 0; i < nrMoves; i++) {
         int from = moves[i].fromPosition;
         int to = moves[i].toPosition;
-        if (History[historyTableNr][from][to] > maxHistoryValue)
+        if (History[historyTableNr][from][to] > maxHistoryValue) {
           maxHistoryValue = History[historyTableNr][from][to];
+        }
       }
     }
 
@@ -5102,10 +5216,10 @@ class SearchMove {
         if (moveOrdering_UseSEE) {
           int seeScore = moves[i].seeScore;
           // multiply by (historyMoveScore+1), to not let HistoryMoveScore interfere with SeeScore's
-          if (seeScore > 0)
+          if (seeScore > 0) {
             scores[i] +=
                 winningCaptureScoreOffset + seeScore * (historyMoveScore + 1);
-          else if (seeScore < 0)
+          } else if (seeScore < 0)
             scores[i] += losingCaptureScoreOffset +
                 seeScore * (historyMoveScore + 1); // seeScore is negative
           else
@@ -5118,10 +5232,10 @@ class SearchMove {
                   Const.PieceTypeBitMask;
           // positive=winning , negative=losing
           int captureScore = capturingPieceType - capturedPieceType;
-          if (captureScore > 0)
+          if (captureScore > 0) {
             scores[i] += winningCaptureScoreOffset +
                 captureScore * (historyMoveScore + 1);
-          else if (captureScore == 0)
+          } else if (captureScore == 0)
             scores[i] += equalCaptureScoreOffset;
           else
             scores[i] += losingCaptureScoreOffset +
@@ -5130,15 +5244,16 @@ class SearchMove {
       } else {
         // Not a capture : is it a Killer move ?
         if (useKillerMoves) {
-          if (MoveDo.Eq(moves[i], KillerMoves1[plyNr]))
+          if (MoveDo.Eq(moves[i], KillerMoves1[plyNr])) {
             scores[i] += killerMove1Score;
-          else if (MoveDo.Eq(moves[i], KillerMoves2[plyNr]))
+          } else if (MoveDo.Eq(moves[i], KillerMoves2[plyNr]))
             scores[i] += killerMove2Score;
         }
       }
       // is it a pawn promotion ? Only score the Queen promotion. Let the minor promotions get score = 0;
-      if (moves[i].moveType == Const.PawnPromoteQueenID)
+      if (moves[i].moveType == Const.PawnPromoteQueenID) {
         scores[i] += pawnPromotionOffset;
+      }
 
       if (useMoveOrdering_History && maxHistoryValue != 0) {
         // if maxHistoryValue == 0, History is empty. Dividing by it yields Int.MinValue !!
@@ -5188,8 +5303,9 @@ class SearchMove {
       }
     }
     //
-    if (moveOrdering_SearchPV && !haveFoundPVMove)
+    if (moveOrdering_SearchPV && !haveFoundPVMove) {
       isFollowingThePV = false; // lost the PV track
+    }
   }
 
   ScoreQMoves(int plyNr) {
@@ -5214,9 +5330,9 @@ class SearchMove {
       if (moves[i].captureInfo != Const.NoCaptureID) {
         if (moveOrdering_UseSEE) {
           int seeScore = moves[i].seeScore;
-          if (seeScore > 0)
+          if (seeScore > 0) {
             scores[i] += winningCaptureScoreOffset + seeScore;
-          else if (seeScore < 0)
+          } else if (seeScore < 0)
             scores[i] +=
                 losingCaptureScoreOffset + seeScore; // seeScore is negative
           else
@@ -5229,9 +5345,9 @@ class SearchMove {
                   Const.PieceTypeBitMask;
           // positive=winning , negative=losing
           int captureScore = capturingPieceType - capturedPieceType;
-          if (captureScore > 0)
+          if (captureScore > 0) {
             scores[i] += winningCaptureScoreOffset + captureScore;
-          else if (captureScore == 0)
+          } else if (captureScore == 0)
             scores[i] += equalCaptureScoreOffset;
           else
             scores[i] += losingCaptureScoreOffset + captureScore;
@@ -5239,8 +5355,9 @@ class SearchMove {
       }
 
       // is it a pawn promotion ? Only score the Queen promotion. Let the minor promotions get score = 0;
-      if (moves[i].moveType == Const.PawnPromoteQueenID)
+      if (moves[i].moveType == Const.PawnPromoteQueenID) {
         scores[i] = pawnPromotionOffset;
+      }
     }
   }
 
@@ -5254,16 +5371,18 @@ class SearchMove {
         KillerMoves1[plyNr] = currentMove;
       } else {
         // KillerMove1 is already set to CurrentMove. Try KillerMove2
-        if (!MoveDo.Eq(currentMove, KillerMoves2[plyNr]))
+        if (!MoveDo.Eq(currentMove, KillerMoves2[plyNr])) {
           KillerMoves2[plyNr] = currentMove;
+        }
       }
     }
     if (useMoveOrdering_History) {
       int color;
-      if (use2HistoryTables)
+      if (use2HistoryTables) {
         color = board.colorToMove;
-      else
+      } else {
         color = Const.White; // use the same table for both colors
+      }
 
       var history = History[color]; //int[,]
       history[currentMove.fromPosition][currentMove.toPosition] +=
@@ -5296,8 +5415,9 @@ class SearchMove {
   ScaleDownHistory(int colorToMove, int shift) {
     // reduce all history values to prevent overflow, or scale between moves
     for (int i = 0; i < Const.NrSquares; i++)
-      for (int j = 0; j < Const.NrSquares; j++)
+      for (int j = 0; j < Const.NrSquares; j++) {
         History[colorToMove][i][j] = History[colorToMove][i][j] >>> shift;
+      }
     maxHistoryValue[colorToMove] = maxHistoryValue[colorToMove] >>> shift;
   }
 
@@ -5309,11 +5429,12 @@ class SearchMove {
     int maxScore = -2147483648; //int.MinValue;
     int bestMoveNr = -1;
 
-    for (int i = 0; i < nrMoves; i++)
+    for (int i = 0; i < nrMoves; i++) {
       if (scores[i] >= maxScore) {
         maxScore = scores[i];
         bestMoveNr = i;
       }
+    }
     scores[bestMoveNr] = -2147483648; // don't pick this one again
     return bestMoveNr;
   }
@@ -5326,12 +5447,11 @@ class SearchMove {
     if (N < 1) N = 1;
     for (int i = 0; i < N; i++) {
       Move mv = PV_Matrix[0][i];
-      if (mv.moveType == Const.NoMoveID || mv.fromPosition == mv.toPosition)
+      if (mv.moveType == Const.NoMoveID || mv.fromPosition == mv.toPosition) {
         break;
+      }
 
-      s += EPD.PositionToString(mv.fromPosition) +
-          EPD.PositionToString(mv.toPosition) +
-          " ";
+      s += "${EPD.PositionToString(mv.fromPosition)}${EPD.PositionToString(mv.toPosition)} ";
     }
     return s;
   }
@@ -5428,7 +5548,7 @@ class Engine {
 
     bool isStallMate = false;
 
-    Board clone = new Board();
+    Board clone = Board();
     clone.LoadFrom(board);
 
     moveGenerator.GenerateMoves([]);
@@ -5506,8 +5626,10 @@ playSampleAIvsAI() {
   c0_openings Opn = c0_openings();
 
   // randomize more
-  int roll_rnd = DateTime.now().second << 2;
-  while ((roll_rnd--) > 0) BitBoard.rnd.nextInt(1);
+  int rollRnd = DateTime.now().second << 2;
+  while ((rollRnd--) > 0) {
+    BitBoard.rnd.nextInt(1);
+  }
 
   int mc = 0;
   String mlist = "", pgn = "";
@@ -5524,13 +5646,13 @@ playSampleAIvsAI() {
     int kg = engine.IsCheckMateOrStallMate();
     if (kg == 1) {
       String draw = "1/2-1/2";
-      logPrint("Stalemate " + draw);
-      pgn += " " + draw;
+      logPrint("Stalemate $draw");
+      pgn += " $draw";
     }
     if (kg == 2) {
       String win = (engine.board.colorToMove == Const.White ? "0-1" : "1-0");
-      logPrint("Checkmate# " + win);
-      pgn += "# " + win;
+      logPrint("Checkmate# $win");
+      pgn += "# $win";
     }
 
     if (kg == 0 && engine.board.IsInCheck()) {
@@ -5544,24 +5666,21 @@ playSampleAIvsAI() {
 
     if (book) {
       String op = Opn.c0_Opening(mlist);
-      if (op.length > 0) {
+      if (op.isNotEmpty) {
         bm = c0_getOpnMv(op); //Take randomized opening move
-        logPrint(bm + " opening move ");
+        logPrint("$bm opening move ");
         // wait a second
-        DateTime pause_s = DateTime.now();
-        while (pause_s.second == DateTime.now().second) {}
-      } else
+        DateTime pauseS = DateTime.now();
+        while (pauseS.second == DateTime.now().second) {}
+      } else {
         book = false;
+      }
     }
 
     if (!book) {
       ss.FindBestMove();
       bm = ss.EngineResults.bestmovestring;
-      logPrint(bm +
-          " score= " +
-          ss.EngineResults.Score.toString() +
-          " nodes=" +
-          ss.EngineResults.NodeCount.toString());
+      logPrint("$bm score= ${ss.EngineResults.Score} nodes=${ss.EngineResults.NodeCount}");
     }
 
     mc++;
@@ -5575,7 +5694,7 @@ playSampleAIvsAI() {
     Move mv = engine.board.FindMoveOnBoard(ucimove);
     mlist += ucimove;
 
-    if ((mc & 1) != 0) pgn += ((mc >> 1) + 1).toString() + ".";
+    if ((mc & 1) != 0) pgn += "${(mc >> 1) + 1}.";
     pgn += MoveDo.ToString(mv, engine.board.colorToMove);
 
     ss.board.moveGenerator.GenerateMoves([]);

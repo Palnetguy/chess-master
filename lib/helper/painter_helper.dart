@@ -517,16 +517,16 @@ class PainterHelper extends GetxController {
         txtThinking.value = true;
       } else if (a.length >= 4) {
         // chess move
-        int from_sq = owl.at2square(a.substring(0, 2));
-        int to_sq = owl.at2square(a.substring(2, 4));
-        if (from_sq >= 0 && from_sq < 64 && to_sq >= 0 && to_sq < 64) {
-          AnimToMove(from_sq, to_sq);
+        int fromSq = owl.at2square(a.substring(0, 2));
+        int toSq = owl.at2square(a.substring(2, 4));
+        if (fromSq >= 0 && fromSq < 64 && toSq >= 0 && toSq < 64) {
+          AnimToMove(fromSq, toSq);
           txtThinking.value = false;
         } else {
           // Handle invalid move gracefully
           print("Invalid movge detected Here Boss");
         }
-      } else if (a.length > 0) {
+      } else if (a.isNotEmpty) {
         repaint.value = true;
       }
     }

@@ -25,92 +25,96 @@ class c0_openings {
     return s.substring(at, at + len);
   }
 
-  String c0_Opening(String c0_fmoves) {
-    String c0_retdata = "",
-        c0_mvs = "",
-        c0_s = "",
-        c0_c = "",
-        c0_ECO = "",
-        c0_kf = "",
-        c0_NMoves = "",
-        c0_OName = "",
-        c0_op = "",
-        c0_next = "";
+  String c0_Opening(String c0Fmoves) {
+    String c0Retdata = "",
+        c0Mvs = "",
+        c0S = "",
+        c0C = "",
+        c0Eco = "",
+        c0Kf = "",
+        c0Nmoves = "",
+        c0Oname = "",
+        c0Op = "",
+        c0Next = "";
 
-    int c0_i = 0, c0_j = 0, c0_pt = 0, c0_nm = 0;
+    int c0I = 0, c0J = 0, c0Pt = 0, c0Nm = 0;
 
-    for (c0_i = 0; c0_i < c0_opn.length; c0_i++) {
-      c0_s = c0_opn[c0_i];
-      for (c0_j = 0; c0_j < c0_s.length;) {
-        c0_c = substr(c0_s, c0_j,
+    for (c0I = 0; c0I < c0_opn.length; c0I++) {
+      c0S = c0_opn[c0I];
+      for (c0J = 0; c0J < c0S.length;) {
+        c0C = substr(c0S, c0J,
             1); // Looking for special symbols or type of information...
-        if (c0_c == "-") // Other variant...
+        if (c0C == "-") // Other variant...
         {
-          c0_j++;
-          for (c0_nm = 0;
-              c0_j + c0_nm < c0_s.length &&
-                  ("0123456789").indexOf(substr(c0_s, c0_j + c0_nm, 1)) >= 0;
-              c0_nm++);
+          c0J++;
+          for (c0Nm = 0;
+              c0J + c0Nm < c0S.length &&
+                  ("0123456789").contains(substr(c0S, c0J + c0Nm, 1));
+              c0Nm++) {
+             {}
+          }
 
           // Next value is length for moves to shorten...
-          c0_mvs = substr(c0_mvs, 0,
-              c0_mvs.length - (4 * int.parse(substr(c0_s, c0_j, c0_nm))));
-          c0_j += c0_nm;
-        } else if (c0_c == ".") // Will be other opening or variant...
+          c0Mvs = substr(c0Mvs, 0,
+              c0Mvs.length - (4 * int.parse(substr(c0S, c0J, c0Nm))));
+          c0J += c0Nm;
+        } else if (c0C == ".") // Will be other opening or variant...
         {
-          c0_j++;
-          c0_mvs = "";
-        } else if (("abcdefgh").indexOf(c0_c) >= 0) // If it is a chess move...
+          c0J++;
+          c0Mvs = "";
+        } else if (("abcdefgh").contains(c0C)) // If it is a chess move...
         {
-          c0_mvs += substr(c0_s, c0_j, 4);
-          c0_j += 4;
-        } else if (("0123456789").indexOf(c0_c) >=
-            0) // If it is a coefficient (for best move searches)...
+          c0Mvs += substr(c0S, c0J, 4);
+          c0J += 4;
+        } else if (("0123456789").contains(c0C)) // If it is a coefficient (for best move searches)...
         {
-          c0_kf = c0_c;
-          if ((c0_mvs.length > c0_fmoves.length) &&
-              (substr(c0_mvs, 0, c0_fmoves.length) == c0_fmoves)) {
-            c0_next = substr(c0_mvs, c0_fmoves.length, 4);
+          c0Kf = c0C;
+          if ((c0Mvs.length > c0Fmoves.length) &&
+              (substr(c0Mvs, 0, c0Fmoves.length) == c0Fmoves)) {
+            c0Next = substr(c0Mvs, c0Fmoves.length, 4);
 
-            if (c0_NMoves.indexOf(c0_next) < 0)
-              c0_NMoves += c0_next + " (" + c0_kf + ") ";
+            if (!c0Nmoves.contains(c0Next)) {
+              c0Nmoves += "$c0Next ($c0Kf) ";
+            }
           }
-          c0_j++;
+          c0J++;
         } else // Opening information... ECO code and name (Main name for x00)
         {
-          c0_ECO = substr(c0_s, c0_j, 3);
-          c0_j += 3;
-          for (c0_pt = 0; substr(c0_s, c0_j + c0_pt, 1) != "."; c0_pt++);
+          c0Eco = substr(c0S, c0J, 3);
+          c0J += 3;
+          for (c0Pt = 0; substr(c0S, c0J + c0Pt, 1) != "."; c0Pt++) {
+             {}
+          }
 
-          if ((c0_mvs.length <= c0_fmoves.length) &&
-              (substr(c0_fmoves, 0, c0_mvs.length) == c0_mvs)) {
-            if (c0_mvs.length > c0_op.length &&
-                c0_op.length < c0_fmoves.length) {
-              c0_op = c0_mvs;
-              c0_OName = "ECO " + c0_ECO;
+          if ((c0Mvs.length <= c0Fmoves.length) &&
+              (substr(c0Fmoves, 0, c0Mvs.length) == c0Mvs)) {
+            if (c0Mvs.length > c0Op.length &&
+                c0Op.length < c0Fmoves.length) {
+              c0Op = c0Mvs;
+              c0Oname = "ECO $c0Eco";
             }
           }
 
-          c0_j += (c0_pt + 1);
+          c0J += (c0Pt + 1);
         }
       }
     }
     // Sorting by coeff. descending
-    for (c0_i = 1; c0_i < 10; c0_i++) {
-      for (c0_j = 6; c0_j < c0_NMoves.length - 9;) {
-        c0_j += 9;
-        if (substr(c0_NMoves, c0_j, 1) == c0_i.toString() &&
-            substr(c0_NMoves, c0_j, 1).codeUnits[0] >=
-                substr(c0_NMoves, 6, 1).codeUnits[0]) {
-          c0_NMoves = substr(c0_NMoves, c0_j - 6, 9) +
-              substr(c0_NMoves, 0, c0_j - 6) +
-              c0_NMoves.substring(c0_j - 6 + 9);
+    for (c0I = 1; c0I < 10; c0I++) {
+      for (c0J = 6; c0J < c0Nmoves.length - 9;) {
+        c0J += 9;
+        if (substr(c0Nmoves, c0J, 1) == c0I.toString() &&
+            substr(c0Nmoves, c0J, 1).codeUnits[0] >=
+                substr(c0Nmoves, 6, 1).codeUnits[0]) {
+          c0Nmoves = substr(c0Nmoves, c0J - 6, 9) +
+              substr(c0Nmoves, 0, c0J - 6) +
+              c0Nmoves.substring(c0J - 6 + 9);
         }
       }
     }
 
-    if (c0_NMoves.length > 0) c0_retdata = c0_NMoves + c0_OName;
+    if (c0Nmoves.isNotEmpty) c0Retdata = c0Nmoves + c0Oname;
 
-    return c0_retdata;
+    return c0Retdata;
   }
 }

@@ -69,21 +69,21 @@ void main2() {
   fh.write('//Multiply by ((Magic << 32) | Magic)\n');
 
   fh.write('//White Pawns\n');
-  fh.write('Shift_wp = [' + res_wp_shifts + '];\n');
-  fh.write('Magic_wp = [' + res_wp_magics + '];\n');
+  fh.write('Shift_wp = [$res_wp_shifts];\n');
+  fh.write('Magic_wp = [$res_wp_magics];\n');
   fh.write('//Black Pawns\n');
-  fh.write('Shift_bp = [' + res_bp_shifts + '];\n');
-  fh.write('Magic_bp = [' + res_bp_magics + '];\n');
+  fh.write('Shift_bp = [$res_bp_shifts];\n');
+  fh.write('Magic_bp = [$res_bp_magics];\n');
 
   fh.close();
 
-  print("T_max buffer needed=" + T_max.toString());
+  print("T_max buffer needed=$T_max");
   print("Ok");
 }
 
-int p_Masks(int square, int b_w, int n, int m) {
+int p_Masks(int square, int bW, int n, int m) {
   int p = 0;
-  p += (b_w << 11);
+  p += (bW << 11);
   p += (square << 5);
   p += (n << 1);
   p += m;
@@ -105,10 +105,11 @@ bool BoSet(int sq, bool capt) {
 void gen_pawnmoves() {
   int V = (square >> 3), H = (square & 7);
   if (V > 0 && V < 7) {
-    if (b_w != 0)
+    if (b_w != 0) {
       V--;
-    else
+    } else {
       V++;
+    }
 
     int sq = (V << 3) | H;
     bool f = BoSet(sq, false);
@@ -131,7 +132,7 @@ logBitsOfInt(int N) {
     for (int h = 0; h < 7; h++) {
       int sq = (v << 3) | h;
       int bit = 1 << sq;
-      s += " " + ((N & bit) != 0 ? "1" : ".");
+      s += " ${(N & bit) != 0 ? "1" : "."}";
     }
     print(s);
   }
@@ -181,8 +182,12 @@ void Permutate() {
 
 void prepare_tables() {
   int i = 0;
-  for (i = 0; i < (1 << 12); i++) Mask.add(0); // prepare array
-  for (i = 0; i < 128; i++) TbLen.add(0); // prepare array
+  for (i = 0; i < (1 << 12); i++) {
+    Mask.add(0); // prepare array
+  }
+  for (i = 0; i < 128; i++) {
+    TbLen.add(0); // prepare array
+  }
 
   for (square = 0; square < 64; square++) {
     for (b_w = 0; b_w < 2; b_w++) {
@@ -221,7 +226,7 @@ int rand32() {
 void find_Magics_pawns() {
   String bufSq = square2at(square);
 
-  int table_p = p_Masks(square, b_w, 0, 0);
+  int tableP = p_Masks(square, b_w, 0, 0);
 
   int LEN = TbLen[(64 * b_w) + square];
 
@@ -229,23 +234,22 @@ void find_Magics_pawns() {
 
   bool found = false;
 
-  print("sq# " + square.toString());
+  print("sq# $square");
 
   var TB2 = [];
-  for (t = 0; t < (1 << bitCnt); t++) TB2.add(0);
+  for (t = 0; t < (1 << bitCnt); t++) {
+    TB2.add(0);
+  }
 
   for (; !found;) {
-    print("searching: square " +
-        bufSq +
-        " " +
-        (b_w == 1 ? "white" : "black") +
-        " pawn bits=" +
-        bitCnt.toString());
+    print("searching: square $bufSq ${b_w == 1 ? "white" : "black"} pawn bits=$bitCnt");
 
     int toN = (1 << 23);
     for (int N = 0; N != toN; N++) {
       int k = (1 << bitCnt); // clear previous search
-      for (int z = 0; z < k;) TB2[z++] = 0;
+      for (int z = 0; z < k;) {
+        TB2[z++] = 0;
+      }
 
       // find the magic number!
 
@@ -259,7 +263,7 @@ void find_Magics_pawns() {
       // and includes all possible results for pawns only
       int Magic2 = (Magic << 32) | Magic;
 
-      int p = table_p;
+      int p = tableP;
 
       bool good = true;
       for (int w = 0; w < LEN; w++) {
@@ -293,13 +297,13 @@ void find_Magics_pawns() {
         found = true;
         print("found magic");
         print("Multiply by ((Magic << 32) | Magic) ");
-        print(bitCnt.toString() + ", " + Magic.toString());
+        print("$bitCnt, $Magic");
         if (b_w == 1) {
-          res_bp_shifts += bitCnt.toString() + ',';
-          res_bp_magics += Magic.toString() + ',';
+          res_bp_shifts += '$bitCnt,';
+          res_bp_magics += '$Magic,';
         } else {
-          res_wp_shifts += bitCnt.toString() + ',';
-          res_wp_magics += Magic.toString() + ',';
+          res_wp_shifts += '$bitCnt,';
+          res_wp_magics += '$Magic,';
         }
 
         break;
@@ -312,7 +316,7 @@ void find_Magics_pawns() {
 
 void find_Magics() {
   for (b_w = 0; b_w < 2; b_w++) {
-    print("Magics for " + (b_w != 0 ? "white" : "black") + "pawns");
+    print("Magics for ${b_w != 0 ? "white" : "black"}pawns");
 
     for (square = 0; square < 64; square++) {
       find_Magics_pawns();

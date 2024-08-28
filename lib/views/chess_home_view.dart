@@ -1,15 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controllers/audio_controller.dart';
 import '../controllers/game_controller.dart';
 import '../helper/imagetext_painter.dart';
+import '../widgets/settings_drawer.dart';
 import 'painter.dart';
 import '../helper/painter_helper.dart';
 
 class ChessHomeScreen extends StatelessWidget {
-  final PainterHelper painterHelper = PainterHelper.instance;
-
   ChessHomeScreen({super.key});
   String assetPath = "assets/images/";
+  final PainterHelper painterHelper = Get.find<PainterHelper>();
+  final AudioController audioController = Get.find<AudioController>();
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +22,8 @@ class ChessHomeScreen extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
+        drawer: SettingsDrawer(),
         body: Column(
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -53,15 +60,26 @@ class ChessHomeScreen extends StatelessWidget {
                           )),
                     ],
                   ),
-                  const Icon(
-                    Icons.settings,
-                    color: Colors.red,
-                    size: 30,
+                  // const Icon(
+                  //   Icons.settings,
+                  //   color: Colors.red,
+                  //   size: 30,
+                  // ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      // Open the drawer
+                      _scaffoldKey.currentState?.openDrawer();
+                    },
                   ),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
             Obx(() {
@@ -83,7 +101,7 @@ class ChessHomeScreen extends StatelessWidget {
               }
             }),
 
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
 
@@ -92,7 +110,7 @@ class ChessHomeScreen extends StatelessWidget {
               child: Painter(),
             ),
 
-            Text("Checking Here"),
+            const Text("Checking Here"),
 
             // Bottom buttons (Restart, Pieces, Undo, Hint)
             Container(
@@ -120,15 +138,67 @@ class ChessHomeScreen extends StatelessWidget {
   }
 
   Widget gameBottomButton(String imgPath, int index) {
-    return GestureDetector(
-      onTap: () {
-        // bottomButtonAction();
-        painterHelper.bottomButtonAction(index);
-      },
-      child: CircleAvatar(
-        foregroundImage: AssetImage(imgPath),
-        minRadius: 27,
-        // maxRadius: 35,
+    return Obx(() {
+      // Assuming isThinking is a reactive variable in the gameController
+      bool isThinking = painterHelper.txtThinking.value;
+
+      return Stack(
+        children: [
+          InkWell(
+            onTap: () {
+              if (kDebugMode) {
+                print("Selected Index is $index");
+                audioController.startMusic();
+              }
+              if (kDebugMode) {
+                print(
+                    "Selected Engine is ${painterHelper.engineSelected.value}");
+              }
+              painterHelper.bottomButtonAction(index);
+              if (kDebugMode) {
+                print(
+                    "Selected Engine is ${painterHelper.engineSelected.value}");
+              }
+            },
+            child: CircleAvatar(
+              foregroundImage: AssetImage(imgPath),
+              minRadius: 27,
+              // maxRadius: 35,
+            ),
+          ),
+          if (isThinking && painterHelper.engineSelected.value == (index - 1))
+            redLampOverlay(),
+        ],
+      );
+    });
+  }
+
+  // Widget gameBottomButton(String imgPath, int index) {
+  //   return InkWell(
+  //     onTap: () {
+  //       // bottomButtonAction();
+  //       painterHelper.bottomButtonAction(index);
+  //     },
+  //     child: CircleAvatar(
+  //       foregroundImage: AssetImage(imgPath),
+  //       minRadius: 27,
+  //       // maxRadius: 35,
+  //     ),
+  //   );
+  // }
+
+  Widget redLampOverlay() {
+    return Positioned(
+      top: 0,
+      right: 0,
+      child: Container(
+        width: 18,
+        height: 18,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.black, width: 2),
+        ),
       ),
     );
   }

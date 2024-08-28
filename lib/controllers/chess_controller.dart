@@ -67,7 +67,7 @@ class ChessController extends GetxController {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (game.value.chessGame.turn == 'w') {
         if (timeLeftWhite.value > 0) {
           timeLeftWhite.value--;

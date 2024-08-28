@@ -81,21 +81,21 @@ void main2() {
 
   fh.write('//Magics found for 64 squares\n');
   fh.write('//Rooks\n');
-  fh.write('Shift_rooks = [' + res_R_shifts + '];\n');
-  fh.write('Magic_rooks = [' + res_R_magics + '];\n');
+  fh.write('Shift_rooks = [$res_R_shifts];\n');
+  fh.write('Magic_rooks = [$res_R_magics];\n');
   fh.write('//Bishops\n');
-  fh.write('Shift_bishops = [' + res_B_shifts + '];\n');
-  fh.write('Magic_bishops = [' + res_B_magics + '];\n');
+  fh.write('Shift_bishops = [$res_B_shifts];\n');
+  fh.write('Magic_bishops = [$res_B_magics];\n');
 
   fh.close();
 
-  print("T_max buffer needed=" + T_max.toString());
+  print("T_max buffer needed=$T_max");
   print("Ok");
 }
 
-int p_Masks(int square, int b_r, int n, int m) {
+int p_Masks(int square, int bR, int n, int m) {
   int p = 0;
-  p += (b_r << 21);
+  p += (bR << 21);
   p += (square << 15);
   p += (n << 1);
   p += m;
@@ -120,10 +120,11 @@ void dir(int dv, int dh) {
 }
 
 void gen2dir() {
-  if (legalck)
+  if (legalck) {
     Bo2 = 0;
-  else
+  } else {
     Board = 0;
+  }
 
   if (b_r != 0) {
     //bishops
@@ -187,8 +188,12 @@ void Permutate() {
 
 void prepare_tables() {
   int i = 0;
-  for (i = 0; i < 4194304; i++) Mask.add(0); // prepare array
-  for (i = 0; i < 128; i++) TbLen.add(0); // prepare array
+  for (i = 0; i < 4194304; i++) {
+    Mask.add(0); // prepare array
+  }
+  for (i = 0; i < 128; i++) {
+    TbLen.add(0); // prepare array
+  }
 
   for (square = 0; square < 64; square++) {
     for (b_r = 0; b_r < 2; b_r++) {
@@ -226,7 +231,7 @@ int rand32() {
 void find_SqBR() {
   String bufSq = square2at(square);
 
-  int table_p = p_Masks(square, b_r, 0, 0);
+  int tableP = p_Masks(square, b_r, 0, 0);
 
   int LEN = TbLen[(64 * b_r) + square];
 
@@ -235,28 +240,28 @@ void find_SqBR() {
   bool found = false;
   int bitCnt = (usr_bits_const ? usr_bits : 3); // will increase
 
-  print("sq# " + square.toString());
+  print("sq# $square");
 
   var TB2 = [];
-  for (t = 0; t < (1 << 16); t++) TB2.add(0);
+  for (t = 0; t < (1 << 16); t++) {
+    TB2.add(0);
+  }
 
   for (; !found;) {
     if (bitCnt < 16) bitCnt++; // do again, but limit below (1<<16)
 
-    if (usr_bits_const || (usr_bits >= 0 && bitCnt > usr_bits))
+    if (usr_bits_const || (usr_bits >= 0 && bitCnt > usr_bits)) {
       bitCnt = usr_bits;
+    }
 
-    print("searching: square " +
-        bufSq +
-        " " +
-        (b_r == 1 ? "bishops" : "rooks") +
-        "bits=" +
-        bitCnt.toString());
+    print("searching: square $bufSq ${b_r == 1 ? "bishops" : "rooks"}bits=$bitCnt");
 
     int toN = (1 << (14 + usr_searchtime));
     for (int N = 0; N != toN; N++) {
       int k = (1 << bitCnt); // clear previous search
-      for (int z = 0; z < k;) TB2[z++] = 0;
+      for (int z = 0; z < k;) {
+        TB2[z++] = 0;
+      }
 
       // find the magic number!
 
@@ -265,7 +270,7 @@ void find_SqBR() {
         Magic = rand32();
         if (Magic <= MAX_SAFE_INTEGER_52bit) break;
       }
-      int p = table_p;
+      int p = tableP;
 
       bool good = true;
       for (int w = 0; w < LEN; w++) {
@@ -284,9 +289,9 @@ void find_SqBR() {
           break;
         }
 
-        if (TB2[index] == 0)
+        if (TB2[index] == 0) {
           TB2[index] = Bo2;
-        else if (TB2[index] != Bo2) {
+        } else if (TB2[index] != Bo2) {
           good = false;
           break;
         }
@@ -295,13 +300,13 @@ void find_SqBR() {
       if (good) {
         found = true;
         print("found magic");
-        print(bitCnt.toString() + ", " + Magic.toString());
+        print("$bitCnt, $Magic");
         if (b_r == 1) {
-          res_B_shifts += bitCnt.toString() + ',';
-          res_B_magics += Magic.toString() + ',';
+          res_B_shifts += '$bitCnt,';
+          res_B_magics += '$Magic,';
         } else {
-          res_R_shifts += bitCnt.toString() + ',';
-          res_R_magics += Magic.toString() + ',';
+          res_R_shifts += '$bitCnt,';
+          res_R_magics += '$Magic,';
         }
 
         break;
@@ -313,13 +318,14 @@ void find_SqBR() {
 }
 
 void find_Magics() {
-  for (b_r = 1; b_r >= 0; b_r--)
+  for (b_r = 1; b_r >= 0; b_r--) {
     if (usr_b_r < 0 || usr_b_r == b_r) {
       print("Magics");
-      if (b_r != 0)
+      if (b_r != 0) {
         print("bishops");
-      else
+      } else {
         print("rooks");
+      }
 
       for (square = 0; square < 64; square++) {
         if (usr_square < 0 || usr_square == square) {
@@ -327,4 +333,5 @@ void find_Magics() {
         }
       }
     }
+  }
 }

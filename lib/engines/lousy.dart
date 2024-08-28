@@ -26,8 +26,10 @@ class LousyEngine {
     Opn = c0_openings();
 
     // randomize more
-    int roll_rnd = DateTime.now().second << 2;
-    while ((roll_rnd--) > 0) BitBoard.rnd.nextInt(1);
+    int rollRnd = DateTime.now().second << 2;
+    while ((rollRnd--) > 0) {
+      BitBoard.rnd.nextInt(1);
+    }
   }
 
   bool isItMyMove(bool myColorIsWhite) {
@@ -84,13 +86,13 @@ class LousyEngine {
         if ((--Tck) == 0) {
           String foundmove = Opn.c0_Opening(mlist); // openings or...
 
-          if (foundmove.length == 0) {
+          if (foundmove.isEmpty) {
             ss.FindBestMove(); // let the engine search
             foundmove = ss.EngineResults.bestmovestring;
             print(foundmove);
           }
 
-          if (foundmove.length > 0) {
+          if (foundmove.isNotEmpty) {
             // style g7-g8=Q
             return foundmove;
           }
@@ -107,7 +109,7 @@ class LousyEngine {
   }
 
   TakeBack() {
-    if (mlist.length > 0) {
+    if (mlist.isNotEmpty) {
       Bo.UnMakeMove(Bo.movesHist[Bo.movesHist.length - 1]);
       mlist = mlist.substring(0, mlist.length - 4);
     }

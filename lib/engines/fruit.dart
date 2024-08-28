@@ -24,7 +24,7 @@ class FruitEngine {
   // move by mouse or tap
   MakeMove(int fromSquare, int toSquare) {
     String ucimove = sq2at(fromSquare) + sq2at(toSquare);
-    mlist += ucimove + " ";
+    mlist += "$ucimove ";
   }
 
   // Do engine shoud make a move? Then calculate and do it.
@@ -38,7 +38,7 @@ class FruitEngine {
       if (Tck > 0) {
         if ((--Tck) == 0) {
           if (!Fru.randomopening(mlist)) {
-            Fru.do_input("position moves " + mlist);
+            Fru.do_input("position moves $mlist");
 
             Fru.do_input("go movetime 4");
           }
@@ -55,7 +55,7 @@ class FruitEngine {
   }
 
   TakeBack() {
-    if (mlist.length > 0) {
+    if (mlist.isNotEmpty) {
       mlist = mlist.substring(0, mlist.length - 5);
     }
   }

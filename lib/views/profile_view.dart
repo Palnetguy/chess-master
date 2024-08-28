@@ -11,25 +11,25 @@ class ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"),
+        title: const Text("Profile"),
       ),
       body: Obx(() {
         final user = _profileController.user.value;
-        if (user == null) return CircularProgressIndicator();
+        if (user == null) return const CircularProgressIndicator();
         return Column(
           children: [
             CircleAvatar(
               radius: 50,
               backgroundImage: NetworkImage(user.photoURL),
             ),
-            SizedBox(height: 20),
-            Text(user.displayName, style: TextStyle(fontSize: 24)),
-            SizedBox(height: 10),
-            Text(user.email, style: TextStyle(color: Colors.grey)),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            Text(user.displayName, style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 10),
+            Text(user.email, style: const TextStyle(color: Colors.grey)),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => _profileController.signOut(),
-              child: Text("Sign Out"),
+              child: const Text("Sign Out"),
             ),
           ],
         );
