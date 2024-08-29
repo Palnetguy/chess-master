@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import '../controllers/audio_controller.dart';
+import '../controllers/auth_controller.dart';
 import '../services/share_app_service.dart';
 import '../views/about_us_view.dart';
 
 class SettingsDrawer extends StatelessWidget {
-  SettingsDrawer({Key? key}) : super(key: key);
+  SettingsDrawer({super.key});
   final AudioController audioController = Get.find<AudioController>();
+  final AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +145,7 @@ class SettingsDrawer extends StatelessWidget {
           ListTile(
             title: const Text('Logout'),
             onTap: () {
-              // Handle logout
+              authController.signOutUser();
             },
           ),
         ],

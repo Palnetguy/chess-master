@@ -1,18 +1,24 @@
 {
   "project_info": {
     "project_number": "890110941957",
+    "firebase_url": "https://chessmaster-e0dbb-default-rtdb.firebaseio.com",
     "project_id": "chessmaster-e0dbb",
     "storage_bucket": "chessmaster-e0dbb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:890110941957:android:b322f2f7aee440deb7756c",
+        "mobilesdk_app_id": "1:890110941957:android:27be1d148bc84003b7756c",
         "android_client_info": {
-          "package_name": "com.tak.chessmaster"
+          "package_name": "com.example.flutter_chess"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "890110941957-3n5g6qbtkjr82atv91gd6vcvmp36l7u5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBDtqLWpsnAJBkmnOgsY2WJzWzu1j1Pd2A"
@@ -20,7 +26,63 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "890110941957-3n5g6qbtkjr82atv91gd6vcvmp36l7u5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "890110941957-d9m93b3re1h10rfla70lnlj1dv0mpdnq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterChess"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890110941957:android:b322f2f7aee440deb7756c",
+        "android_client_info": {
+          "package_name": "com.tak.chessmaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "890110941957-ge3mjtin9v3saa015jl9jfupbonosf6d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tak.chessmaster",
+            "certificate_hash": "bc766b4a5df3c97173495d05f050ea86c7bc9a9d"
+          }
+        },
+        {
+          "client_id": "890110941957-3n5g6qbtkjr82atv91gd6vcvmp36l7u5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDtqLWpsnAJBkmnOgsY2WJzWzu1j1Pd2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "890110941957-3n5g6qbtkjr82atv91gd6vcvmp36l7u5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "890110941957-d9m93b3re1h10rfla70lnlj1dv0mpdnq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterChess"
+              }
+            }
+          ]
         }
       }
     }

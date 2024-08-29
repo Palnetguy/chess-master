@@ -7,11 +7,16 @@ import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import 'dart:developer' as dev;
 
+import 'constants.dart';
 import 'controllers/audio_controller.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/game_controller.dart';
 import 'helper/painter_helper.dart';
 import 'services/firebase_service.dart';
+import 'views/about_us_view.dart';
+import 'views/authentication/login_screen.dart';
+import 'views/authentication/sign_up_screen.dart';
+import 'views/authentication/splash_screen.dart';
 import 'views/chess_home_view.dart';
 
 Future<void> main() async {
@@ -40,8 +45,17 @@ Future<void> main() async {
   ]);
   await Firebase.initializeApp(options: firebaseOptions);
 
-  Get.put(AudioController());
+  // Initialize Firebase App Check
+  // await FirebaseAppCheck.instance.activate(
+  //   webRecaptchaSiteKey: 'YOUR_RECAPTCHA_SITE_KEY', // Only for web
+  // You can use other providers like "AndroidProvider.playIntegrity" for Android
+  // or "AppleProvider.appAttest" for iOS
+  //   androidProvider: AndroidProvider.debug,
+  //   appleProvider: AppleProvider.debug,
+  // );
+
   Get.put(AuthController());
+  Get.put(AudioController());
   Get.put(GameController());
   Get.put(PainterHelper());
 
@@ -63,7 +77,19 @@ class MyApp extends StatelessWidget {
       //       ? AuthView()
       //       : HomeView();
       // }),
-      home: ChessHomeScreen(),
+      // home: const SplashScreen(),
+      initialRoute: Constants.splashScreen,
+      getPages: [
+        GetPage(name: Constants.splashScreen, page: () => const SplashScreen()),
+        // GetPage(name: Constants.gameScreen, page: () => const HomeScreen()),
+        GetPage(name: Constants.gameScreen, page: () => ChessHomeScreen()),
+        // GetPage(name: Constants.settingScreen, page: () => const SettingScreen()),
+        GetPage(name: Constants.aboutScreen, page: () => const AboutUsScreen()),
+        // GetPage(name: Constants.gameStartUpScreen, page: () => const GameStartUpScreen()),
+        // GetPage(name: Constants.gameTimeScreen, page: () => const GameTimeScreen()),
+        GetPage(name: Constants.loginScreen, page: () => const LoginScreen()),
+        GetPage(name: Constants.signUpScreen, page: () => const SignUpScreen()),
+      ],
     );
   }
 }

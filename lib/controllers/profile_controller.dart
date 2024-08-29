@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../models/user.dart';
+import '../models/user_model.dart';
 import 'auth_controller.dart';
 
 class ProfileController extends GetxController {
@@ -8,13 +8,13 @@ class ProfileController extends GetxController {
 
   var user = Rx<UserModel?>(null);
 
-  @override
-  void onInit() {
-    super.onInit();
-    user.bindStream(_authController.user.stream);
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   user.bindStream(_authController.user.stream);
+  // }
 
-  void signOut() {
-    _authController.signOut();
-  }
+  // void signOut() {
+  //   _authController.signOut();
+  // }
 }

@@ -29,18 +29,18 @@ class ChessController extends GetxController {
       game.value = ChessGame(chess.Chess());
       _startTimer();
     } else {
-      // Create a new game in Firestore
-      DocumentReference gameRef = await _firestore.collection('games').add({
-        'player1': _authController.user.value!.uid,
-        'player2': opponentId,
-        'fen': game.value.chessGame.fen,
-        'turn': 'w',
-        'lastMove': null,
-        'timeControl': selectedTimeControl.value,
-        'timeLeftWhite': timeLeftWhite.value,
-        'timeLeftBlack': timeLeftBlack.value,
-      });
-      gameId.value = gameRef.id;
+      // // Create a new game in Firestore
+      // DocumentReference gameRef = await _firestore.collection('games').add({
+      //   'player1': _authController.user.value!.uid,
+      //   'player2': opponentId,
+      //   'fen': game.value.chessGame.fen,
+      //   'turn': 'w',
+      //   'lastMove': null,
+      //   'timeControl': selectedTimeControl.value,
+      //   'timeLeftWhite': timeLeftWhite.value,
+      //   'timeLeftBlack': timeLeftBlack.value,
+      // });
+      // gameId.value = gameRef.id;
 
       // Listen for game updates
       _listenToGameUpdates(gameId.value);
