@@ -8,9 +8,11 @@ import 'package:logging/logging.dart';
 import 'dart:developer' as dev;
 
 import 'constants.dart';
+import 'controllers/google_ads_controller.dart';
 import 'controllers/audio_controller.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/game_controller.dart';
+import 'controllers/startapp_ads_controller.dart';
 import 'helper/painter_helper.dart';
 import 'services/firebase_service.dart';
 import 'views/about_us_view.dart';
@@ -58,6 +60,8 @@ Future<void> main() async {
   Get.put(AudioController());
   Get.put(GameController());
   Get.put(PainterHelper());
+  Get.put(StartAppAdsController());
+  // Get.put(GoogleAdsController());
 
   runApp(const MyApp());
 }

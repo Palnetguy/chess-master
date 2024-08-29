@@ -41,6 +41,8 @@ dependencies:
   image_cropper: ^8.0.2
   flutter_facebook_auth: ^7.1.0
   twitter_login: ^4.4.2
+  # google_mobile_ads: ^5.1.0
+  startapp_sdk: ^1.0.1
   
 
 dev_dependencies:

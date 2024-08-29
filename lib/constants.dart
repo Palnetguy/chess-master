@@ -12,6 +12,10 @@ class Constants {
 
   static const String custom = 'Custom';
 
+  static const String deepLink = 'https://chessmaster.page.link';
+  static const String callBackDeepLink =
+      'https://chessmaster-e0dbb.firebaseapp.com/__/auth/handler';
+
   static const String uid = 'uid';
   static const String name = 'name';
   static const String image = 'image';

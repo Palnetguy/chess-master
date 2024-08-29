@@ -166,49 +166,49 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 24.0,
                         )),
                   const SizedBox(height: 20),
-                  const Text(
-                    '- OR - \n Sign in With',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // SocialButton(
-                      //   label: 'Guest',
-                      //   assetImage: AssetsManager.userIcon,
-                      //   height: 55.0,
-                      //   width: 55.0,
-                      //   onTap: () {
-                      //     // TODO: Implement guest login
-                      //   },
-                      // ),
-                      SocialButton(
-                        label: 'Google',
-                        assetImage: AssetsManager.googleIcon,
-                        height: 55.0,
-                        width: 55.0,
-                        onTap: signInWithGoogle,
-                      ),
-                      SocialButton(
-                        label: 'Facebook',
-                        assetImage: AssetsManager.facebookLogo,
-                        height: 55.0,
-                        width: 55.0,
-                        onTap: signInWithFacebook,
-                      ),
-                      SocialButton(
-                          label: 'Twitter',
-                          assetImage: AssetsManager.twitterLogo,
-                          height: 55.0,
-                          width: 55.0,
-                          onTap: signInWithTwitter),
-                    ],
-                  ),
+                  // const Text(
+                  //   '- OR - \n Sign in With',
+                  //   textAlign: TextAlign.center,
+                  //   style: TextStyle(
+                  //     color: Colors.grey,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 20),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     // SocialButton(
+                  //     //   label: 'Guest',
+                  //     //   assetImage: AssetsManager.userIcon,
+                  //     //   height: 55.0,
+                  //     //   width: 55.0,
+                  //     //   onTap: () {
+                  //     //     // TODO: Implement guest login
+                  //     //   },
+                  //     // ),
+                  //     SocialButton(
+                  //       label: 'Google',
+                  //       assetImage: AssetsManager.googleIcon,
+                  //       height: 55.0,
+                  //       width: 55.0,
+                  //       onTap: signInWithGoogle,
+                  //     ),
+                  //     SocialButton(
+                  //       label: 'Facebook',
+                  //       assetImage: AssetsManager.facebookLogo,
+                  //       height: 55.0,
+                  //       width: 55.0,
+                  //       onTap: signInWithFacebook,
+                  //     ),
+                  //     SocialButton(
+                  //         label: 'Twitter',
+                  //         assetImage: AssetsManager.twitterLogo,
+                  //         height: 55.0,
+                  //         width: 55.0,
+                  //         onTap: signInWithTwitter),
+                  //   ],
+                  // ),
                   const SizedBox(height: 40),
                   HaveAccountWidget(
                     label: 'Don\'t have an account?',

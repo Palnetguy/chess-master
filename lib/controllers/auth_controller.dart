@@ -113,9 +113,9 @@ class AuthController extends GetxController {
   Future<User?> signInWithTwitter() async {
     try {
       final twitterLogin = TwitterLogin(
-        apiKey: 'YOUR_TWITTER_API_KEY',
-        apiSecretKey: 'YOUR_TWITTER_API_SECRET_KEY',
-        redirectURI: 'YOUR_TWITTER_REDIRECT_URI',
+        apiKey: 'bHYyXzJDMjZpMmRHTi1QekphMmM6MTpjaQ',
+        apiSecretKey: 'kh9g2YFgI1jm8C8gJPLRDPBA1vpQVX-vpxqyPf3uyB5FFqAODg',
+        redirectURI: Constants.deepLink,
       );
       final authResult = await twitterLogin.login();
       if (authResult.status == TwitterLoginStatus.loggedIn) {
@@ -247,7 +247,26 @@ class AuthController extends GetxController {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     await _firebaseAuth.signOut();
     _isSignedIn.value = false;
-    sharedPreferences.clear();
+    _userModel.value = null;
+    _uid.value = null;
+    await sharedPreferences.clear();
     Get.offAllNamed(Constants.loginScreen);
   }
+
+  // Future<void> signOutUser() async {
+  //   try {
+  //     SharedPreferences sharedPreferences =
+  //         await SharedPreferences.getInstance();
+  //     await _firebaseAuth.signOut();
+  //     await _googleSignIn.signOut();
+  //     await _facebookAuth.logOut();
+  //     _isSignedIn.value = false;
+  //     _userModel.value = null;
+  //     _uid.value = null;
+  //     await sharedPreferences.clear();
+  //     Get.offAllNamed(Constants.loginScreen);
+  //   } catch (e) {
+  //     print("Error signing out: $e");
+  //   }
+  // }
 }

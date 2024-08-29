@@ -1,8 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:startapp_sdk/startapp.dart';
+import '../controllers/google_ads_controller.dart';
 import '../controllers/audio_controller.dart';
+import '../controllers/auth_controller.dart';
 import '../controllers/game_controller.dart';
+import '../controllers/startapp_ads_controller.dart';
 import '../helper/imagetext_painter.dart';
 import '../widgets/settings_drawer.dart';
 import 'painter.dart';
@@ -13,12 +17,19 @@ class ChessHomeScreen extends StatelessWidget {
   String assetPath = "assets/images/";
   final PainterHelper painterHelper = Get.find<PainterHelper>();
   final AudioController audioController = Get.find<AudioController>();
+  final AuthController authController = Get.find<AuthController>();
+  // final GoogleAdsController admobAdsController =
+  // Get.find<GoogleAdsController>();
+  final StartAppAdsController startappAdsController =
+      Get.find<StartAppAdsController>();
+  // final user = authController.userModel;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     final GameController gameController = Get.find<GameController>();
+    final user = authController.userModel;
 
     return SafeArea(
       child: Scaffold(
@@ -34,11 +45,24 @@ class ChessHomeScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 35, color: Colors.brown),
+                  GestureDetector(
+                    onTap: () {
+                      _scaffoldKey.currentState?.openDrawer();
+                    },
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.white,
+                      backgroundImage:
+                          user?.image != null && user!.image!.isNotEmpty
+                              ? NetworkImage(user.image!)
+                              : null,
+                      child: user?.image == null || user!.image!.isEmpty
+                          ? const Icon(Icons.person,
+                              size: 35, color: Colors.brown)
+                          : null,
+                    ),
                   ),
+
                   Column(
                     children: [
                       Obx(() {
@@ -101,8 +125,14 @@ class ChessHomeScreen extends StatelessWidget {
               }
             }),
 
+            Obx(() => startappAdsController.bannerAd.value != null
+                ? StartAppBanner(startappAdsController.bannerAd.value!)
+                : const SizedBox(
+                    height: 40,
+                  )),
+
             const SizedBox(
-              height: 50,
+              height: 10,
             ),
 
             // Flexible widget to allow the chessboard to resize based on available space
@@ -110,7 +140,13 @@ class ChessHomeScreen extends StatelessWidget {
               child: Painter(),
             ),
 
-            const Text("Checking Here"),
+            // Obx(() {
+            //   if (admobAdsController.isAdLoaded.value) {
+            //     return admobAdsController.getBannerAd();
+            //   } else {
+            //     return const SizedBox.shrink();
+            //   }
+            // }),
 
             // Bottom buttons (Restart, Pieces, Undo, Hint)
             Container(
